@@ -1,0 +1,594 @@
+<!--#set var="TITLE" value="View-Independent Adjoint Light Tracing for Lighting Design Optimization" -->
+<!--#set var="SHORTTITLE" value="lipp-2024-val" -->
+<!--#set var="MAINTAINER" value="webmaster" -->
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="no-js adaptivetheme">
+  <head>
+    
+    <meta charset="utf-8">
+<script>var _paq = _paq || [];(function(){var u=(("https:" == document.location.protocol) ? "https://www.cg.tuwien.ac.at/matomo/" : "https://www.cg.tuwien.ac.at/matomo/");_paq.push(["setSiteId", "1"]);_paq.push(["setTrackerUrl", u+"matomo.php"]);_paq.push(["setDoNotTrack", 1]);if (!window.matomo_search_results_active) {_paq.push(["trackPageView"]);}_paq.push(["setIgnoreClasses", ["no-tracking","colorbox"]]);_paq.push(["enableLinkTracking"]);var d=document,g=d.createElement("script"),s=d.getElementsByTagName("script")[0];g.type="text/javascript";g.defer=true;g.async=true;g.src=u+"matomo.js";s.parentNode.insertBefore(g,s);})();</script>
+<meta name="Generator" content="Drupal 11 (https://www.drupal.org)">
+<meta name="MobileOptimized" content="width">
+<meta name="HandheldFriendly" content="true">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://www.cg.tuwien.ac.at/"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "View-Independent Adjoint Light Tracing for Lighting Design Optimization"
+        }
+    ]
+}</script>
+<link rel="icon" href="/Klex.png" type="image/png">
+<link rel="canonical" href="https://www.cg.tuwien.ac.at/content/DESIGN-EXPORT">
+<link rel="shortlink" href="https://www.cg.tuwien.ac.at/node/4015">
+
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com"><title>View-Independent Adjoint Light Tracing for Lighting Design Optimization | TU Wien &ndash; Research Unit of Computer Graphics</title>
+    <link rel="stylesheet" media="all" href="/sites/default/files/css/css_dZmFsAw4ygNi0PgxRF5iOLGGoHODuk01CPqgRBih_aU.css?delta=0&amp;language=en&amp;theme=at_cg&amp;include=eJx1kOEOgjAMhF_IwCMtpatY3VZcO3BvryAj_pA_l_uuzTUpmMOxh1W7AFWKdROMdNmSfgBtFh_k2SQ3lPDjY6RkByUDPKioSXSo6q4cWpnX3dyfhXJ1hXfOpJMk5Zncp7LoSewAUbJnSWcLPsu0urO5BvbkZflTYDAEapeVIONtB4OXJIn1olWN4vc9M9Oi_aZdFF8CvQEq7YRX">
+<link rel="stylesheet" media="all" href="/sites/default/files/css/css_5i81gTJQr84u1LvMKl_bpSLrKFJBxgngcRjoMr_ve2w.css?delta=1&amp;language=en&amp;theme=at_cg&amp;include=eJx1kOEOgjAMhF_IwCMtpatY3VZcO3BvryAj_pA_l_uuzTUpmMOxh1W7AFWKdROMdNmSfgBtFh_k2SQ3lPDjY6RkByUDPKioSXSo6q4cWpnX3dyfhXJ1hXfOpJMk5Zncp7LoSewAUbJnSWcLPsu0urO5BvbkZflTYDAEapeVIONtB4OXJIn1olWN4vc9M9Oi_aZdFF8CvQEq7YRX">
+
+    
+  <script type="application/json" data-drupal-selector="drupal-settings-json">{"path":{"baseUrl":"\/","pathPrefix":"","currentPath":"node\/4015","currentPathIsAdmin":false,"isFront":false,"currentLanguage":"en"},"pluralDelimiter":"\u0003","suppressDeprecationErrors":true,"matomo":{"disableCookies":false,"trackColorbox":true,"trackMailto":true},"visitors":{"module":"\/modules\/contrib\/visitors","route":"entity.node.canonical","server":"erzherzog","counter":"node:4015"},"at_cg":{"at_responsivemenus":{"bp":"all and (min-width: 60.0625em)","default":"ms-slidedown","responsive":"ms-dropmenu","acd":{"acd_load":true,"acd_default":true,"acd_responsive":false,"acd_both":false}},"at_breakpoints":{"at_core_simple_wide":{"breakpoint":"wide","mediaquery":"all and (min-width: 60.0625em)"},"at_core_simple_tablet-isolate":{"breakpoint":"tablet-isolate","mediaquery":"all and (min-width: 45.0625em) and (max-width: 60em)"},"at_core_simple_mobile":{"breakpoint":"mobile","mediaquery":"all and (max-width: 45em)"}}},"at_current_theme_name":"at_cg","user":{"uid":0,"permissionsHash":"6b66fd7a78058df006602c9283b19dccc8267c129efe947bf6751e9ae6a8b2ca"}}</script><script type='text/javascript'>
+var modulekit={"modules":{"publdb":{"path":"","name":"Publication Database E186\/2","id":"publdb","version":"1.0.1","depend":["modulekit-form","messages","table","twig","json_readable_encode","modulekit-auth","PDOext","modulekit-form-twig","modulekit-history","csrf","auth-pages","ajax"],"include":{"php":["inc\/functions.php","inc\/edit.php","inc\/edit_chooser.php","inc\/mysql.php","inc\/twig.php","inc\/print_list.php","inc\/search_form.php","inc\/create_thumbnails.php","inc\/format_date.php","inc\/show_replacement_patterns.php","inc\/filter_replacement_patterns.php","inc\/file.php","inc\/gallery_render.php","inc\/gallery_get_random_images.php","inc\/html2plaintext.php","inc\/update_file_header.php","inc\/import_tudb.php","inc\/import.php","inc\/tiss_projects.php","inc\/import_repositum.php","inc\/repositum_notification.php","inc\/convert_references.php","inc\/auto_create_entities.php","inc\/sanitize.php","inc\/cache.php","inc\/DBObject.php","inc\/DBObjectList.php","inc\/Publication.php","inc\/PublicationType.php","inc\/Author.php","inc\/Project.php","inc\/Workgroup.php","inc\/PublicationField.php","inc\/PublicationType_AutoField.php","inc\/PublicationView.php","inc\/FundingOrganisation.php","inc\/ResearchArea.php","inc\/Selection.php","inc\/PressItem.php","inc\/drupal.php","inc\/array_diff_change.php","inc\/PublicationTwigTemplates.php","inc\/bibtex.php"],"js":["inc\/functions.js","inc\/Publication.js","inc\/index.js","inc\/edit.js","inc\/print_list.js","inc\/DBObject.js","inc\/configure_csv.js","node_modules\/viewerjs\/dist\/viewer.js","dist\/externals.js"],"css":["style.css","node_modules\/viewerjs\/dist\/viewer.css"]},"description":"This application implements a publication database for TU-Wien E186\/2 Institute of Computer Graphics and Algorithms.","category":"application","version_build":"git.cd8d36e","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-lib":{"path":"lib\/modulekit\/lib\/","name":"Modulekit - External libraries","id":"modulekit-lib","include_php":[],"include_js":[],"modules_path":"","version_build":"git.34a0c24","version":"","include":{"php":[],"js":[],"css":[]}},"pg_modules":{"path":"lib\/modulekit\/lib\/\/pg_modules\/","id":"pg_modules","include":{"mcp":["backend.php"],"backend":["backend.php"]},"version_build":"git.34a0c24","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"twig":{"path":"lib\/modulekit\/lib\/\/twig\/","name":"Twig integration","depend":["hooks","html"],"include":{"php":["twig.php"],"js":["twig.js"]},"id":"twig","version_build":"git.34a0c24","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"pg_sql":{"path":"lib\/modulekit\/lib\/\/pg_sql\/","id":"pg_sql","include":{"php":["sql.php"],"mcp":["sql.php"],"backend":["sql.php"]},"version_build":"git.34a0c24","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"mysql":{"path":"lib\/modulekit\/lib\/\/mysql\/","include":{"php":["code.php"]},"id":"mysql","version_build":"git.34a0c24","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"pg_schema":{"path":"lib\/modulekit\/lib\/\/pg_schema\/","id":"pg_schema","version_build":"git.34a0c24","version":"","modules_path":["modules","lib\/modulekit","modulekit"],"include":{"php":[],"js":[],"css":[]}},"mysql-pdo":{"path":"lib\/modulekit\/lib\/\/mysql-pdo\/","id":"mysql-pdo","include":{"php":["code.php"]},"version_build":"git.34a0c24","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-auth":{"path":"lib\/modulekit\/auth\/","id":"modulekit-auth","depend":["hooks"],"include":{"php":["inc\/Auth.php","inc\/Auth_default.php","inc\/code.php","inc\/Auth_User.php"]},"default_include":{"php":["*.php"]},"load":["modulekit-auth-ldap","modulekit-auth-htpasswd"],"version_build":"git.146e78d","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-auth-oauth":{"path":"lib\/modulekit\/auth\/modules\/oauth\/","id":"modulekit-auth-oauth","depend":["hooks","modulekit-auth"],"include":{"php":["code.php"]},"version_build":"git.146e78d","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-auth-pages":{"path":"lib\/modulekit\/auth\/modules\/auth-pages\/","id":"modulekit-auth-pages","depend":["modulekit-form","modulekit-auth","page","csrf"],"version_build":"git.146e78d","version":"","modules_path":["modules","lib\/modulekit","modulekit"],"include":{"php":["page_logout.php","page_login.php","modulekit.php","code.php"]}},"modulekit-auth-ldap":{"path":"lib\/modulekit\/auth\/modules\/ldap\/","id":"modulekit-auth-ldap","depend":["hooks","modulekit-auth"],"include":{"php":["ldap.php","code.php"]},"version_build":"git.146e78d","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-auth-user-menu":{"path":"lib\/modulekit\/auth\/modules\/auth-user-menu\/","id":"modulekit-auth-user-menu","depend":["weight_sort","hooks","auth-pages","modulekit-auth"],"include":{"php":["code.php"],"js":["code.js"],"css":["style.css"]},"version_build":"git.146e78d","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-auth-user-settings-js":{"path":"lib\/modulekit\/auth\/modules\/auth-user-settings-js\/","id":"modulekit-auth-user-settings-js","depend":["auth-js","modulekit-auth-user-settings"],"include":{"php":["code.php"],"js":["code.js"]},"version_build":"git.146e78d","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-auth-user-settings":{"path":"lib\/modulekit\/auth\/modules\/auth-user-settings\/","id":"modulekit-auth-user-settings","depend":["json_readable_encode","modulekit-auth"],"include":{"php":["code.php"],"js":[]},"version_build":"git.146e78d","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-auth-js":{"path":"lib\/modulekit\/auth\/modules\/auth-js\/","id":"modulekit-auth-js","depend":["html","modulekit-auth"],"include":{"php":["code.php"],"js":["Auth_User.js","Auth.js"]},"version_build":"git.146e78d","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-auth-wordpress":{"path":"lib\/modulekit\/auth\/modules\/wordpress\/","id":"modulekit-auth-wordpress","depend":["hooks"],"include":{"php":["code.php"]},"version_build":"git.146e78d","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-auth-user-settings-page":{"path":"lib\/modulekit\/auth\/modules\/auth-user-settings-page\/","id":"modulekit-auth-user-settings-page","depend":["modulekit-form","modulekit-auth-user-settings","hooks","page"],"version_build":"git.146e78d","version":"","modules_path":["modules","lib\/modulekit","modulekit"],"include":{"php":["modulekit.php","code.php"]}},"modulekit-auth-htpasswd":{"path":"lib\/modulekit\/auth\/modules\/htpasswd\/","id":"modulekit-auth-htpasswd","version_build":"git.146e78d","version":"","modules_path":["modules","lib\/modulekit","modulekit"],"include":{"php":["modulekit.php","code.php"]}},"modulekit-form":{"path":"lib\/modulekit\/form\/","name":"Form","id":"modulekit-form","version":"2.0.0-alpha","depend":["lang","calendar","date","hooks","json_readable_encode","weight_sort"],"include_php":["inc\/form.php","inc\/functions.php","inc\/form_element.php","inc\/form_element_array.php","inc\/form_element_form_chooser.php","inc\/form_element_form.php","inc\/form_element_hash.php","inc\/form_element_checkbox.php","inc\/form_element_radio.php","inc\/form_element_text.php","inc\/form_element_textarea.php","inc\/form_element_boolean.php","inc\/form_element_color.php","inc\/form_element_password.php","inc\/form_element_keywords.php","inc\/form_element_json.php","inc\/form_element_unsupported.php","inc\/form_element_select.php","inc\/form_element_select_other.php","inc\/form_element_numeric.php","inc\/form_element_file.php","inc\/form_element_date.php","inc\/form_element_label.php","inc\/form_element_autocomplete.php","inc\/form_element_display.php","inc\/form_element_hidden.php","inc\/form_element_intermediate_text.php","inc\/form_element_switch.php","inc\/form_element_fixed.php"],"include_js":["inc\/functions.js","inc\/form.js","inc\/form_element.js","inc\/form_element_array.js","inc\/form_element_form_chooser.js","inc\/form_element_form.js","inc\/form_element_hash.js","inc\/form_element_text.js","inc\/form_element_textarea.js","inc\/form_element_boolean.js","inc\/form_element_radio.js","inc\/form_element_checkbox.js","inc\/form_element_color.js","inc\/form_element_password.js","inc\/form_element_keywords.js","inc\/form_element_json.js","inc\/form_element_unsupported.js","inc\/form_element_select.js","inc\/form_element_select_other.js","inc\/form_element_numeric.js","inc\/form_element_file.js","inc\/form_element_date.js","inc\/form_element_label.js","inc\/form_element_autocomplete.js","inc\/form_element_display.js","inc\/form_element_hidden.js","inc\/form_element_intermediate_text.js","inc\/form_element_switch.js","inc\/form_element_fixed.js"],"include_css":["inc\/form.css","inc\/form_element.css","inc\/form_element_text.css","inc\/form_element_array.css","inc\/form_element_form_chooser.css","inc\/form_element_form.css","inc\/form_element_keywords.css","inc\/form_element_textarea.css","inc\/form_element_select.css","inc\/form_element_autocomplete.css","inc\/form_element_file.css","inc\/theme.css"],"languages":["en","de"],"version_build":"git.73b1789","modules_path":["modules","lib\/modulekit","modulekit"],"include":{"php":["inc\/form.php","inc\/functions.php","inc\/form_element.php","inc\/form_element_array.php","inc\/form_element_form_chooser.php","inc\/form_element_form.php","inc\/form_element_hash.php","inc\/form_element_checkbox.php","inc\/form_element_radio.php","inc\/form_element_text.php","inc\/form_element_textarea.php","inc\/form_element_boolean.php","inc\/form_element_color.php","inc\/form_element_password.php","inc\/form_element_keywords.php","inc\/form_element_json.php","inc\/form_element_unsupported.php","inc\/form_element_select.php","inc\/form_element_select_other.php","inc\/form_element_numeric.php","inc\/form_element_file.php","inc\/form_element_date.php","inc\/form_element_label.php","inc\/form_element_autocomplete.php","inc\/form_element_display.php","inc\/form_element_hidden.php","inc\/form_element_intermediate_text.php","inc\/form_element_switch.php","inc\/form_element_fixed.php"],"js":["inc\/functions.js","inc\/form.js","inc\/form_element.js","inc\/form_element_array.js","inc\/form_element_form_chooser.js","inc\/form_element_form.js","inc\/form_element_hash.js","inc\/form_element_text.js","inc\/form_element_textarea.js","inc\/form_element_boolean.js","inc\/form_element_radio.js","inc\/form_element_checkbox.js","inc\/form_element_color.js","inc\/form_element_password.js","inc\/form_element_keywords.js","inc\/form_element_json.js","inc\/form_element_unsupported.js","inc\/form_element_select.js","inc\/form_element_select_other.js","inc\/form_element_numeric.js","inc\/form_element_file.js","inc\/form_element_date.js","inc\/form_element_label.js","inc\/form_element_autocomplete.js","inc\/form_element_display.js","inc\/form_element_hidden.js","inc\/form_element_intermediate_text.js","inc\/form_element_switch.js","inc\/form_element_fixed.js"],"css":["inc\/form.css","inc\/form_element.css","inc\/form_element_text.css","inc\/form_element_array.css","inc\/form_element_form_chooser.css","inc\/form_element_form.css","inc\/form_element_keywords.css","inc\/form_element_textarea.css","inc\/form_element_select.css","inc\/form_element_autocomplete.css","inc\/form_element_file.css","inc\/theme.css"]}},"modulekit-form-twig":{"path":"lib\/modulekit\/form\/modules\/modulekit-form-twig\/","id":"modulekit-form-twig","depend":["modulekit-form"],"include":{"php":["form_element.php"],"js":["form_element.js"]},"version_build":"git.73b1789","version":"2.0.0-alpha","modules_path":["modules","lib\/modulekit","modulekit"]},"date":{"path":"lib\/modulekit\/form\/modules\/date\/","include":{"js":["pad.js","date_format.js","date_parse_from_format.js"]},"id":"date","version_build":"git.73b1789","version":"2.0.0-alpha","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-form-debug":{"path":"lib\/modulekit\/form\/modules\/debug\/","id":"modulekit-form-debug","include":{"js":["code.js"],"css":["style.css"]},"version_build":"git.73b1789","version":"2.0.0-alpha","modules_path":["modules","lib\/modulekit","modulekit"]},"calendar":{"path":"lib\/modulekit\/form\/modules\/calendar\/","depend":["modulekit-form","date"],"include":{"js":["calendar.js"],"css":["calendar.css"]},"id":"calendar","version_build":"git.73b1789","version":"2.0.0-alpha","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-form-markdown":{"path":"lib\/modulekit\/form\/modules\/markdown\/","id":"modulekit-form-markdown","depend":["modulekit-form"],"include":{"php":["form_element_markdown.php"],"js":["form_element_markdown.js"],"css":["form_element_markdown.css"]},"version_build":"git.73b1789","version":"2.0.0-alpha","modules_path":["modules","lib\/modulekit","modulekit"]},"form_compat":{"path":"lib\/modulekit\/form\/modules\/form_compat\/","id":"form_compat","include":{"php":["form_compat.php"]},"version_build":"git.73b1789","version":"2.0.0-alpha","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-form-geolocation":{"path":"lib\/modulekit\/form\/modules\/geolocation\/","id":"modulekit-form-geolocation","depend":["modulekit-form"],"include":{"php":["code.php"],"js":["code.js"]},"version_build":"git.73b1789","version":"2.0.0-alpha","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-base":{"path":"lib\/modulekit\/base\/","name":"Modulekit - Basic extensions","id":"modulekit-base","include_php":[],"include_js":[],"modules_path":"","version_build":"git.de6f389","version":"","include":{"php":[],"js":[],"css":[]}},"html":{"path":"lib\/modulekit\/base\/\/html\/","id":"html","depend":["weight_sort"],"include":{"php":["functions.php"]},"version_build":"git.de6f389","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"csrf":{"path":"lib\/modulekit\/base\/\/csrf\/","id":"csrf","include":{"php":["code.php"]},"version_build":"git.de6f389","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"opt_sort":{"path":"lib\/modulekit\/base\/\/opt_sort\/","id":"opt_sort","include":{"php":["opt_sort.php"],"js":["opt_sort.js"]},"version_build":"git.de6f389","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"weight_sort":{"path":"lib\/modulekit\/base\/\/weight_sort\/","id":"weight_sort","include":{"php":["weight_sort.php"],"js":["weight_sort.js"]},"version_build":"git.de6f389","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"options":{"path":"lib\/modulekit\/base\/\/options\/","id":"options","depend":["hooks"],"include":{"js":["options.js"]},"version_build":"git.de6f389","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"messages":{"path":"lib\/modulekit\/base\/\/messages\/","include":{"php":["messages.php"],"js":["messages.js"],"css":["style.css"]},"id":"messages","version_build":"git.de6f389","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"resize_listener":{"path":"lib\/modulekit\/base\/\/resize_listener\/","id":"resize_listener","include":{"js":["code.js"]},"version_build":"git.de6f389","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"tests":{"path":"lib\/modulekit\/base\/\/tests\/","id":"tests","version_build":"git.de6f389","version":"","modules_path":["modules","lib\/modulekit","modulekit"],"include":{"php":[],"js":[],"css":[]}},"json_readable_encode":{"path":"lib\/modulekit\/base\/\/json_readable_encode\/","id":"json_readable_encode","include":{"php":["json_readable_encode.php"],"js":["json_readable_encode.js"]},"version_build":"git.de6f389","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"sprintf":{"path":"lib\/modulekit\/base\/\/sprintf\/","include":{"js":["sprintf.js","vsprintf.js"]},"id":"sprintf","version_build":"git.de6f389","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"str_to_id":{"path":"lib\/modulekit\/base\/\/str_to_id\/","id":"str_to_id","include":{"php":["str_to_id.php"],"js":["str_to_id.js"]},"version_build":"git.de6f389","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"shell_escape":{"path":"lib\/modulekit\/base\/\/shell_escape\/","id":"shell_escape","include":{"php":["code.php"]},"version_build":"git.de6f389","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"page":{"path":"lib\/modulekit\/base\/\/page\/","include":{"php":["code.php"],"js":["code.js"]},"id":"page","version_build":"git.de6f389","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"hooks":{"path":"lib\/modulekit\/base\/\/hooks\/","id":"hooks","include":{"php":["hooks.php"],"js":["hooks.js"],"mcp":["hooks.php"],"backend":["hooks.php"]},"version_build":"git.de6f389","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-history":{"path":"lib\/modulekit\/history\/","id":"modulekit-history","depend":["adv_exec","hooks","PDOext","messages"],"include":{"php":["inc\/git.php","inc\/Changeset.php"]},"version_build":"git.a6691fe","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-lang":{"path":"lib\/modulekit\/lang\/","name":"Language System","id":"modulekit-lang","depend":["hooks","html","sprintf"],"include":{"php":["inc\/lang.php"],"mcp":["inc\/lang.php"],"js":["inc\/lang.js"]},"default_include":{"php":["code.php"],"js":["code.js"],"css":["style.css"]},"version_build":"git.ffb3db0","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"translation_inspect":{"path":"lib\/modulekit\/lang\/modules\/translation_inspect\/","id":"translation_inspect","version_build":"git.ffb3db0","version":"","modules_path":["modules","lib\/modulekit","modulekit"],"include":{"php":[],"js":[],"css":["style.css"]}},"lang_preferred":{"path":"lib\/modulekit\/lang\/modules\/lang_preferred\/","name":"Query preferred Languages","id":"lang_preferred","version_build":"git.ffb3db0","version":"","modules_path":["modules","lib\/modulekit","modulekit"],"include":{"php":["code.php"],"js":[],"css":[]}},"translation_statistics":{"path":"lib\/modulekit\/lang\/modules\/translation_statistics\/","name":"Translation Statistics","depend":["translation","win","ajax_indicator"],"id":"translation_statistics","version_build":"git.ffb3db0","version":"","modules_path":["modules","lib\/modulekit","modulekit"],"include":{"php":["code.php"],"js":["code.js"],"css":["style.css"]}},"lang_chooser_minimal":{"path":"lib\/modulekit\/lang\/modules\/lang_chooser_minimal\/","id":"lang_chooser_minimal","version_build":"git.ffb3db0","version":"","modules_path":["modules","lib\/modulekit","modulekit"],"include":{"php":["code.php"],"js":[],"css":["style.css"]}},"lang_chooser":{"path":"lib\/modulekit\/lang\/modules\/lang_chooser\/","name":"Language Chooser","depend":["win","options_ui"],"id":"lang_chooser","version_build":"git.ffb3db0","version":"","modules_path":["modules","lib\/modulekit","modulekit"],"include":{"php":["code.php"],"js":["code.js"],"css":[]}},"translation":{"path":"lib\/modulekit\/lang\/modules\/translation\/","name":"Translation System","depend":["win"],"id":"translation","version_build":"git.ffb3db0","version":"","modules_path":["modules","lib\/modulekit","modulekit"],"include":{"php":["code.php"],"js":["code.js"],"css":["style.css"]}},"modulekit-ajax":{"path":"lib\/modulekit\/ajax\/","name":"AJAX","id":"modulekit-ajax","depend":[],"include_php":["inc\/ajax.php"],"include_js":["inc\/ajax.js"],"include_css":[],"version_build":"git.4dec2cc","version":"","modules_path":["modules","lib\/modulekit","modulekit"],"include":{"php":["inc\/ajax.php"],"js":["inc\/ajax.js"],"css":[]}},"modulekit-table":{"path":"lib\/modulekit\/table\/","id":"modulekit-table","depend":["hooks","weight_sort","opt_sort"],"include":{"php":["inc\/TableData.php","inc\/table.php"],"js":["inc\/table.js","inc\/TableData.js","inc\/functions.js"],"css":["inc\/style.css"]},"version_build":"git.25542bd","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"adv_exec":{"path":"lib\/modulekit\/adv_exec\/","include":{"php":["adv_exec.php","AdvExec.php","AdvExecChroot.php"]},"id":"adv_exec","version_build":"git.5ccbfe2","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"PDOext":{"path":"lib\/modulekit\/PDOext\/","id":"PDOext","include":{"php":["PDOext.php"]},"version_build":"git.6601182","version":"","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-form-config":{"path":"modulekit\/form-config\/","id":"modulekit-form-config","include":{"php":["code.php"],"css":["style.css"]},"desc":"A form for configuring modulekit modules. Does not need any further dependencies.","version_build":"git.cd8d36e","version":"1.0.1","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit-page-config":{"path":"modulekit\/page-config\/","id":"modulekit-page-config","depend":["modulekit-form","messages"],"include":{"php":["modules.php"]},"desc":"A page for configuring modulekit modules. Need further dependencies: modulekit-form, modulekit-base, modulekit-lang.","version_build":"git.cd8d36e","version":"1.0.1","modules_path":["modules","lib\/modulekit","modulekit"]},"modulekit":{"path":"modulekit\/","id":"modulekit","version":"1.1.0","include":[],"modules_path":"modules","version_build":"git.b1c856a"}},"order":["hooks","weight_sort","html","sprintf","modulekit-lang","date","calendar","json_readable_encode","modulekit-form","messages","opt_sort","modulekit-table","twig","modulekit-auth","modulekit-auth-ldap","modulekit-auth-htpasswd","PDOext","modulekit-form-twig","adv_exec","modulekit-history","csrf","page","modulekit-auth-pages","modulekit-ajax","publdb"],"aliases":{"":"publdb","publdb":"publdb","lib":"modulekit-lib","modulekit-lib":"modulekit-lib","pg_modules":"pg_modules","twig":"twig","pg_sql":"pg_sql","mysql":"mysql","pg_schema":"pg_schema","mysql-pdo":"mysql-pdo","auth":"modulekit-auth","modulekit-auth":"modulekit-auth","oauth":"modulekit-auth-oauth","modulekit-auth-oauth":"modulekit-auth-oauth","auth-pages":"modulekit-auth-pages","modulekit-auth-pages":"modulekit-auth-pages","ldap":"modulekit-auth-ldap","modulekit-auth-ldap":"modulekit-auth-ldap","auth-user-menu":"modulekit-auth-user-menu","modulekit-auth-user-menu":"modulekit-auth-user-menu","auth-user-settings-js":"modulekit-auth-user-settings-js","modulekit-auth-user-settings-js":"modulekit-auth-user-settings-js","auth-user-settings":"modulekit-auth-user-settings","modulekit-auth-user-settings":"modulekit-auth-user-settings","auth-js":"modulekit-auth-js","modulekit-auth-js":"modulekit-auth-js","wordpress":"modulekit-auth-wordpress","modulekit-auth-wordpress":"modulekit-auth-wordpress","auth-user-settings-page":"modulekit-auth-user-settings-page","modulekit-auth-user-settings-page":"modulekit-auth-user-settings-page","htpasswd":"modulekit-auth-htpasswd","modulekit-auth-htpasswd":"modulekit-auth-htpasswd","form":"modulekit-form","modulekit-form":"modulekit-form","modulekit-form-twig":"modulekit-form-twig","date":"date","debug":"modulekit-form-debug","modulekit-form-debug":"modulekit-form-debug","calendar":"calendar","markdown":"modulekit-form-markdown","modulekit-form-markdown":"modulekit-form-markdown","form_compat":"form_compat","geolocation":"modulekit-form-geolocation","modulekit-form-geolocation":"modulekit-form-geolocation","base":"modulekit-base","modulekit-base":"modulekit-base","html":"html","csrf":"csrf","opt_sort":"opt_sort","weight_sort":"weight_sort","options":"options","messages":"messages","resize_listener":"resize_listener","tests":"tests","json_readable_encode":"json_readable_encode","sprintf":"sprintf","str_to_id":"str_to_id","shell_escape":"shell_escape","page":"page","hooks":"hooks","history":"modulekit-history","modulekit-history":"modulekit-history","lang":"modulekit-lang","modulekit-lang":"modulekit-lang","translation_inspect":"translation_inspect","lang_preferred":"lang_preferred","translation_statistics":"translation_statistics","lang_chooser_minimal":"lang_chooser_minimal","lang_chooser":"lang_chooser","translation":"translation","ajax":"modulekit-ajax","modulekit-ajax":"modulekit-ajax","table":"modulekit-table","modulekit-table":"modulekit-table","adv_exec":"adv_exec","PDOext":"PDOext","form-config":"modulekit-form-config","modulekit-form-config":"modulekit-form-config","page-config":"modulekit-page-config","modulekit-page-config":"modulekit-page-config","modulekit":"modulekit"},"load":[],"config":{"load":[]},"root_path":"\/home\/publdb\/htdocs\/","version":"1.0.1+git.cd8d36e","compiled":{"js":"compiled_js.js","php":"compiled_php.php","css":"compiled_css.css"}};
+var modulekit_root_relative="..\/..\/";
+
+function modulekit_loaded(module) {
+  if((!modulekit)||
+     (!modulekit.aliases))
+    return false;
+
+  if(modulekit.aliases[module])
+    module=modulekit.aliases[module];
+
+  for(var i=0; i<modulekit.order.length; i++)
+    if(modulekit.order[i]==module)
+      return modulekit.modules[module];
+
+  return false;
+}
+
+function modulekit_file(module, path, absolute_path) {
+  var prefix="";
+
+  if(!path)
+    path="";
+
+  if(typeof absolute_path=="undefined")
+    absolute_path=false;
+
+  if(absolute_path===true) {
+    var rel=modulekit_root_relative.split("../");
+    prefix=location.pathname.split("/");
+    prefix=prefix.slice(0, prefix.length-rel.length).join("/")+"/";
+  }
+  else if(absolute_path===false) {
+    prefix=modulekit_root_relative;
+  }
+
+  if((!modulekit)||
+     (!modulekit.modules))
+     return;
+
+  if((modulekit.aliases)&&
+     (modulekit.aliases[module]))
+    module=modulekit.aliases[module];
+
+  if((!modulekit.modules[module])||
+     (!modulekit.modules[module].path))
+    return;
+
+  return prefix+modulekit.modules[module].path+path;
+}
+
+function modulekit_get_includes(type) {
+  var list=[];
+
+  if((!modulekit)||
+     (!modulekit.modules)||
+     (!modulekit.order))
+    return [];
+
+  for(var i=0; i<modulekit.order.length; i++) {
+    var m=modulekit.order[i];
+
+    if(modulekit.modules[m].include&&modulekit.modules[m].include[type])
+      for(var j=0; j<modulekit.modules[m].include[type].length; j++)
+	list.push(modulekit_file(m, modulekit.modules[m].include[type][j]));
+  }
+
+  return list;
+}
+</script>
+<script type='text/javascript' src="../../modulekit-cache/compiled_js.js?1.0.1+git.cd8d36e"></script>
+<link rel='stylesheet' type='text/css' href="../../modulekit-cache/compiled_css.css?1.0.1+git.cd8d36e">
+<!-- add_html_headers -->
+<script type='text/javascript' src='../../modulekit-cache/lang_en.js?1.0.1+git.cd8d36e'></script>
+<script type='text/javascript'>
+var ui_lang="en";
+var language_list={"ast":"Asturianu","be":"\u0411\u0435\u043b\u0430\u0440\u0443\u0441\u043a\u0430\u044f \u043c\u043e\u0432\u0430","bg":"\u0431\u044a\u043b\u0433\u0430\u0440\u0441\u043a\u0438","bs":"bosanski\/\u0431\u043e\u0441\u0430\u043d\u0441\u043a\u0438","ca":"Catal\u00e0","cs":"\u010ce\u0161tina","da":"Dansk","de":"Deutsch","el":"\u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac","en":"English","es":"Espa\u00f1ol","et":"Eesti","fi":"suomi","fr":"Fran\u00e7ais","ga":"Gaeilge","gl":"galego","hr":"hrvatski","hu":"magyar","is":"\u00edslenska","it":"Italiano","ja":"\u65e5\u672c\u8a9e","lt":"lietuvi\u0173 kalba","lv":"latvie\u0161u valoda","mk":"\u043c\u0430\u043a\u0435\u0434\u043e\u043d\u0441\u043a\u0438","mt":"Malti","nl":"Nederlands","no":"norsk","oc":"occitan","pl":"Polski","pt":"portugu\u00eas","pt-br":"Portugu\u00eas (Brasil)","ro":"Romanian","ru":"\u0420\u0443\u0441\u0441\u043a\u0438\u0439","sk":"sloven\u010dina","sl":"sloven\u0161\u010dina","sq":"shqip","sr":"\u0421\u0440\u043f\u0441\u043a\u0438","sv":"svenska","uk":"\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430"};
+var languages=["en"];
+var lang_genders={"1":"F","2":"M","3":"N"};
+var lang_non_translated=[];
+</script>
+
+<meta http-equiv="content-language" content="en">
+<!-- /add_html_headers -->
+</head><body class="layout-type--page-layout user-logged-out path-not-frontpage path-node path-content-DESIGN-EXPORT page-node-type--page theme-name--at-cg">
+        <a href="#block-at-cg-content" class="visually-hidden focusable skip-link">Skip to main content</a>
+    
+      <div class="dialog-off-canvas-main-canvas" data-off-canvas-main-canvas>
+    
+<div class="page js-layout">
+  <div data-at-row="header" class="l-header l-row">
+  
+  <header class="l-pr page__row pr-header" role="banner" id="masthead">
+    <div class="l-rw regions container pr-header__rw arc--1 hr--1" data-at-regions="">
+      <div data-at-region="1" class="l-r region pr-header__header-first" id="rid-header-first"><div id="block-cgheader" class="l-bl block block-config-provider--block-content block-plugin-id--block-content-a566fc25-612f-4246-bae2-20ba14373763 block--type-basic block--view-mode-full">
+  <div class="block__inner">
+
+    <div class="block__content"><div class="clearfix text-formatted field field-block-content--body field-formatter-text-default field-name-body field-type-text-with-summary field-label-hidden has-single"><div class="field__items"><div class="field__item"><div class="icons"><a href="https://www.tuwien.ac.at"><img src="/TU-Wien.svg" alt="TU Wien Logo" id="tuwien-logo"></a> <a href="https://www.cg.tuwien.ac.at"><img src="/Klex.svg" alt="Computer Graphics Logo" id="cg-logo"></a></div><ul class="header"><li><a href="https://www.tuwien.ac.at/">TU Wien</a></li><li><a href="https://www.informatik.tuwien.ac.at/" target="_top">Faculty of Informatics</a></li><li><a href="https://www.informatik.tuwien.ac.at/fakultaet/institute/e193" target="_top">Institute of Visual Computing &amp; Human-Centered Technology</a></li><li><a href="https://www.cg.tuwien.ac.at/" target="_top">Research Unit of Computer Graphics</a></li></ul></div></div>
+</div>
+</div></div>
+</div>
+</div>
+    </div>
+  </header>
+  
+</div>
+<div data-at-row="navbar" class="l-navbar l-row">
+  
+  <div class="l-pr page__row pr-navbar" id="navbar">
+    <div class="l-rw regions container pr-navbar__rw arc--1 hr--1" data-at-regions="">
+      <div data-at-region="1" class="l-r region pr-navbar__navbar" id="rid-navbar"><svg style="display:none;">
+    <symbol id="rm-toggle__icon--open" viewbox="0 0 1792 1792" preserveaspectratio="xMinYMid meet">
+    <path class="rm-toggle__icon__path" d="M1664 1344v128q0 26-19 45t-45 19h-1408q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45zm0-512v128q0 26-19 45t-45 19h-1408q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45zm0-512v128q0 26-19 45t-45 19h-1408q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45z"></path>
+  </symbol>
+    <symbol id="rm-toggle__icon--close" viewbox="0 0 1792 1792" preserveaspectratio="xMinYMid meet">
+    <path class="rm-toggle__icon__path" d="M1490 1322q0 40-28 68l-136 136q-28 28-68 28t-68-28l-294-294-294 294q-28 28-68 28t-68-28l-136-136q-28-28-28-68t28-68l294-294-294-294q-28-28-28-68t28-68l136-136q28-28 68-28t68 28l294 294 294-294q28-28 68-28t68 28l136 136q28 28 28 68t-28 68l-294 294 294 294q28 28 28 68z"></path>
+  </symbol>
+</svg>
+<nav aria-labelledby="block-at-cg-main-menu-menu" id="block-at-cg-main-menu" class="l-bl rm-block rm-config-provider--system rm-plugin-id--system-menu-block-main js-hide">
+  <div class="rm-block__inner">
+    <div class="rm-toggle">
+      <button class="rm-toggle__link un-button" role="button" aria-expanded="false">
+                <svg class="rm-toggle__icon">
+          <use id="rm-toggle__icon--use" xlink:href="#rm-toggle__icon--open"></use>
+        </svg>
+                <span class="rm-toggle__label" id="block-at-cg-main-menu-menu">Main menu</span>
+      </button>
+    </div><div class="rm-block__content" id="rm-content">
+        <span id="rm-accordion-trigger" class="hidden">
+            <button class="rm-accordion-trigger un-button" role="button" aria-expanded="false">
+              <svg class="rm-accordion-trigger__icon" viewbox="0 0 1792 1792" preserveaspectratio="xMinYMid meet"><path d="M1600 736v192q0 40-28 68t-68 28h-416v416q0 40-28 68t-68 28h-192q-40 0-68-28t-28-68v-416h-416q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h416v-416q0-40 28-68t68-28h192q40 0 68 28t28 68v416h416q40 0 68 28t28 68z"></path></svg>
+                            <span class="visually-hidden">Toggle sub-menu</span>
+            </button>
+          </span>
+    <ul class="menu odd menu-level-1 menu-name--main">      
+                          
+      
+            <li class="menu__item menu__item-title--home" id="menu-name--main__home">
+
+        <span class="menu__link--wrapper">
+          <a href="/" class="menu__link" data-drupal-link-system-path="&lt;front&gt;">Home</a>
+        </span>
+
+        
+      </li>      
+                          
+      
+            <li class="menu__item menu__item-title--people" id="menu-name--main__people">
+
+        <span class="menu__link--wrapper">
+          <a href="/staff" class="menu__link" data-drupal-link-system-path="node/4726">People</a>
+        </span>
+
+        
+      </li>      
+                          
+      
+            <li class="menu__item menu__item-title--courses" id="menu-name--main__courses">
+
+        <span class="menu__link--wrapper">
+          <a href="/courses" class="menu__link" data-drupal-link-system-path="node/4001">Courses</a>
+        </span>
+
+        
+      </li>      
+                          
+      
+            <li class="menu__item menu__item-title--student-topics" id="menu-name--main__student-topics">
+
+        <span class="menu__link--wrapper">
+          <a href="/courses/Topics" class="menu__link" data-drupal-link-system-path="node/9">Student Topics</a>
+        </span>
+
+        
+      </li>      
+                          
+      
+            <li class="menu__item menu__item-title--research" id="menu-name--main__research">
+
+        <span class="menu__link--wrapper">
+          <a href="/research" class="menu__link" data-drupal-link-system-path="node/4062">Research</a>
+        </span>
+
+        
+      </li>      
+            
+      
+            <li class="menu__item menu__item-title--publications" id="menu-name--main__publications">
+
+        <span class="menu__link--wrapper">
+          <a href="/research/publications" class="menu__link">Publications</a>
+        </span>
+
+        
+      </li>      
+                          
+      
+            <li class="menu__item menu__item-title--jobs" id="menu-name--main__jobs">
+
+        <span class="menu__link--wrapper">
+          <a href="/jobs" class="menu__link" data-drupal-link-system-path="node/928">Jobs</a>
+        </span>
+
+        
+      </li></ul>
+  
+
+</div></div>
+</nav>
+</div>
+    </div>
+  </div>
+  
+</div>
+<div data-at-row="highlighted" class="l-highlighted l-row">
+  
+  <div class="l-pr page__row pr-highlighted" id="highlighted">
+    <div class="l-rw regions container pr-highlighted__rw arc--1 hr--1" data-at-regions="">
+      <div data-at-region="1" class="l-r region pr-highlighted__highlighted" id="rid-highlighted"><div class="l-bl block--messages" id="system-messages-block" data-drupal-messages><div data-drupal-messages-fallback class="hidden"></div></div></div>
+    </div>
+  </div>
+  
+</div>
+<div data-at-row="main" class="l-main l-row">
+  
+  <div class="l-pr page__row pr-main" id="main-content">
+    <div class="l-rw regions container pr-main__rw arc--1 hr--1" data-at-regions="">
+      <div data-at-region="1" data-at-block-count="4" class="l-r region pr-main__content" id="rid-content"><div id="block-at-cg-page-title" class="l-bl block block-config-provider--core block-plugin-id--page-title-block">
+  <div class="block__inner">
+
+    <div class="block__content">
+  <h1 class="page__title"><span class="field field-name-title field-formatter-string field-type-string field-label-hidden">View-Independent Adjoint Light Tracing for Lighting Design Optimization</span>
+</h1>
+
+</div></div>
+</div>
+<!-- ****   Don't edit above this line   **** -->
+
+<div id='intro'>
+<main id="block-at-cg-content" class="l-bl block block-main-content" role="main">
+  
+  <div data-history-node-id="4015" role="article" class="node node--view-mode-full node--type-page node--id-4015 atl atl--cg-default cg-default clearfix">
+
+  
+
+  <div class="group-header">
+    
+  </div>
+
+  <div class="group-sidebar-top">
+    <div class="w3-left field field--name-field-header-image field--type-image field--label-hidden field__item"><a href="https://www.cg.tuwien.ac.at/research/publications/2024/lipp-2024-val/lipp-2024-val-preview.jpg"><img src="https://www.cg.tuwien.ac.at/research/publications/2024/lipp-2024-val/lipp-2024-val-preview:thumb300.png" width="477" height="480" alt="" loading="lazy" typeof="foaf:Image" class="image-style-large"></a></div>
+<div class="clearfix text-formatted field field-node--field-header field-formatter-text-default field-name-field-header field-type-text-long field-label-hidden has-single"><div class="field__items"><div class="field__item"><p><a href="https://www.cg.tuwien.ac.at/staff/LukasLipp">Lukas Lipp</a><a class="orcid" href='https://orcid.org/0000-0002-1110-0707'><img class='inline-image' src='https://www.cg.tuwien.ac.at/research/publications/images/ORCID_iD.svg' alt='ORCID iD'></a>, <a href="https://www.cg.tuwien.ac.at/staff/DavidHahn">David Hahn</a><a class="orcid" href='https://orcid.org/0000-0002-7617-5523'><img class='inline-image' src='https://www.cg.tuwien.ac.at/research/publications/images/ORCID_iD.svg' alt='ORCID iD'></a>, <a href="https://www.cg.tuwien.ac.at/staff/PierreEcormier-Nocca">Pierre Ecormier-Nocca</a><a class="orcid" href='https://orcid.org/0000-0002-3975-4913'><img class='inline-image' src='https://www.cg.tuwien.ac.at/research/publications/images/ORCID_iD.svg' alt='ORCID iD'></a>, Florian Rist, <a href="https://www.cg.tuwien.ac.at/staff/MichaelWimmer">Michael Wimmer</a><a class="orcid" href='https://orcid.org/0000-0002-9370-2663'><img class='inline-image' src='https://www.cg.tuwien.ac.at/research/publications/images/ORCID_iD.svg' alt='ORCID iD'></a><br>
+<b><a href='https://www.cg.tuwien.ac.at/research/publications/2024/lipp-2024-val/'>View-Independent Adjoint Light Tracing for Lighting Design Optimization</a></b><br>
+<i>ACM Transactions on Graphics</i>, 43(3):35, May 2024.  </p>
+</div></div>
+</div>
+
+  </div>
+
+  <div class="group-main">
+    <div class="clearfix text-formatted field field-node--body field-formatter-text-default field-name-body field-type-text-with-summary field-label-hidden has-single"><div class="field__items"><div class="field__item"><p><h2><a name="Information"></a>Information</h2>
+<ul>
+<li>Publication Type: Journal Paper with Conference Talk</li>
+<li>Workgroup(s)/Project(s): <ul>
+<li><a href="https://www.cg.tuwien.ac.at/research/projects/ACD">Advanced Computational Design</a></li></ul>
+</li>
+<li>Date: May 2024</li>
+<li>Journal: ACM Transactions on Graphics</li>
+<li>Volume: 43</li>
+<li>Open Access: yes</li>
+<li>Number: 3</li>
+<li>Article Number: 35</li>
+<li>ISSN: 1557-7368</li>
+<li>Event: SIGGRAPH 2024</li>
+<li>DOI: <a href='https://doi.org/10.1145/3662180'>10.1145/3662180</a>
+</li>
+<li>Pages: 16</li>
+<li>Publisher: ASSOC COMPUTING MACHINERY</li>
+<li>Keywords: differentiable rendering, global illumination, Lighting design, optimization, ray tracing</li>
+</ul>
+<h2><a name="Information"></a>Abstract</h2>
+Differentiable rendering methods promise the ability to optimize various parameters of three-dimensional (3D) scenes to achieve a desired result. However, lighting design has so far received little attention in this field. In this article, we introduce a method that enables continuous optimization of the arrangement of luminaires in a 3D scene via differentiable light tracing. Our experiments show two major issues when attempting to apply existing methods from differentiable path tracing to this problem: First, many rendering methods produce images, which restricts the ability of a designer to define lighting objectives to image space. Second, most previous methods are designed for scene geometry or material optimization and have not been extensively tested for the case of optimizing light sources. Currently available differentiable ray-tracing methods do not provide satisfactory performance, even on fairly basic test cases in our experience. In this article, we propose, to the best of our knowledge, a novel adjoint light tracing method that overcomes these challenges and enables gradient-based lighting design optimization in a view-independent (camera-free) way. Thus, we allow the user to paint illumination targets directly onto the 3D scene or use existing baked illumination data (e.g., light maps). Using modern ray-tracing hardware, we achieve interactive performance. We find light tracing advantageous over path tracing in this setting, as it naturally handles irregular geometry, resulting in less noise and improved optimization convergence. We compare our adjoint gradients to state-of-the-art image-based differentiable rendering methods. We also demonstrate that our gradient data works with various common optimization algorithms, providing good convergence behaviour. Qualitative comparisons with real-world scenes underline the practical applicability of our method.<h2><a name="Information"></a>Additional Files and Images</h2>
+<div class='downloads'>
+
+        
+            	             
+      <h3>Additional images and videos</h3>
+  
+  <div class='all_media'>
+  <div class='list_media'>
+    </div>
+
+  <div class='more_media'>
+      <div class='file'>
+      <a href='https://www.cg.tuwien.ac.at/research/publications/2024/lipp-2024-val/lipp-2024-val-preview.jpg' class='file_preview_thumb'><img style='max-width: 175px; max-height: 175px;' display_src="https://www.cg.tuwien.ac.at/research/publications/2024/lipp-2024-val/lipp-2024-val-preview.jpg" src="https://www.cg.tuwien.ac.at/research/publications/2024/lipp-2024-val/lipp-2024-val-preview:thumb175.png" alt="preview"></a>
+      <br>
+      <a href='https://www.cg.tuwien.ac.at/research/publications/2024/lipp-2024-val/lipp-2024-val-preview.jpg' title='Download file'>preview</a>
+    </div>
+    </div>
+  </div>
+
+      <h3>Additional files</h3>
+  
+  <div class='list_files'>
+    </div>
+
+  <div class='more_files'>
+    </div>
+</div>
+<script>
+register_hook('init', function () {
+  var all_media = document.getElementsByClassName('all_media')
+  if (all_media.length) {
+    var viewer = new Viewer(all_media[0], {
+      url: 'display_src'
+    })
+
+    // Modify the link (parent of img) of all images to prevent default action
+    viewer.images.forEach(function (img) {
+      img.parentNode.onclick = function () {
+        return false
+      }
+    })
+  }
+})
+</script>
+<h2><a name="Information"></a>Weblinks</h2>
+<ul>
+
+<li><a href='https://repositum.tuwien.at/handle/20.500.12708/203067'>Entry in reposiTUm (TU Wien Publication Database)</a></li>
+
+
+
+<li>DOI: <a href='https://doi.org/10.1145/3662180'>10.1145/3662180</a></li>
+
+</ul>
+<h2><a name="Information"></a>BibTeX</h2>
+<pre class='bibtex'>
+@article{lipp-2024-val,
+  title =      &quot;View-Independent Adjoint Light Tracing for Lighting Design
+               Optimization&quot;,
+  author =     &quot;Lukas Lipp and David Hahn and Pierre Ecormier-Nocca and
+               Florian Rist and Michael Wimmer&quot;,
+  year =       &quot;2024&quot;,
+  abstract =   &quot;Differentiable rendering methods promise the ability to
+               optimize various parameters of three-dimensional (3D) scenes
+               to achieve a desired result. However, lighting design has so
+               far received little attention in this field. In this
+               article, we introduce a method that enables continuous
+               optimization of the arrangement of luminaires in a 3D scene
+               via differentiable light tracing. Our experiments show two
+               major issues when attempting to apply existing methods from
+               differentiable path tracing to this problem: First, many
+               rendering methods produce images, which restricts the
+               ability of a designer to define lighting objectives to image
+               space. Second, most previous methods are designed for scene
+               geometry or material optimization and have not been
+               extensively tested for the case of optimizing light sources.
+               Currently available differentiable ray-tracing methods do
+               not provide satisfactory performance, even on fairly basic
+               test cases in our experience. In this article, we propose,
+               to the best of our knowledge, a novel adjoint light tracing
+               method that overcomes these challenges and enables
+               gradient-based lighting design optimization in a
+               view-independent (camera-free) way. Thus, we allow the user
+               to paint illumination targets directly onto the 3D scene or
+               use existing baked illumination data (e.g., light maps).
+               Using modern ray-tracing hardware, we achieve interactive
+               performance. We find light tracing advantageous over path
+               tracing in this setting, as it naturally handles irregular
+               geometry, resulting in less noise and improved optimization
+               convergence. We compare our adjoint gradients to
+               state-of-the-art image-based differentiable rendering
+               methods. We also demonstrate that our gradient data works
+               with various common optimization algorithms, providing good
+               convergence behaviour. Qualitative comparisons with
+               real-world scenes underline the practical applicability of
+               our method.&quot;,
+  month =      may,
+  journal =    &quot;ACM Transactions on Graphics&quot;,
+  volume =     &quot;43&quot;,
+  number =     &quot;3&quot;,
+  articleno =  &quot;35&quot;,
+  issn =       &quot;1557-7368&quot;,
+  doi =        &quot;10.1145/3662180&quot;,
+  pages =      &quot;16&quot;,
+  publisher =  &quot;ASSOC COMPUTING MACHINERY&quot;,
+  keywords =   &quot;differentiable rendering, global illumination, Lighting
+               design, optimization, ray tracing&quot;,
+  URL =        &quot;https://www.cg.tuwien.ac.at/research/publications/2024/lipp-2024-val/&quot;,
+}
+</pre>
+</p>
+</div></div>
+</div>
+
+  </div>
+
+  <div class="group-sidebar-below">
+    
+  </div>
+
+  <div class="group-footer">
+    
+  </div>
+</div>
+
+
+  
+</main>
+</div>
+    </div>
+  </div>
+  
+</div>
+<div data-at-row="content-suffix" class="l-content-suffix l-row">
+  
+  <div class="l-pr page__row pr-content-suffix" id="content-suffix">
+    <div class="l-rw regions container pr-content-suffix__rw arc--1 hr--1" data-at-regions="">
+      <div data-at-region="1" class="l-r region pr-content-suffix__content-suffix" id="rid-content-suffix"><div role="navigation" aria-labelledby="block-at-cg-breadcrumbs-menu" id="block-at-cg-breadcrumbs" class="l-bl block block-breadcrumbs block-config-provider--system block-plugin-id--system-breadcrumb-block">
+  <div class="block__inner">
+
+    
+    <h2 class="visually-hidden block__title block-breadcrumbs__title" id="block-at-cg-breadcrumbs-menu"><span>Breadcrumbs</span></h2>
+    
+      <div class="breadcrumb">
+    <nav class="is-responsive is-horizontal" data-at-responsive-list>
+      <div class="is-responsive__list">
+        <h3 class="visually-hidden breadcrumb__title">You are here:</h3>
+        <ol class="breadcrumb__list"><li class='breadcrumb__list-item is-responsive__item'><a href="/">Home</a> </li>
+<li class='breadcrumb__list-item is-responsive__item'><a href="/research/">Research</a> </li>
+<li class='breadcrumb__list-item is-responsive__item'> <a href="/research/publications/">Publications</a> </li>
+<li class='breadcrumb__list-item is-responsive__item'> <a href="/research/publications/2024/">2024</a> </li>
+<li class='breadcrumb__list-item is-responsive__item'> <a class='current' href="/research/publications/2024/lipp-2024-val/">lipp-2024-val</a> </li>
+</ol>
+      </div>
+    </nav>
+  </div></div>
+</div>
+</div>
+    </div>
+  </div>
+  
+</div>
+<div data-at-row="subfeatures" class="l-subfeatures l-row">
+  
+  <div class="l-pr page__row pr-subfeatures regions-multiple" id="sub-features">
+    <div class="l-rw regions container pr-subfeatures__rw arc--2 hr--1-2" data-at-regions="">
+      <div data-at-region="1" class="l-r region pr-subfeatures__subfeatures-first" id="rid-subfeatures-first"><div id="block-cgfooter" class="l-bl block block-config-provider--block-content block-plugin-id--block-content-4726eb85-1571-4741-8410-51adf642257a block--type-basic block--view-mode-full">
+  <div class="block__inner">
+
+    <div class="block__content"><div class="clearfix text-formatted field field-block-content--body field-formatter-text-default field-name-body field-type-text-with-summary field-label-hidden has-single"><div class="field__items"><div class="field__item"><p>TU Wien<br>
+Institute of Visual Computing &amp; Human-Centered Technology<br>
+Favoritenstr. 9-11 / E193-02<br>
+A-1040 Vienna<br>
+Austria - Europe</p>
+
+<p><a href="tel:+43-1-58801-193201">Tel.&nbsp;+43-1-58801-193201</a></p>
+
+<p class="hide-print"><a href="https://www.cg.tuwien.ac.at/resources/maps/">How to find us</a></p>
+</div></div>
+</div>
+</div></div>
+</div>
+</div><div data-at-region="2" data-at-block-count="2" class="l-r region pr-subfeatures__subfeatures-second" id="rid-subfeatures-second"><nav role="navigation" aria-labelledby="block-at-cg-account-menu-menu" id="block-at-cg-account-menu" class="l-bl block block-menu block-config-provider--system block-plugin-id--system-menu-block-account">
+  <div class="block__inner block-menu__inner">
+
+    
+    <h2 class="visually-hidden block__title block-menu__title" id="block-at-cg-account-menu-menu"><span>User menu</span></h2>
+    <div class="block__content block-menu__content">
+    <ul class="menu odd menu-level-1 menu-name--account">      
+                          
+      
+            <li class="menu__item menu__item-title--log-in" id="menu-name--account__log-in">
+
+        <span class="menu__link--wrapper">
+          <a href="https://www.cg.tuwien.ac.at/research/publications/login.php?return=%2Fresearch%2Fpublications%2F2024%2Flipp-2024-val%2F" class="menu__link" data-drupal-link-system-path="user/login">Login</a>
+        </span>
+
+        
+      </li></ul>
+  
+
+</div></div>
+</nav>
+<nav role="navigation" aria-labelledby="block-at-cg-footer-menu" id="block-at-cg-footer" class="l-bl block block-menu block-config-provider--system block-plugin-id--system-menu-block-footer">
+  <div class="block__inner block-menu__inner">
+
+    
+    <h2 class="visually-hidden block__title block-menu__title" id="block-at-cg-footer-menu"><span>Footer menu</span></h2>
+    <div class="block__content block-menu__content">
+    <ul class="menu odd menu-level-1 menu-name--footer">      
+                          
+      
+            <li class="menu__item menu__item-title--datenschutzerkl&auml;rung" id="menu-name--footer__datenschutzerklrung">
+
+        <span class="menu__link--wrapper">
+          <a href="/content/Datenschutzerkl%C3%A4rung" class="menu__link" data-drupal-link-system-path="node/1317">Datenschutzerkl&auml;rung</a>
+        </span>
+
+        
+      </li>      
+                          
+      
+            <li class="menu__item menu__item-title--impressum" id="menu-name--footer__impressum">
+
+        <span class="menu__link--wrapper">
+          <a href="/impressum" class="menu__link" data-drupal-link-system-path="node/4821">Impressum</a>
+        </span>
+
+        
+      </li></ul>
+  
+
+</div></div>
+</nav>
+</div>
+    </div>
+  </div>
+  
+</div>
+
+  
+</div>
+
+  </div>
+
+    
+    
+<script src="/core/assets/vendor/jquery/jquery.min.js?v=4.0.0"></script>
+<script src="/core/assets/vendor/once/once.min.js?v=1.0.1"></script>
+<script src="/core/misc/drupalSettingsLoader.js?v=11.4.12"></script>
+<script src="/core/misc/drupal.js?v=11.4.12"></script>
+<script src="/core/misc/drupal.init.js?v=11.4.12"></script>
+<script src="/themes/custom/at_cg/scripts/aspect-keep-size.js?v=8.x-1.0"></script>
+<script src="/themes/custom/at_cg/scripts/teaser-slideshow.js?v=8.x-1.0"></script>
+<script src="/themes/custom/at_cg/scripts/group-photo-image-map.js?v=8.x-1.0"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fontfaceobserver/2.1.0/fontfaceobserver.js"></script>
+<script src="/themes/custom/at_cg/scripts/fontfaceobserver-check.js?v=8.x-1.0"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/enquire.js/2.1.6/enquire.min.js"></script>
+<script src="/themes/contrib/adaptivetheme/at_core/scripts/min/at.breakpoints.min.js?v=11.4.12"></script>
+<script src="/core/misc/debounce.js?v=11.4.12"></script>
+<script src="/themes/contrib/adaptivetheme/at_core/scripts/min/at.responsiveLists.min.js?v=11.4.12"></script>
+<script src="/themes/contrib/adaptivetheme/at_core/scripts/min/doubletaptogo.min.js?v=11.4.12"></script>
+<script src="/themes/contrib/adaptivetheme/at_core/scripts/min/at.responsiveMenus.min.js?v=11.4.12"></script>
+<script src="/themes/contrib/adaptivetheme/at_core/scripts/min/matchMedia.min.js?v=11.4.12"></script>
+<script src="/themes/contrib/adaptivetheme/at_core/scripts/min/matchMedia.addListener.min.js?v=11.4.12"></script>
+<script src="/themes/contrib/adaptivetheme/at_core/scripts/min/at.responsiveTables.min.js?v=11.4.12"></script>
+<script src="/modules/contrib/matomo/js/matomo.js?tobxpu"></script>
+<script src="/modules/contrib/visitors/js/visitors.js?tobxpu"></script>
+
+  </body>
+</html>
+
