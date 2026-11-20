@@ -1,0 +1,36 @@
+.venv/
+__pycache__/
+*.py[cod]
+third_party/
+papers/*.html
+papers/*.txt
+tmp/
+results/
+
+# Unity-generated state (Packages and ProjectSettings remain tracked)
+Light/Library/
+Light/Temp/
+Light/Logs/
+Light/obj/
+Light/UserSettings/
+Light/.vs/
+Light/.idea/
+Light/Assembly-CSharp*.csproj
+Light/*.sln
+Light/*.user
+
+# Do not commit Unity assets. Keep only the application's source files.
+Light/Assets/*
+!Light/Assets/LightingMvp/
+Light/Assets/LightingMvp/*
+!Light/Assets/LightingMvp/README.md
+!Light/Assets/LightingMvp/Editor/
+!Light/Assets/LightingMvp/Runtime/
+!Light/Assets/LightingMvp/Shaders/
+Light/Assets/LightingMvp/Editor/*
+!Light/Assets/LightingMvp/Editor/*.cs
+Light/Assets/LightingMvp/Runtime/*
+!Light/Assets/LightingMvp/Runtime/*.cs
+Light/Assets/LightingMvp/Shaders/*
+!Light/Assets/LightingMvp/Shaders/*.compute
+!Light/Assets/LightingMvp/Shaders/*.shader
