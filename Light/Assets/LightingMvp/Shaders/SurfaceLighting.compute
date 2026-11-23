@@ -13,6 +13,8 @@ RWStructuredBuffer<float4> _Irradiance;
 RWStructuredBuffer<float4> _OutgoingRadiance;
 uint _SampleCount;
 uint _LightCount;
+uint _UseVisibility;
+StructuredBuffer<float> _Visibility;
 
 [numthreads(64,1,1)]
 void EvaluateSurfaceLighting(uint3 id : SV_DispatchThreadID)
@@ -36,7 +38,8 @@ void EvaluateSurfaceLighting(uint3 id : SV_DispatchThreadID)
             float cone = saturate((coneCosine-light.cosOuter)/max(light.cosInner-light.cosOuter,1e-8));
             angular = cone*cone;
         }
-        irradiance += light.intensity*light.color.rgb*distanceAttenuation*angular*cosine;
+        float visibility = _UseVisibility != 0 ? _Visibility[l*_SampleCount+id.x] : 1;
+        irradiance += visibility*light.intensity*light.color.rgb*distanceAttenuation*angular*cosine;
     }
     _Irradiance[id.x] = float4(irradiance,1);
     // Lambertian L_o = rho/pi * E. This is outgoing surface radiance, not a tonemapped screen pixel.

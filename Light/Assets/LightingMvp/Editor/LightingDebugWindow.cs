@@ -15,13 +15,14 @@ namespace LightingMvp.Editor
         [SerializeField] private Bounds effectBounds=new Bounds(new Vector3(0,1,0),new Vector3(2,2,2));
         [SerializeField] private bool selectedLightsOnly,boundsInitialized;
         [SerializeField] private float positionSigma=0.15f,intensitySigma=0.20f,directionSigma=12,colorSigma;
-        [SerializeField] private int fieldResolution=30,fieldMode,fieldExperiment,fieldDisplayMode,fieldColormap=1;
+        [SerializeField] private int fieldResolution=30,fieldMode,fieldExperiment,fieldDisplayMode,fieldColormap=1,fieldQuantity;
         [SerializeField] private bool showIrradiance,irradianceAdvanced,autoFieldUpdate=true,autoFieldNormalize=true,logFieldScale=true,rgbFieldMode;
         [SerializeField] private float fieldContrast=20,fieldMarkerScale=1,manualFieldMax=0.0005f,fieldOverlayOpacity=1;
         private bool fieldDirty=true;
         private double nextFieldUpdate;
-        private string fieldLightSignature="";
+        private string fieldLightSignature="",fieldGeometrySignature="";
         private SurfaceSampleSet fieldSamples;
+        private DiffuseRadiosity fieldTransport;
         private Vector3[] fieldValues;
         private float fieldMax;
         private Texture2D fieldLegend;
@@ -29,24 +30,30 @@ namespace LightingMvp.Editor
         private GameObject fieldOverlayRoot;
         private Material fieldOverlayMaterial;
         private sealed class FieldOverlay { public Mesh mesh;public int start,count; }
-        private readonly string[] fieldModes={ "Current scene lights","Target irradiance","Absolute error |current-target|" };
+        private readonly string[] fieldModes={ "Current scene lights","Target field","Absolute error |current-target|" };
         private readonly BoxBoundsHandle boundsHandle=new BoxBoundsHandle();
         private readonly System.Collections.Generic.List<LightState> perturbationBaseline=new System.Collections.Generic.List<LightState>();
         private int lastPerturbedCount=-1;
 
         private sealed class LightState { public Light light;public Vector3 position;public Quaternion rotation;public float intensity;public Color color; }
 
-        private const string ScenePath="Assets/Scenes/CornellBoxMvp.unity";
-        private static string OutputRoot { get { return Path.GetFullPath(Path.Combine(Application.dataPath,"../../results/unity_mvp")); } }
-        private readonly string[] files={ "point_position_intensity.json","spot_position_direction.json" };
-        private readonly string[] labels={ "Point: position + intensity","Spot: position + direction" };
+        private const string ScenePath=CornellBoxMvpEditor.ScenePath;
+        private const int RadiosityQuantity=2;
+        private static string OutputRoot=>CornellBoxMvpEditor.OutputRoot;
+        private readonly string[] files={ "point_position_intensity.json","spot_position_direction.json","three_point_position_intensity.json","three_point_joint_cct.json",CornellBoxMvpEditor.RadiosityExperiment+".json" };
+        private readonly string[] labels={ "Point: position + intensity","Spot: position + direction","Three points: position + intensity","Three points: position + intensity + CCT","Three points: multi-bounce GI + CCT" };
+        private bool RadiosityField=>fieldQuantity==RadiosityQuantity;
+        private static readonly string[] replayViews={ "All lights","Selected light only" };
+        [SerializeField] private int experiment=-1,selectedReplayLight;
+        [SerializeField] private bool isolateReplayLight;
         private CornellBoxMvpEditor.ExperimentReport[] reports;
-        private int experiment,index;
+        private int index;
+        private Vector2 scrollPosition;
         private float speed=45;
         private bool playing,showTarget=true;
         private double nextUpdate;
-        private Light candidate;
-        private LightSpec restoreOnClose;
+        private CornellSceneRig replayRig;
+        private Light candidate=>replayRig!=null&&replayRig.Count>0?replayRig[0]:null;
 
         [MenuItem("Lighting MVP/Debug Window")]
         public static void Open()
@@ -54,15 +61,137 @@ namespace LightingMvp.Editor
             var window=GetWindow<LightingDebugWindow>();window.titleContent=new GUIContent("Lighting Debug");window.Show();
         }
 
-        public static void BatchPreviewSmoke() { try { var window=GetWindow<LightingDebugWindow>();window.OpenExperimentScene();for(int experimentIndex=0;experimentIndex<2;experimentIndex++){window.experiment=experimentIndex;var history=window.reports[experimentIndex].history;window.index=Mathf.Min(250,history.Count-1);window.ApplyCurrent();Vector3 expected=history[window.index].lights[0].position;if(Vector3.Distance(window.candidate.transform.position,expected)>1e-6f)throw new Exception("Iteration preview state mismatch");}window.Close();Debug.Log("Iteration preview smoke test passed");EditorApplication.Exit(0); } catch(Exception e){Debug.LogException(e);EditorApplication.Exit(2);} }
+        public static void BatchPreviewSmoke()
+        {
+            try
+            {
+                EditorSceneManager.OpenScene(ScenePath);
+                VerifyCornellPlayback();EditorApplication.Exit(0);
+            }
+            catch(Exception e){Debug.LogException(e);EditorApplication.Exit(2);}
+        }
 
-        public static void BatchPerturbationSmoke() { try { var window=GetWindow<LightingDebugWindow>();window.OpenExperimentScene();window.activeTab=1;window.effectBounds=new Bounds(new Vector3(0,1,0),new Vector3(2,2,2));if(window.GetLightsInScope().Count!=1)throw new Exception("Bounding-box scope mismatch");window.seed=1234;Vector3 before=window.candidate.transform.position;window.ApplyRandomPerturbation();Vector3 perturbed=window.candidate.transform.position;if(Vector3.Distance(before,perturbed)<1e-6f)throw new Exception("Perturbation did not move the light");window.RestorePerturbationBaseline();if(Vector3.Distance(before,window.candidate.transform.position)>1e-6f)throw new Exception("Perturbation restore mismatch");window.seed=1234;window.ApplyRandomPerturbation();if(Vector3.Distance(perturbed,window.candidate.transform.position)>1e-6f)throw new Exception("Perturbation is not reproducible");window.RestorePerturbationBaseline();window.effectBounds=new Bounds(new Vector3(10,10,10),Vector3.one);if(window.GetLightsInScope().Count!=0)throw new Exception("Bounding-box exclusion mismatch");window.Close();Debug.Log("Lighting perturbation smoke test passed");EditorApplication.Exit(0); } catch(Exception e){Debug.LogException(e);EditorApplication.Exit(2);} }
+        internal static void VerifyCornellPlayback()
+        {
+            using var baseline=new CornellSceneRig(SceneManager.GetActiveScene());
+            var states=new string[baseline.Count];
+            for(int i=0;i<baseline.Count;i++)states[i]=LightSignature(baseline[i]);
+            var window=CreateInstance<LightingDebugWindow>();
+            try
+            {
+                if(RecordedLightCount(window.reports[window.experiment])!=3||window.isolateReplayLight)
+                    throw new Exception("Replay did not default to a recorded multi-light rig in all-lights mode.");
+                for(int i=0;i<window.files.Length;i++)
+                {
+                    window.experiment=i;
+                    var history=window.reports[i].history;
+                    int frame=Mathf.Min(75,history.Count-3);
+                    window.index=frame;window.ApplyCurrent();
+                    AssertFrame(frame,-1);
+                    if(history[frame].lights.Length==1)continue;
 
-        public static void BatchIrradianceSmoke() { try { var window=GetWindow<LightingDebugWindow>();window.OpenExperimentScene();window.showIrradiance=true;window.fieldMode=0;window.RecomputeIrradiance();if(window.fieldSamples.Count!=5*(window.fieldResolution+1)*(window.fieldResolution+1)||window.fieldValues.Length!=window.fieldSamples.Count||window.fieldMax<=0)throw new Exception("Current irradiance visualization data mismatch");if(window.fieldDisplayMode==0&&(window.fieldOverlays.Count!=5||window.fieldOverlays[0].mesh.colors.Length==0))throw new Exception("Continuous irradiance mesh was not generated");window.fieldMode=1;window.fieldExperiment=0;window.RecomputeIrradiance();if(window.fieldMax<=0)throw new Exception("Target irradiance visualization data mismatch");window.fieldMode=2;window.RecomputeIrradiance();if(window.fieldMax<=0)throw new Exception("Error irradiance visualization data mismatch");window.ExportDisplayedField();window.Close();Debug.Log("Irradiance visualization smoke test passed");EditorApplication.Exit(0); } catch(Exception e){Debug.LogException(e);EditorApplication.Exit(2);} }
+                    window.playing=true;window.nextUpdate=0;window.Tick();
+                    AssertFrame(++frame,-1);
+                    window.SetReplayView(true,1);
+                    AssertFrame(frame,1);
+                    if(!window.playing)throw new Exception("Changing replay mode paused playback.");
+                    window.nextUpdate=0;window.Tick();
+                    AssertFrame(++frame,1);
+                    window.SetReplayView(true,2);
+                    AssertFrame(frame,2);
+                    window.SetReplayView(false,2);
+                    AssertFrame(frame,-1);
+                    window.playing=false;
+                }
+                window.experiment=3;window.ApplyCurrent();
+                window.showIrradiance=true;window.fieldMode=1;window.fieldExperiment=3;window.fieldQuantity=1;window.RecomputeIrradiance();
+                if(window.fieldOverlays.Count!=7||window.fieldMax<=0)throw new Exception("Multi-light radiance overlay mismatch.");
+                CornellBoxMvpEditor.Capture("three_point_target_radiance_heatmap.png");
+                window.SetReplayView(true,2);
+                AssertIsolatedOverlay();
+                window.experiment=Array.IndexOf(window.files,CornellBoxMvpEditor.RadiosityExperiment+".json");
+                window.ApplyCurrent();
+                window.fieldQuantity=RadiosityQuantity;window.fieldMode=1;window.RecomputeIrradiance();
+                var giReport=window.reports[window.experiment];
+                if(!giReport.usesRadiosity||window.fieldTransport==null||window.fieldMax<=0||window.fieldOverlays.Count!=0)
+                    throw new Exception("Multi-bounce replay did not use the radiosity patch overlay.");
+                var selectedTarget=new[]{TargetLights(giReport)[2]};
+                var giSamples=window.fieldSamples;
+                var expectedGi=AnalyticLighting.EvaluateField(selectedTarget,giSamples,UnityVisibility.Evaluate(selectedTarget,giSamples),true,window.fieldTransport);
+                if(AnalyticLighting.FieldNrmse(window.fieldValues,expectedGi,giSamples)>1e-6f)
+                    throw new Exception("Multi-bounce overlay did not isolate the selected target light.");
+                window.StopReplay();
+                for(int i=0;i<states.Length;i++)if(states[i]!=LightSignature(baseline[i]))throw new Exception("Replay did not restore the original Cornell light state.");
+                Debug.Log("Cornell replay smoke passed: all experiments, synchronized and isolated playback, direct and multi-bounce overlays, and scene restoration.");
+            }
+            finally{DestroyImmediate(window);}
+
+            void AssertFrame(int frame,int onlyLight)
+            {
+                if(window.index!=frame||window.replayRig==null)throw new Exception("Replay did not stay on the expected frame.");
+                LightSpec[] expected=window.reports[window.experiment].history[frame].lights;
+                for(int l=0;l<window.replayRig.Count;l++)
+                {
+                    Light actual=window.replayRig[l];
+                    bool visible=l<expected.Length&&(onlyLight<0||l==onlyLight);
+                    if(actual.gameObject.activeSelf!=visible||actual.isActiveAndEnabled!=visible)
+                        throw new Exception("Replay did not activate the correct light slots.");
+                    if(visible&&(Vector3.Distance(actual.transform.position,expected[l].position)>1e-6f||
+                        Mathf.Abs(actual.intensity-expected[l].intensity)>1e-6f||Mathf.Abs(actual.colorTemperature-expected[l].cctKelvin)>0.01f))
+                        throw new Exception("Replay light state mismatch.");
+                }
+            }
+
+            void AssertIsolatedOverlay()
+            {
+                // Deliberately keep the overlay's all-lights target on another experiment.
+                window.fieldExperiment=0;
+                var report=window.reports[window.experiment];
+                var samples=window.fieldSamples;
+                var frame=report.history[window.index].lights;
+                Vector3[] current=Radiance(frame[2],false),target=Radiance(TargetLights(report)[2],report.usesCct);
+                for(int mode=0;mode<3;mode++)
+                {
+                    window.fieldMode=mode;window.RecomputeIrradiance();
+                    if(window.fieldValues?.Length!=samples.Count)throw new Exception("Isolated overlay field is missing.");
+                    for(int i=0;i<samples.Count;i++)
+                    {
+                        Vector3 d=current[i]-target[i];
+                        Vector3 expected=mode==0?current[i]:mode==1?target[i]:new Vector3(Mathf.Abs(d.x),Mathf.Abs(d.y),Mathf.Abs(d.z));
+                        if(Vector3.Distance(window.fieldValues[i],expected)>Mathf.Max(1e-7f,expected.magnitude*1e-4f))
+                            throw new Exception("Isolated overlay is not the selected light's field (mode "+mode+").");
+                    }
+                }
+
+                Vector3[] Radiance(LightSpec spec,bool cct)
+                {
+                    var rig=new[]{spec};
+                    var mask=report.usesVisibility?UnityVisibility.Evaluate(rig,samples):null;
+                    return AnalyticLighting.DiffuseRadiance(AnalyticLighting.Evaluate(rig,samples,mask,cct),samples);
+                }
+            }
+
+            static string LightSignature(Light light)=>light.gameObject.activeSelf+"/"+light.transform.localPosition.ToString("R")+"/"+
+                light.transform.localRotation.ToString("R")+"/"+EditorJsonUtility.ToJson(light);
+        }
+
+        public static void BatchPerturbationSmoke() { try { var window=GetWindow<LightingDebugWindow>();window.experiment=0;window.OpenExperimentScene();window.activeTab=1;window.effectBounds=new Bounds(new Vector3(0,1,0),new Vector3(2,2,2));if(window.GetLightsInScope().Count!=1)throw new Exception("Bounding-box scope mismatch");window.seed=1234;Vector3 before=window.candidate.transform.position;window.ApplyRandomPerturbation();Vector3 perturbed=window.candidate.transform.position;if(Vector3.Distance(before,perturbed)<1e-6f)throw new Exception("Perturbation did not move the light");window.RestorePerturbationBaseline();if(Vector3.Distance(before,window.candidate.transform.position)>1e-6f)throw new Exception("Perturbation restore mismatch");window.seed=1234;window.ApplyRandomPerturbation();if(Vector3.Distance(perturbed,window.candidate.transform.position)>1e-6f)throw new Exception("Perturbation is not reproducible");window.RestorePerturbationBaseline();window.effectBounds=new Bounds(new Vector3(10,10,10),Vector3.one);if(window.GetLightsInScope().Count!=0)throw new Exception("Bounding-box exclusion mismatch");window.Close();Debug.Log("Lighting perturbation smoke test passed");EditorApplication.Exit(0); } catch(Exception e){Debug.LogException(e);EditorApplication.Exit(2);} }
+
+        public static void BatchIrradianceSmoke() { try { var window=GetWindow<LightingDebugWindow>();window.OpenExperimentScene();window.showIrradiance=true;window.fieldMode=0;window.RecomputeIrradiance();if(window.fieldSamples.Count<=5*(window.fieldResolution+1)*(window.fieldResolution+1)||window.fieldValues.Length!=window.fieldSamples.Count||window.fieldMax<=0)throw new Exception("Current irradiance visualization data mismatch");if(window.fieldDisplayMode==0&&(window.fieldOverlays.Count!=7||window.fieldOverlays[0].mesh.colors.Length==0))throw new Exception("Continuous irradiance mesh was not generated");window.fieldMode=1;window.fieldExperiment=0;window.RecomputeIrradiance();if(window.fieldMax<=0)throw new Exception("Target irradiance visualization data mismatch");window.fieldMode=2;window.RecomputeIrradiance();if(window.fieldMax<=0)throw new Exception("Error irradiance visualization data mismatch");window.ExportDisplayedField();window.Close();Debug.Log("Irradiance visualization smoke test passed");EditorApplication.Exit(0); } catch(Exception e){Debug.LogException(e);EditorApplication.Exit(2);} }
 
         public static void OpenContinuousIrradianceVisual() { var window=GetWindow<LightingDebugWindow>();window.OpenExperimentScene();window.showIrradiance=true;window.fieldDisplayMode=0;window.fieldMode=1;window.fieldExperiment=0;window.RecomputeIrradiance();EditorApplication.ExecuteMenuItem("Window/General/Game"); }
 
-        private void OnEnable()
+        internal static void EndCornellPreviews()
+        {
+            foreach(var window in Resources.FindObjectsOfTypeAll<LightingDebugWindow>()){window.StopReplay();window.DestroyFieldOverlays();window.fieldDirty=true;}
+        }
+
+        internal static void RefreshCornellReports()
+        {
+            foreach(var window in Resources.FindObjectsOfTypeAll<LightingDebugWindow>()){window.LoadReports();window.fieldDirty=true;window.Repaint();}
+        }
+
+        private void LoadReports()
         {
             reports=new CornellBoxMvpEditor.ExperimentReport[files.Length];
             for(int i=0;i<files.Length;i++)
@@ -70,7 +199,40 @@ namespace LightingMvp.Editor
                 string path=Path.Combine(OutputRoot,files[i]);
                 if(File.Exists(path))reports[i]=JsonUtility.FromJson<CornellBoxMvpEditor.ExperimentReport>(File.ReadAllText(path));
             }
-            BuildFieldLegend();DestroyFieldOverlays();fieldDirty=true;
+            if(experiment<0||experiment>=reports.Length||RecordedLightCount(reports[experiment])==0)
+            {
+                experiment=Array.FindIndex(reports,report=>RecordedLightCount(report)>1);
+                if(experiment<0)experiment=Mathf.Max(0,Array.FindIndex(reports,report=>RecordedLightCount(report)>0));
+            }
+        }
+
+        private static int RecordedLightCount(CornellBoxMvpEditor.ExperimentReport report)=>
+            report?.history!=null&&report.history.Count>0?report.history[0].lights?.Length??0:0;
+
+        private static LightSpec[] TargetLights(CornellBoxMvpEditor.ExperimentReport report)=>
+            report.targetRig!=null&&report.targetRig.Length>0?report.targetRig:new[]{report.target};
+
+        private int VisibleReplayLight(int lightCount)=>
+            isolateReplayLight&&lightCount>1?Mathf.Clamp(selectedReplayLight,0,lightCount-1):-1;
+
+        private int IsolatedPreviewLight()
+        {
+            if(activeTab!=0||replayRig==null)return -1;
+            var history=reports?[experiment]?.history;
+            return history!=null&&index>=0&&index<history.Count?VisibleReplayLight(history[index].lights?.Length??0):-1;
+        }
+
+        private static string ReplayLightLabel(int light)=>"Light "+(light+1);
+
+        private void SetReplayView(bool isolate,int selectedLight)
+        {
+            isolateReplayLight=isolate;selectedReplayLight=selectedLight;
+            if(replayRig!=null)ApplyCurrent();
+        }
+
+        private void OnEnable()
+        {
+            LoadReports();BuildFieldLegend();DestroyFieldOverlays();fieldDirty=true;
             EditorApplication.update+=Tick;
             SceneView.duringSceneGui+=DrawSceneMarkers;
         }
@@ -79,98 +241,151 @@ namespace LightingMvp.Editor
         {
             EditorApplication.update-=Tick;SceneView.duringSceneGui-=DrawSceneMarkers;
             if(fieldLegend!=null)UnityEngine.Object.DestroyImmediate(fieldLegend);DestroyFieldOverlays();
-            if(candidate!=null&&restoreOnClose!=null){UnityLightAdapter.Apply(candidate,restoreOnClose);EditorUtility.SetDirty(candidate);}
+            StopReplay();
         }
 
         private void OnGUI()
         {
-            activeTab=Mathf.Clamp(activeTab,0,1);activeTab=GUILayout.Toolbar(activeTab,new[]{"Iteration Replay","Light Perturbation"});
-            EditorGUILayout.Space();bool enabled=EditorGUILayout.ToggleLeft("Show Irradiance",showIrradiance,EditorStyles.boldLabel);
-            if(enabled!=showIrradiance){showIrradiance=enabled;fieldDirty=true;if(!showIrradiance){DestroyFieldOverlays();fieldValues=null;}RefreshEditorViews();}
-            if(showIrradiance&&SceneManager.GetActiveScene().path!=ScenePath){EditorGUILayout.HelpBox("Irradiance preview currently uses the saved Cornell Box experiment.",MessageType.Info);if(GUILayout.Button("Open Cornell Box Experiment"))OpenExperimentScene();}
-            else if(showIrradiance)DrawIrradianceControls();
-            EditorGUILayout.Space();if(activeTab==0)DrawIterationTab();else DrawPerturbationTab();
+            int tab=GUILayout.Toolbar(Mathf.Clamp(activeTab,0,1),new[]{"Iteration Replay","Light Perturbation"});
+            if(tab!=activeTab){StopReplay();activeTab=tab;scrollPosition=Vector2.zero;}
+            using(var scroll=new EditorGUILayout.ScrollViewScope(scrollPosition))
+            {
+                scrollPosition=scroll.scrollPosition;
+                EditorGUILayout.Space();bool enabled=EditorGUILayout.ToggleLeft("Show Irradiance",showIrradiance,EditorStyles.boldLabel);
+                if(enabled!=showIrradiance){showIrradiance=enabled;fieldDirty=true;if(!showIrradiance){DestroyFieldOverlays();fieldValues=null;}RefreshEditorViews();}
+                if(showIrradiance&&SceneManager.GetActiveScene().path!=ScenePath){EditorGUILayout.HelpBox("Irradiance preview currently uses the saved Cornell Box experiment.",MessageType.Info);if(GUILayout.Button("Open Cornell Box Experiment"))OpenExperimentScene();}
+                else if(showIrradiance)DrawIrradianceControls();
+                EditorGUILayout.Space();if(activeTab==0)DrawIterationTab();else DrawPerturbationTab();
+            }
         }
 
         private void DrawIterationTab()
         {
-            if(reports==null||reports[0]==null||reports[1]==null)
-            {
-                EditorGUILayout.HelpBox("先运行 Lighting MVP > Run Cornell Box Experiments 生成逐迭代记录。",MessageType.Info);return;
-            }
             if(SceneManager.GetActiveScene().path!=ScenePath)
             {
                 EditorGUILayout.HelpBox("迭代预览使用已保存的 Cornell Box 实验场景。",MessageType.Info);
                 if(GUILayout.Button("Open Cornell Box Experiment"))OpenExperimentScene();
                 return;
             }
-            BindCandidate();
+            if(GUILayout.Button("Reload recorded runs")){StopReplay();LoadReports();fieldDirty=true;}
             EditorGUI.BeginChangeCheck();
             experiment=EditorGUILayout.Popup("Experiment",experiment,labels);
             if(EditorGUI.EndChangeCheck()){index=0;playing=false;ApplyCurrent();}
             var report=reports[experiment];
-            if(report.history==null||report.history.Count==0||report.history[0].lights==null)
+            if(RecordedLightCount(report)==0)
             {
-                EditorGUILayout.HelpBox("旧报告没有灯具快照，请重新运行实验。",MessageType.Warning);return;
+                EditorGUILayout.HelpBox("先运行 Lighting MVP > Run Cornell Box Experiments 生成逐迭代记录。",MessageType.Warning);return;
             }
-            int count=report.history.Count;
+            int count=report.history.Count;index=Mathf.Clamp(index,0,count-1);
+            DrawReplayView(report.history[index].lights.Length);
+            if(replayRig==null&&GUILayout.Button("Preview recorded state"))ApplyCurrent();
+            if(replayRig!=null&&GUILayout.Button("Restore scene lights"))StopReplay();
             EditorGUI.BeginChangeCheck();
             index=EditorGUILayout.IntSlider("Recorded state",index,0,count-1);
             if(EditorGUI.EndChangeCheck()){playing=false;ApplyCurrent();}
             EditorGUILayout.BeginHorizontal();
             if(GUILayout.Button("|<")){index=0;playing=false;ApplyCurrent();}
             if(GUILayout.Button("<")){index=Mathf.Max(0,index-1);playing=false;ApplyCurrent();}
+            bool wasPlaying=playing;
             playing=GUILayout.Toggle(playing,playing?"Pause":"Play","Button",GUILayout.Width(80));
+            if(playing&&!wasPlaying){if(index==count-1)index=0;ApplyCurrent();}
             if(GUILayout.Button(">")){index=Mathf.Min(count-1,index+1);playing=false;ApplyCurrent();}
             if(GUILayout.Button(">|")){index=count-1;playing=false;ApplyCurrent();}
             EditorGUILayout.EndHorizontal();
             speed=EditorGUILayout.Slider("States / second",speed,1,120);
-            showTarget=EditorGUILayout.Toggle("Show target marker",showTarget);
+            showTarget=EditorGUILayout.Toggle("Show target markers",showTarget);
             EditorGUILayout.Space();
-            OptimizationHistoryEntry entry=report.history[index];LightSpec light=entry.lights[0];
+            OptimizationHistoryEntry entry=report.history[index];
             string phase=entry.step<=report.steps?"Adam":"L-BFGS accepted step";
             EditorGUILayout.LabelField(phase,"Step "+entry.step);
-            EditorGUILayout.LabelField("Loss",entry.loss.ToString("E6"));
-            EditorGUILayout.LabelField("Field NRMSE",entry.nrmse.ToString("P6"));
-            EditorGUILayout.LabelField("Position",light.position.ToString("F6"));
-            EditorGUILayout.LabelField("Intensity",light.intensity.ToString("F6"));
-            if(light.kind==LightKind.Spot)EditorGUILayout.LabelField("Direction",light.direction.normalized.ToString("F6"));
-            EditorGUILayout.LabelField("Position error",Vector3.Distance(light.position,report.target.position).ToString("F6")+" m");
-            if(light.kind==LightKind.Spot)EditorGUILayout.LabelField("Direction error",Vector3.Angle(light.direction,report.target.direction).ToString("F4")+" deg");
+            EditorGUILayout.LabelField("Rig loss",entry.loss.ToString("E6"));
+            EditorGUILayout.LabelField("Rig field NRMSE",entry.nrmse.ToString("P6"));
+            if(report.usesRadiosity)
+            {
+                EditorGUILayout.LabelField("Fitted field","Multi-bounce diffuse radiance");
+                if(GUILayout.Button("Show multi-bounce field"))
+                {
+                    if(replayRig==null)ApplyCurrent();
+                    fieldQuantity=RadiosityQuantity;fieldMode=0;fieldExperiment=experiment;
+                    showIrradiance=true;irradianceAdvanced=true;fieldDirty=true;RefreshEditorViews();
+                }
+            }
+            LightSpec[] targets=TargetLights(report);
+            int onlyLight=VisibleReplayLight(entry.lights.Length);
+            for(int i=0;i<entry.lights.Length;i++)
+            {
+                if(onlyLight>=0&&i!=onlyLight)continue;
+                LightSpec light=entry.lights[i];
+                EditorGUILayout.LabelField(ReplayLightLabel(i),light.position.ToString("F4")+" / "+light.intensity.ToString("F4"));
+                LightSpec target=i<targets.Length?targets[i]:null;
+                if(target==null)continue;
+                EditorGUILayout.LabelField("Position error",Vector3.Distance(light.position,target.position).ToString("F4")+" m");
+                if(report.usesCct)EditorGUILayout.LabelField("CCT",light.cctKelvin.ToString("F0")+" K (target "+target.cctKelvin.ToString("F0")+" K)");
+                if(light.kind==LightKind.Spot)EditorGUILayout.LabelField("Direction error",Vector3.Angle(light.direction,target.direction).ToString("F4")+" deg");
+            }
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox("在 Game 视图观察照明变化；Scene 视图中黄色球为目标位置，青色球为当前灯位置。记录包含每个 Adam 步骤和每个被接受的 L-BFGS 步骤。",MessageType.None);
             if(GUILayout.Button("Open Game View"))EditorApplication.ExecuteMenuItem("Window/General/Game");
         }
 
-        private void OpenExperimentScene()
+        private void DrawReplayView(int lightCount)
         {
-            DestroyFieldOverlays();EditorSceneManager.OpenScene(ScenePath);candidate=null;restoreOnClose=null;BindCandidate();index=0;ApplyCurrent();
+            EditorGUILayout.LabelField("Recorded lights",lightCount.ToString());
+            if(lightCount<2)return;
+            bool isolate=EditorGUILayout.Popup("Replay view",isolateReplayLight?1:0,replayViews)==1;
+            int selected=Mathf.Clamp(selectedReplayLight,0,lightCount-1);
+            if(isolate)
+            {
+                var lightLabels=new string[lightCount];
+                for(int i=0;i<lightCount;i++)lightLabels[i]=ReplayLightLabel(i);
+                selected=EditorGUILayout.Popup("Selected light",selected,lightLabels);
+            }
+            if(isolate!=isolateReplayLight||isolate&&selected!=selectedReplayLight)SetReplayView(isolate,selected);
         }
 
-        private void BindCandidate()
+        private void OpenExperimentScene()
         {
-            if(candidate!=null)return;
-            var go=GameObject.Find("Candidate Light");if(go==null)return;
-            candidate=go.GetComponent<Light>();restoreOnClose=UnityLightAdapter.FromUnity(candidate);ApplyCurrent();
+            StopReplay();DestroyFieldOverlays();fieldDirty=true;
+            if(SceneManager.GetActiveScene().path!=ScenePath)
+            {
+                if(!Application.isBatchMode&&!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())return;
+                EditorSceneManager.OpenScene(ScenePath);
+            }
+            index=0;ApplyCurrent();
+        }
+
+        private void StopReplay()
+        {
+            playing=false;
+            if(replayRig==null)return;
+            replayRig.Dispose();replayRig=null;fieldDirty=true;RefreshEditorViews();
         }
 
         private void ApplyCurrent()
         {
-            if(candidate==null||reports==null||reports[experiment]==null)return;
-            var history=reports[experiment].history;if(history==null||history.Count==0)return;
+            var report=reports?[experiment];
+            if(SceneManager.GetActiveScene().path!=ScenePath||RecordedLightCount(report)==0){StopReplay();return;}
+            var history=report.history;
             index=Mathf.Clamp(index,0,history.Count-1);
-            var lights=history[index].lights;if(lights==null||lights.Length==0)return;
-            UnityLightAdapter.Apply(candidate,lights[0]);EditorUtility.SetDirty(candidate);
-            SceneView.RepaintAll();EditorApplication.QueuePlayerLoopUpdate();Repaint();
+            var lights=history[index].lights;if(lights==null||lights.Length==0){StopReplay();return;}
+            if(replayRig==null)replayRig=new CornellSceneRig(SceneManager.GetActiveScene());
+            if(replayRig.Count<lights.Length){StopReplay();Debug.LogWarning("The saved scene is missing candidate lights.");return;}
+            replayRig.Apply(lights,report.usesVisibility,VisibleReplayLight(lights.Length));fieldDirty=true;
+            RefreshEditorViews();Repaint();
         }
 
         private void Tick()
         {
+            if(SceneManager.GetActiveScene().path!=ScenePath)
+            {
+                StopReplay();
+                if(fieldSamples!=null){DestroyFieldOverlays();fieldDirty=true;}
+            }
             if(showIrradiance&&autoFieldUpdate&&EditorApplication.timeSinceStartup>=nextFieldUpdate){nextFieldUpdate=EditorApplication.timeSinceStartup+0.25;UpdateFieldIfLightsChanged();}
             if(!playing||candidate==null||reports==null||reports[experiment]==null)return;
             if(EditorApplication.timeSinceStartup<nextUpdate)return;
             var history=reports[experiment].history;
-            if(index>=history.Count-1){playing=false;return;}
+            if(index>=history.Count-1){playing=false;Repaint();return;}
             index++;nextUpdate=EditorApplication.timeSinceStartup+1.0/speed;ApplyCurrent();
         }
 
@@ -305,17 +520,29 @@ namespace LightingMvp.Editor
             if(!irradianceAdvanced)return;
             EditorGUI.indentLevel++;
             EditorGUI.BeginChangeCheck();
-            fieldDisplayMode=EditorGUILayout.Popup("Visualization",fieldDisplayMode,new[]{"Continuous surface","Sample discs (debug)"});
             fieldMode=EditorGUILayout.Popup("Field",fieldMode,fieldModes);
-            if(fieldMode>0)fieldExperiment=EditorGUILayout.Popup("Target rig",fieldExperiment,labels);
-            fieldResolution=EditorGUILayout.IntSlider("Surface grid resolution",fieldResolution,4,50);
+            fieldQuantity=EditorGUILayout.Popup("Quantity",fieldQuantity,new[]{"Direct irradiance","Direct outgoing radiance","Multi-bounce outgoing radiance"});
+            if(RadiosityField)EditorGUILayout.LabelField("Visualization","Solver patches (Scene view)");
+            else fieldDisplayMode=EditorGUILayout.Popup("Visualization",fieldDisplayMode,new[]{"Continuous surface","Sample discs (debug)"});
+            int onlyLight=IsolatedPreviewLight();
+            if(onlyLight>=0)EditorGUILayout.LabelField("Replay scope",ReplayLightLabel(onlyLight)+" only");
+            if(fieldMode>0)
+            {
+                if(FieldUsesReplayTarget(onlyLight))EditorGUILayout.LabelField("Target rig","Current replay experiment");
+                else
+                {
+                    fieldExperiment=EditorGUILayout.Popup("Target rig",fieldExperiment,labels);
+                    if(reports[fieldExperiment]==null)EditorGUILayout.HelpBox("Run the selected Cornell experiment to create its target field.",MessageType.Info);
+                }
+            }
+            if(!RadiosityField)fieldResolution=EditorGUILayout.IntSlider("Surface grid resolution",fieldResolution,4,50);
             rgbFieldMode=EditorGUILayout.Toggle("RGB instead of heatmap",rgbFieldMode);
             if(!rgbFieldMode)fieldColormap=EditorGUILayout.Popup("Heatmap palette",fieldColormap,new[]{"Viridis","Blue-Cyan-Green-Yellow-Red"});
             autoFieldNormalize=EditorGUILayout.Toggle("Auto normalize",autoFieldNormalize);
-            if(!autoFieldNormalize)manualFieldMax=EditorGUILayout.FloatField("Maximum irradiance",Mathf.Max(1e-8f,manualFieldMax));
+            if(!autoFieldNormalize)manualFieldMax=EditorGUILayout.FloatField("Maximum field value",Mathf.Max(1e-8f,manualFieldMax));
             logFieldScale=EditorGUILayout.Toggle("Log brightness",logFieldScale);
             if(logFieldScale)fieldContrast=EditorGUILayout.Slider("Log contrast",fieldContrast,1,100);
-            if(fieldDisplayMode==0)fieldOverlayOpacity=EditorGUILayout.Slider("Surface overlay opacity",fieldOverlayOpacity,0.05f,1f);
+            if(!RadiosityField&&fieldDisplayMode==0)fieldOverlayOpacity=EditorGUILayout.Slider("Surface overlay opacity",fieldOverlayOpacity,0.05f,1f);
             else fieldMarkerScale=EditorGUILayout.Slider("Marker size",fieldMarkerScale,0.2f,2f);
             autoFieldUpdate=EditorGUILayout.Toggle("Refresh when lights change",autoFieldUpdate);
             if(EditorGUI.EndChangeCheck()){fieldDirty=true;if(!rgbFieldMode)BuildFieldLegend();}
@@ -325,7 +552,7 @@ namespace LightingMvp.Editor
             EditorGUILayout.EndHorizontal();
             if(fieldValues!=null)
             {
-                EditorGUILayout.LabelField(fieldDisplayMode==0?"Surface vertices":"Surface samples",fieldSamples.Count.ToString());
+                EditorGUILayout.LabelField(!RadiosityField&&fieldDisplayMode==0?"Surface vertices":"Surface samples",fieldSamples.Count.ToString());
                 EditorGUILayout.LabelField("Maximum component",fieldMax.ToString("E6"));
                 if(!rgbFieldMode)
                 {
@@ -336,7 +563,7 @@ namespace LightingMvp.Editor
             }
             EditorGUI.indentLevel--;
         }
-        private void BuildVisualizationGeometry(System.Collections.Generic.IEnumerable<MeshRenderer> renderers,int resolution)
+        private void BuildVisualizationGeometry(MeshRenderer[] renderers,int resolution)
         {
             DestroyFieldOverlays();
             var positions=new System.Collections.Generic.List<Vector3>();var normals=new System.Collections.Generic.List<Vector3>();
@@ -350,37 +577,54 @@ namespace LightingMvp.Editor
             foreach(var renderer in renderers)
             {
                 var filter=renderer.GetComponent<MeshFilter>();Mesh source=filter!=null?filter.sharedMesh:null;if(source==null)continue;
-                if(source.vertexCount!=4||source.triangles.Length!=6)throw new System.NotSupportedException("Continuous preview currently expects quad surfaces: "+renderer.name);
-                Vector3[] vertices=source.vertices;Vector3 origin=renderer.transform.TransformPoint(vertices[0]);
-                Vector3 u=renderer.transform.TransformPoint(vertices[1])-origin,v=renderer.transform.TransformPoint(vertices[3])-origin;
-                Vector3 normal=renderer.transform.TransformDirection(source.normals[0]).normalized;
-                Material material=renderer.sharedMaterial;Color albedo=material!=null&&material.HasProperty("_BaseColor")?material.GetColor("_BaseColor"):Color.white;
-                float area=Vector3.Cross(u,v).magnitude/(resolution*resolution);
-                var surfaceVertices=new System.Collections.Generic.List<Vector3>();var surfaceNormals=new System.Collections.Generic.List<Vector3>();
-                var surfaceUvs=new System.Collections.Generic.List<Vector2>();var triangles=new System.Collections.Generic.List<int>();
+                Vector3[] vertices=source.vertices,sourceNormals=source.normals;
+                int[] indices=source.triangles;
+                Matrix4x4 normalMatrix=renderer.transform.worldToLocalMatrix.transpose;
+                Color albedo=SurfaceSampleSet.DiffuseAlbedo(renderer);
                 int start=positions.Count;
-                for(int i=0;i<=resolution;i++)for(int j=0;j<=resolution;j++)
+                var overlayVertices=new System.Collections.Generic.List<Vector3>();
+                var triangles=new System.Collections.Generic.List<int>();
+                for(int t=0;t<indices.Length;t+=3)
                 {
-                    Vector3 position=origin+(i/(float)resolution)*u+(j/(float)resolution)*v;
-                    positions.Add(position);normals.Add(normal);areas.Add(area);albedos.Add(albedo);names.Add(renderer.name);
-                    surfaceVertices.Add(position+normal*0.003f);surfaceNormals.Add(normal);surfaceUvs.Add(new Vector2(i/(float)resolution,j/(float)resolution));
-                    if(i<resolution&&j<resolution)
+                    int ia=indices[t],ib=indices[t+1],ic=indices[t+2];
+                    Vector3 a=renderer.transform.TransformPoint(vertices[ia]),b=renderer.transform.TransformPoint(vertices[ib]),c=renderer.transform.TransformPoint(vertices[ic]);
+                    Vector3 geometricNormal=Vector3.Cross(b-a,c-a);
+                    if(geometricNormal.sqrMagnitude<1e-20f)continue;
+                    bool hasNormals=sourceNormals.Length==vertices.Length;
+                    Vector3 na=hasNormals?normalMatrix.MultiplyVector(sourceNormals[ia]):geometricNormal;
+                    Vector3 nb=hasNormals?normalMatrix.MultiplyVector(sourceNormals[ib]):geometricNormal;
+                    Vector3 nc=hasNormals?normalMatrix.MultiplyVector(sourceNormals[ic]):geometricNormal;
+                    float area=geometricNormal.magnitude/(6f*resolution*resolution);
+                    int first=overlayVertices.Count;
+                    for(int i=0;i<=resolution;i++)for(int j=0;j<=resolution-i;j++)
                     {
-                        int index=i*(resolution+1)+j;
-                        triangles.Add(index);triangles.Add(index+resolution+1);triangles.Add(index+1);
-                        triangles.Add(index+1);triangles.Add(index+resolution+1);triangles.Add(index+resolution+2);
+                        float u=i/(float)resolution,v=j/(float)resolution;
+                        Vector3 pos=a+u*(b-a)+v*(c-a),normal=(na+u*(nb-na)+v*(nc-na)).normalized;
+                        positions.Add(pos);normals.Add(normal);areas.Add(0);albedos.Add(albedo);names.Add(renderer.name);
+                        overlayVertices.Add(pos+normal*0.003f);
+                        if(i+j==resolution)continue;
+                        int current=first+i*(resolution+1)-i*(i-1)/2+j;
+                        int next=current+resolution+1-i;
+                        AddFace(current,next,current+1);
+                        if(i+j<resolution-1)AddFace(current+1,next,next+1);
                     }
+
+                    void AddFace(int i,int j,int k)
+                    {
+                        triangles.Add(i);triangles.Add(j);triangles.Add(k);
+                    }
+                    for(int n=triangles.Count-3*resolution*resolution;n<triangles.Count;n++)areas[start+triangles[n]]+=area;
                 }
-                if(fieldDisplayMode==0)
+                if(fieldDisplayMode==0&&overlayVertices.Count>0)
                 {
                     var mesh=new Mesh { name=renderer.name+" Irradiance Grid",hideFlags=HideFlags.HideAndDontSave };
-                    mesh.SetVertices(surfaceVertices);mesh.SetNormals(surfaceNormals);mesh.SetUVs(0,surfaceUvs);mesh.SetTriangles(triangles,0);mesh.RecalculateBounds();
+                    mesh.SetVertices(overlayVertices);mesh.SetTriangles(triangles,0);mesh.RecalculateBounds();
                     var overlay=new GameObject(renderer.name+" Irradiance") { hideFlags=HideFlags.HideAndDontSave };
                     overlay.transform.SetParent(fieldOverlayRoot.transform,false);overlay.AddComponent<MeshFilter>().sharedMesh=mesh;
                     var meshRenderer=overlay.AddComponent<MeshRenderer>();meshRenderer.sharedMaterial=fieldOverlayMaterial;
                     meshRenderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;meshRenderer.receiveShadows=false;
                     meshRenderer.lightProbeUsage=UnityEngine.Rendering.LightProbeUsage.Off;meshRenderer.reflectionProbeUsage=UnityEngine.Rendering.ReflectionProbeUsage.Off;
-                    fieldOverlays.Add(new FieldOverlay { mesh=mesh,start=start,count=surfaceVertices.Count });
+                    fieldOverlays.Add(new FieldOverlay { mesh=mesh,start=start,count=overlayVertices.Count });
                 }
             }
             fieldSamples=new SurfaceSampleSet { positions=positions.ToArray(),normals=normals.ToArray(),areas=areas.ToArray(),albedos=albedos.ToArray(),names=names.ToArray() };
@@ -400,50 +644,121 @@ namespace LightingMvp.Editor
         private void DestroyFieldOverlays()
         {
             foreach(var overlay in fieldOverlays)if(overlay.mesh!=null)UnityEngine.Object.DestroyImmediate(overlay.mesh);
-            fieldOverlays.Clear();
+            fieldOverlays.Clear();fieldSamples=null;fieldValues=null;fieldTransport=null;fieldGeometrySignature="";
             if(fieldOverlayRoot!=null)UnityEngine.Object.DestroyImmediate(fieldOverlayRoot);fieldOverlayRoot=null;
             if(fieldOverlayMaterial!=null)UnityEngine.Object.DestroyImmediate(fieldOverlayMaterial);fieldOverlayMaterial=null;
-            foreach(var go in Resources.FindObjectsOfTypeAll<GameObject>())if(go.name=="Irradiance Continuous Preview")UnityEngine.Object.DestroyImmediate(go);
         }
+
+        private LightSpec[] CurrentFieldLights(int onlyLight)
+        {
+            if(onlyLight>=0)
+            {
+                Light light=replayRig[onlyLight];
+                return light!=null&&light.isActiveAndEnabled?new[]{UnityLightAdapter.FromUnity(light)}:Array.Empty<LightSpec>();
+            }
+            var specs=new System.Collections.Generic.List<LightSpec>();
+            Scene scene=SceneManager.GetActiveScene();
+            foreach(var light in UnityEngine.Object.FindObjectsOfType<Light>())
+                if(light.gameObject.scene==scene&&light.isActiveAndEnabled&&(light.type==LightType.Point||light.type==LightType.Spot))specs.Add(UnityLightAdapter.FromUnity(light));
+            return specs.ToArray();
+        }
+
+        private bool FieldUsesReplayTarget(int onlyLight)=>onlyLight>=0||
+            (RadiosityField&&replayRig!=null&&reports[experiment].usesRadiosity);
+
         private void RecomputeIrradiance()
         {
             fieldDirty=false;if(SceneManager.GetActiveScene().path!=ScenePath)return;
             var root=GameObject.Find("Cornell Box - 2m open front");if(root==null)return;
-            BuildVisualizationGeometry(root.GetComponentsInChildren<MeshRenderer>(),fieldResolution);
-            var currentSpecs=new System.Collections.Generic.List<LightSpec>();
-            foreach(var light in UnityEngine.Object.FindObjectsOfType<Light>())
-                if(light.type==LightType.Point||light.type==LightType.Spot)currentSpecs.Add(UnityLightAdapter.FromUnity(light));
-            if(currentSpecs.Count==0)currentSpecs.Add(new LightSpec { intensity=0 });
-            LightSpec[] targetSpecs={ reports[fieldExperiment].target };
-            var shader=AssetDatabase.LoadAssetAtPath<ComputeShader>("Assets/LightingMvp/Shaders/SurfaceLighting.compute");
-            using(var gpu=new SurfaceLightingGpu(shader))
+            var renderers=root.GetComponentsInChildren<MeshRenderer>();
+            string geometry=GeometrySignature(renderers);
+            if(geometry!=fieldGeometrySignature||fieldSamples==null)
             {
-                gpu.Evaluate(currentSpecs.ToArray(),fieldSamples,out Vector3[] current,out Vector3[] _);
-                if(fieldMode==0){fieldValues=current;}
+                if(RadiosityField)
+                {
+                    DestroyFieldOverlays();
+                    fieldSamples=SurfaceSampleSet.FromRenderers(renderers,CornellBoxMvpEditor.RadiosityResolution);
+                    fieldTransport=new DiffuseRadiosity(fieldSamples);
+                }
+                else BuildVisualizationGeometry(renderers,fieldResolution);
+                fieldGeometrySignature=geometry;
+            }
+            if(fieldOverlayMaterial!=null)fieldOverlayMaterial.SetFloat("_Alpha",fieldOverlayOpacity);
+            int onlyLight=IsolatedPreviewLight();
+            var targetReport=fieldMode>0?reports[FieldUsesReplayTarget(onlyLight)?experiment:fieldExperiment]:null;
+            LightSpec[] targetSpecs=targetReport!=null?TargetLights(targetReport):null;
+            if(fieldMode>0&&(targetSpecs==null||onlyLight>=0&&(onlyLight>=targetSpecs.Length||targetSpecs[onlyLight]==null)))
+            {
+                DestroyFieldOverlays();RefreshEditorViews();return;
+            }
+            if(targetSpecs!=null&&onlyLight>=0)targetSpecs=new[]{targetSpecs[onlyLight]};
+            bool shadows=RadiosityField||(targetReport?.usesVisibility??(replayRig==null||reports[experiment].usesVisibility));
+            float[] Mask(LightSpec[] specs)=>shadows?UnityVisibility.Evaluate(specs,fieldSamples):null;
+            if(RadiosityField)Plot((specs,cct)=>AnalyticLighting.EvaluateField(specs,fieldSamples,Mask(specs),cct,fieldTransport));
+            else
+            {
+                var shader=AssetDatabase.LoadAssetAtPath<ComputeShader>("Assets/LightingMvp/Shaders/SurfaceLighting.compute");
+                using var gpu=new SurfaceLightingGpu(shader);
+                Plot((specs,cct)=>
+                {
+                    gpu.Evaluate(specs,fieldSamples,out Vector3[] irradiance,out Vector3[] radiance,Mask(specs),cct);
+                    return fieldQuantity==0?irradiance:radiance;
+                });
+            }
+            fieldMax=0;foreach(var value in fieldValues)fieldMax=Mathf.Max(fieldMax,Mathf.Max(value.x,Mathf.Max(value.y,value.z)));
+            UpdateFieldOverlayColors();
+            fieldLightSignature=CurrentLightSignature();RefreshEditorViews();
+
+            void Plot(Func<LightSpec[],bool,Vector3[]> Evaluate)
+            {
+                if(fieldMode==0)fieldValues=Evaluate(CurrentFieldLights(onlyLight),false);
                 else
                 {
-                    gpu.Evaluate(targetSpecs,fieldSamples,out Vector3[] target,out Vector3[] _);
+                    Vector3[] target=Evaluate(targetSpecs,targetReport.usesCct);
                     if(fieldMode==1)fieldValues=target;
                     else
                     {
+                        Vector3[] current=Evaluate(CurrentFieldLights(onlyLight),false);
                         fieldValues=new Vector3[current.Length];
                         for(int i=0;i<fieldValues.Length;i++)fieldValues[i]=new Vector3(Mathf.Abs(current[i].x-target[i].x),Mathf.Abs(current[i].y-target[i].y),Mathf.Abs(current[i].z-target[i].z));
                     }
                 }
             }
-            fieldMax=0;foreach(var value in fieldValues)fieldMax=Mathf.Max(fieldMax,Mathf.Max(value.x,Mathf.Max(value.y,value.z)));
-            UpdateFieldOverlayColors();
-            fieldLightSignature=CurrentLightSignature();RefreshEditorViews();
         }
 
         private string CurrentLightSignature()
         {
             var text=new System.Text.StringBuilder();text.Append(SceneManager.GetActiveScene().path);
+            var root=GameObject.Find("Cornell Box - 2m open front");
+            if(root!=null)text.Append(GeometrySignature(root.GetComponentsInChildren<MeshRenderer>()));
             foreach(var light in UnityEngine.Object.FindObjectsOfType<Light>())
             {
-                if(light.type!=LightType.Point&&light.type!=LightType.Spot)continue;
-                text.Append(light.GetInstanceID()).Append(light.transform.position).Append(light.transform.forward)
-                    .Append(light.intensity).Append(light.range).Append(light.color).Append(light.spotAngle).Append(light.innerSpotAngle);
+                if(!light.isActiveAndEnabled||(light.type!=LightType.Point&&light.type!=LightType.Spot))continue;
+                text.Append(light.GetInstanceID()).Append(light.transform.position.ToString("R")).Append(light.transform.forward.ToString("R"))
+                    .Append(light.intensity).Append(light.range).Append(light.color.ToString("R")).Append(light.spotAngle).Append(light.innerSpotAngle);
+            }
+            return text.ToString();
+        }
+
+        private string GeometrySignature(MeshRenderer[] renderers)
+        {
+            var text=new System.Text.StringBuilder();
+            if(RadiosityField)
+            {
+                text.Append("radiosity");
+                foreach(var collider in FindObjectsOfType<Collider>())
+                {
+                    if(!collider.enabled||collider.isTrigger)continue;
+                    text.Append('/').Append(collider.GetInstanceID()).Append('/').Append(collider.bounds.min.ToString("R"))
+                        .Append('/').Append(collider.bounds.max.ToString("R")).Append('/').Append(collider.transform.localToWorldMatrix.ToString("R"));
+                }
+            }
+            else text.Append(fieldResolution).Append('/').Append(fieldDisplayMode);
+            foreach(var renderer in renderers)
+            {
+                var mesh=renderer.GetComponent<MeshFilter>()?.sharedMesh;
+                text.Append('/').Append(renderer.GetInstanceID()).Append('/').Append(mesh!=null?mesh.GetInstanceID():0)
+                    .Append('/').Append(renderer.transform.localToWorldMatrix.ToString("R")).Append('/').Append(SurfaceSampleSet.DiffuseAlbedo(renderer).ToString("R"));
             }
             return text.ToString();
         }
@@ -476,14 +791,14 @@ namespace LightingMvp.Editor
         }
         private void BuildFieldLegend()
         {
-            if(fieldLegend!=null)UnityEngine.Object.DestroyImmediate(fieldLegend);DestroyFieldOverlays();
+            if(fieldLegend!=null)UnityEngine.Object.DestroyImmediate(fieldLegend);
             fieldLegend=new Texture2D(256,8,TextureFormat.RGBA32,false) { hideFlags=HideFlags.HideAndDontSave };
             for(int x=0;x<256;x++)for(int y=0;y<8;y++)fieldLegend.SetPixel(x,y,Heatmap(x/255f,fieldColormap));
             fieldLegend.Apply();
         }
         private void DrawIrradianceMarkers(SceneView view)
         {
-            if(fieldDisplayMode==0||fieldSamples==null||fieldValues==null)return;
+            if((!RadiosityField&&fieldDisplayMode==0)||fieldSamples==null||fieldValues==null)return;
             for(int i=0;i<fieldSamples.Count;i++)
             {
                 Handles.color=FieldColor(fieldValues[i]);
@@ -494,10 +809,11 @@ namespace LightingMvp.Editor
         private void ExportDisplayedField()
         {
             if(fieldValues==null||fieldSamples==null)return;
-            Directory.CreateDirectory(OutputRoot);string path=Path.Combine(OutputRoot,"debug_irradiance_view.csv");
+            string quantity=RadiosityField?"radiosity":fieldQuantity==0?"irradiance":"radiance";
+            Directory.CreateDirectory(OutputRoot);string path=Path.Combine(OutputRoot,"debug_"+quantity+"_view.csv");
             using(var writer=new StreamWriter(path))
             {
-                writer.WriteLine("surface,x,y,z,nx,ny,nz,area,irradiance_r,irradiance_g,irradiance_b");
+                writer.WriteLine($"surface,x,y,z,nx,ny,nz,area,{quantity}_r,{quantity}_g,{quantity}_b");
                 for(int i=0;i<fieldSamples.Count;i++)writer.WriteLine(string.Format(System.Globalization.CultureInfo.InvariantCulture,
                     "{0},{1:R},{2:R},{3:R},{4:R},{5:R},{6:R},{7:R},{8:R},{9:R},{10:R}",fieldSamples.names[i],
                     fieldSamples.positions[i].x,fieldSamples.positions[i].y,fieldSamples.positions[i].z,fieldSamples.normals[i].x,fieldSamples.normals[i].y,fieldSamples.normals[i].z,
@@ -511,46 +827,25 @@ namespace LightingMvp.Editor
         {
             if(activeTab==1)DrawPerturbationHandles(view);
             if(showIrradiance)DrawIrradianceMarkers(view);
-            if(activeTab!=0||reports==null||reports[experiment]==null||SceneManager.GetActiveScene().path!=ScenePath)return;
+            if(activeTab!=0||replayRig==null||reports[experiment]==null||SceneManager.GetActiveScene().path!=ScenePath)return;
             var report=reports[experiment];if(report.history==null||report.history.Count==0)return;
-            LightSpec current=report.history[Mathf.Clamp(index,0,report.history.Count-1)].lights[0];
-            Handles.color=new Color(0.1f,0.9f,1,1);
-            Handles.SphereHandleCap(0,current.position,Quaternion.identity,0.10f,EventType.Repaint);
-            Handles.Label(current.position+Vector3.up*0.10f,"Current");
-            if(showTarget)
+            LightSpec[] current=report.history[Mathf.Clamp(index,0,report.history.Count-1)].lights;
+            LightSpec[] targets=TargetLights(report);
+            int onlyLight=VisibleReplayLight(current.Length);
+            for(int i=0;i<current.Length;i++)
             {
+                if(onlyLight>=0&&i!=onlyLight)continue;
+                Vector3 position=current[i].position;
+                Handles.color=new Color(0.1f,0.9f,1,1);
+                Handles.SphereHandleCap(0,position,Quaternion.identity,0.08f,EventType.Repaint);
+                Handles.Label(position+Vector3.up*0.10f,"Current "+(i+1));
+                if(!showTarget||i>=targets.Length||targets[i]==null)continue;
+                Vector3 target=targets[i].position;
                 Handles.color=Color.yellow;
-                Handles.SphereHandleCap(0,report.target.position,Quaternion.identity,0.12f,EventType.Repaint);
-                Handles.Label(report.target.position+Vector3.up*0.14f,"Target");
-                Handles.DrawDottedLine(current.position,report.target.position,4);
+                Handles.SphereHandleCap(0,target,Quaternion.identity,0.10f,EventType.Repaint);
+                Handles.Label(target+Vector3.up*0.14f,"Target "+(i+1));
+                Handles.DrawDottedLine(position,target,4);
             }
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

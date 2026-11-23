@@ -17,6 +17,7 @@ namespace LightingMvp
         public float attenuation = 1.0e-4f;
         public float innerAngle = 25.0f;
         public float outerAngle = 45.0f;
+        public float cctKelvin = 6500.0f;
 
         public LightSpec Clone() { return (LightSpec)MemberwiseClone(); }
         public static LightSpec[] CloneArray(LightSpec[] source)

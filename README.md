@@ -42,7 +42,7 @@ Unity 工程位于 `Light/`。主要菜单：
 保持一个 Git 仓库，提交按变更目的拆分，而不是按目录机械混合：
 
 1. `research: validate lighting optimizer with Mitsuba` — Python 优化器、实验及研究结论。
-2. `feat: add Unity lighting optimization debug tools` — Unity 运行时、编辑器工具、Shader 和实验场景。
+2. `feat: add Unity lighting optimization debug tools` — Unity 运行时、编辑器工具和 Shader；本地实验场景不入库。
 3. `chore: document repository structure` — 根目录文档与忽略规则（可并入任一提交）。
 
 后续同时修改两条线路时，如果共享了参数定义、实验报告格式或技术约定，可以使用一个跨目录提交；否则分别提交，保持历史易读、易回滚。
