@@ -54,7 +54,6 @@ namespace LightingMvp.Editor
             public float zeroBounceNrmse,oneBounceNrmse,fourBounceNrmse,sixteenBounceNrmse;
         }
 
-        [MenuItem("Lighting MVP/Run Cornell Box Experiments")]
         public static void RunAll()
         {
             if(EditorApplication.isPlayingOrWillChangePlaymode)throw new InvalidOperationException("Exit Play Mode before running Cornell validation.");

@@ -1,0 +1,16 @@
+{
+    "pipeline": "URP-HighFidelity",
+    "passed": true,
+    "fitsColor": true,
+    "explicitlyDisabledStarRailTaa": false,
+    "viewCount": 2,
+    "lightCount": 3,
+    "width": 160,
+    "height": 120,
+    "trainingRenders": 1054,
+    "checkRenders": 18,
+    "keyframes": 53,
+    "initialNrmse": 0.9119009375572205,
+    "recapturedNrmse": 0.18234358727931977,
+    "wallSeconds": 1.9425946474075318
+}

@@ -1,0 +1,16 @@
+{
+    "pipeline": "CRP-PipelineAsset",
+    "passed": true,
+    "fitsColor": false,
+    "explicitlyDisabledStarRailTaa": true,
+    "viewCount": 1,
+    "lightCount": 2,
+    "width": 160,
+    "height": 120,
+    "trainingRenders": 529,
+    "checkRenders": 8,
+    "keyframes": 92,
+    "initialNrmse": 0.11814910918474198,
+    "recapturedNrmse": 0.004064830485731363,
+    "wallSeconds": 2.338540554046631
+}

@@ -53,9 +53,10 @@ namespace LightingMvp.Editor
         private bool playing,showTarget=true;
         private double nextUpdate;
         private CornellSceneRig replayRig;
+        internal bool HasScenePreview => fieldOverlayRoot != null || replayRig != null;
         private Light candidate=>replayRig!=null&&replayRig.Count>0?replayRig[0]:null;
 
-        [MenuItem("Lighting MVP/Debug Window")]
+        [MenuItem("Lighting MVP/Debug/Legacy field and replay")]
         public static void Open()
         {
             var window=GetWindow<LightingDebugWindow>();window.titleContent=new GUIContent("Lighting Debug");window.Show();
@@ -253,8 +254,10 @@ namespace LightingMvp.Editor
                 scrollPosition=scroll.scrollPosition;
                 EditorGUILayout.Space();bool enabled=EditorGUILayout.ToggleLeft("Show Irradiance",showIrradiance,EditorStyles.boldLabel);
                 if(enabled!=showIrradiance){showIrradiance=enabled;fieldDirty=true;if(!showIrradiance){DestroyFieldOverlays();fieldValues=null;}RefreshEditorViews();}
-                if(showIrradiance&&SceneManager.GetActiveScene().path!=ScenePath){EditorGUILayout.HelpBox("Irradiance preview currently uses the saved Cornell Box experiment.",MessageType.Info);if(GUILayout.Button("Open Cornell Box Experiment"))OpenExperimentScene();}
+                bool cornell=SceneManager.GetActiveScene().path==ScenePath;
+                if(showIrradiance&&!cornell)EditorGUILayout.HelpBox("Use Native Irradiance Preview for this scene. The analytic overlays and recorded targets below are Cornell-specific.",MessageType.Info);
                 else if(showIrradiance)DrawIrradianceControls();
+                if(GUILayout.Button("Open Native Irradiance Preview"))NativeIrradianceWindow.Open();
                 EditorGUILayout.Space();if(activeTab==0)DrawIterationTab();else DrawPerturbationTab();
             }
         }
@@ -274,7 +277,7 @@ namespace LightingMvp.Editor
             var report=reports[experiment];
             if(RecordedLightCount(report)==0)
             {
-                EditorGUILayout.HelpBox("先运行 Lighting MVP > Run Cornell Box Experiments 生成逐迭代记录。",MessageType.Warning);return;
+                EditorGUILayout.HelpBox("No legacy Cornell history found. For new fits, use Lighting MVP > Optimize Lighting (Unity RGB).",MessageType.Warning);return;
             }
             int count=report.history.Count;index=Mathf.Clamp(index,0,count-1);
             DrawReplayView(report.history[index].lights.Length);
