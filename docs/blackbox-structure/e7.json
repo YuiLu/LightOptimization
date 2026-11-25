@@ -1,0 +1,123 @@
+{
+    "schema": 1,
+    "resolution": 256,
+    "unity": "2022.3.62f3c1",
+    "renderer": "Direct3D11",
+    "gpu": "NVIDIA GeForce GTX 1060 6GB",
+    "camera": {
+        "position": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": -4.099999904632568
+        },
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "w": 1.0
+        },
+        "fov": 42.0
+    },
+    "materials": [
+        {
+            "shader": "Lit",
+            "supportsOlat": true,
+            "cameraRenders": 287,
+            "wallSeconds": 3.0324831999999999,
+            "emptyRepeatLoss": 0.0,
+            "intensity": {
+                "samples": 24,
+                "nearZero": 0,
+                "nonzero": 24,
+                "median": 0.0,
+                "worst": 0.0
+            },
+            "additivity": {
+                "samples": 8,
+                "nearZero": 0,
+                "nonzero": 8,
+                "median": 7.840070786352975e-7,
+                "worst": 0.000004701950174030893
+            },
+            "rankings": [
+                {
+                    "contextLights": 0,
+                    "sampleCount": 24,
+                    "predictedTop": 13,
+                    "measuredTop": 13,
+                    "measuredTopInPredictedTop3": true,
+                    "spearman": 1.0,
+                    "top3Regret": 0.0
+                },
+                {
+                    "contextLights": 1,
+                    "sampleCount": 24,
+                    "predictedTop": 17,
+                    "measuredTop": 17,
+                    "measuredTopInPredictedTop3": true,
+                    "spearman": 1.0,
+                    "top3Regret": 0.0
+                },
+                {
+                    "contextLights": 2,
+                    "sampleCount": 24,
+                    "predictedTop": 17,
+                    "measuredTop": 17,
+                    "measuredTopInPredictedTop3": true,
+                    "spearman": 1.0,
+                    "top3Regret": 0.0
+                }
+            ]
+        },
+        {
+            "shader": "Stylized",
+            "supportsOlat": true,
+            "cameraRenders": 287,
+            "wallSeconds": 2.3363948,
+            "emptyRepeatLoss": 0.0,
+            "intensity": {
+                "samples": 24,
+                "nearZero": 0,
+                "nonzero": 24,
+                "median": 5.568604363572606e-8,
+                "worst": 7.372514134391787e-8
+            },
+            "additivity": {
+                "samples": 8,
+                "nearZero": 0,
+                "nonzero": 8,
+                "median": 0.0000010221952613893032,
+                "worst": 0.0000037958004837903055
+            },
+            "rankings": [
+                {
+                    "contextLights": 0,
+                    "sampleCount": 24,
+                    "predictedTop": 13,
+                    "measuredTop": 13,
+                    "measuredTopInPredictedTop3": true,
+                    "spearman": 1.0,
+                    "top3Regret": 0.0
+                },
+                {
+                    "contextLights": 1,
+                    "sampleCount": 24,
+                    "predictedTop": 17,
+                    "measuredTop": 17,
+                    "measuredTopInPredictedTop3": true,
+                    "spearman": 1.0,
+                    "top3Regret": 0.0
+                },
+                {
+                    "contextLights": 2,
+                    "sampleCount": 24,
+                    "predictedTop": 17,
+                    "measuredTop": 17,
+                    "measuredTopInPredictedTop3": true,
+                    "spearman": 1.0,
+                    "top3Regret": 0.0
+                }
+            ]
+        }
+    ]
+}

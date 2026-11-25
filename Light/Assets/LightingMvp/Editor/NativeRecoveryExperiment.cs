@@ -217,7 +217,7 @@ namespace LightingMvp.Editor
             if (seedCount < 1 || seedCount > Seeds.Length) throw new ArgumentOutOfRangeException(nameof(seedCount));
             if (!GraphicsSettings.lightsUseLinearIntensity) throw new InvalidOperationException("Enable linear light intensity for calibrated color coordinates.");
             test = test.ToLowerInvariant();
-            if (!new[] { "e0", "smoke", "all", "e1", "e2", "e2-fixed", "e2-lit", "e2-stylized", "e2-stylized-fixed", "e3", "diagnose", "zerograds", "zerograds-stylized", "e4", "e5", "e6" }.Contains(test))
+            if (!new[] { "e0", "smoke", "all", "e1", "e2", "e2-fixed", "e2-lit", "e2-stylized", "e2-stylized-fixed", "e3", "diagnose", "zerograds", "zerograds-stylized", "e4", "e5", "e6", "e7", "e8", "e8-smoke" }.Contains(test))
                 throw new ArgumentException("Unknown black-box case: " + test);
             SelfTest();
             LightingDebugWindow.EndCornellPreviews();
@@ -245,6 +245,11 @@ namespace LightingMvp.Editor
                     throw new InvalidOperationException("The reference Cornell scene must not contain other active lights.");
                 var gt = lights.Select(RecoveryLightState.Read).ToArray();
                 var views = BuildViews(camera);
+                if (test == "e7" || test == "e8" || test == "e8-smoke")
+                {
+                    RunStructureExperiments(test, output, camera, views, room, lights, block);
+                    return;
+                }
                 if (test == "e4" || test == "e5" || test == "e6")
                 {
                     RunNext(test, output, camera, views[0], room, lights, gt, block);

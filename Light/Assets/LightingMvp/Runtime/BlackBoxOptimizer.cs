@@ -54,7 +54,8 @@ namespace LightingMvp
             return search.Result;
         }
 
-        internal static double Pilot(double[] x, double f, Random rng, int remaining, Func<double[], string, double> evaluate)
+        internal static double Pilot(double[] x, double f, Random rng, int remaining, Func<double[], string, double> evaluate,
+            Func<double[], bool> feasible = null)
         {
             if (remaining < 6 || InteriorRadius(x) < .001) return .03;
             var signs = Signs(x.Length, rng);
@@ -63,8 +64,10 @@ namespace LightingMvp
             foreach (double candidate in new[] { .01, .03, .1 })
             {
                 double h = Math.Min(candidate, InteriorRadius(x));
-                double a = evaluate(Along(x, signs, h), "pilot_plus");
-                double b = evaluate(Along(x, signs, -h), "pilot_minus");
+                var plus = Along(x, signs, h); var minus = Along(x, signs, -h);
+                if (feasible != null && (!feasible(plus) || !feasible(minus))) continue;
+                double a = evaluate(plus, "pilot_plus");
+                double b = evaluate(minus, "pilot_minus");
                 // Prefer slopes that are measurable, yet not dominated by the even (curvature) response.
                 double odd = Math.Abs(a - b), even = Math.Abs(a + b - 2 * f);
                 double score = (even + 1e-5 * Math.Max(f, 1e-8)) / (odd + 1e-15);

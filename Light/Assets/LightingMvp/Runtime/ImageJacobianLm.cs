@@ -11,16 +11,18 @@ namespace LightingMvp
         {
             public double[] Best;
             public double InitialLoss, BestLoss = double.PositiveInfinity, PilotH, Damping;
-            public int Queries, Jacobians, Accepted, Rejected;
+            public int Queries, Jacobians, Accepted, Rejected, BlockedProbes, ShortenedTrials;
             public string StopReason = "budget";
         }
 
-        public static Result Run(double[] initial, int residualSize, ResidualQuery query, int budget, int seed)
+        public static Result Run(double[] initial, int residualSize, ResidualQuery query, int budget, int seed,
+            Func<double[], bool> feasible = null)
         {
             if (initial == null || initial.Length == 0 || residualSize < 1 || query == null || budget < 1)
                 throw new ArgumentException("Initial parameters, residual callback, and positive sizes/budget are required.");
             foreach (double u in initial)
                 if (!(u >= 0 && u <= 1)) throw new ArgumentException("Parameters must be normalized to [0,1].");
+            if (feasible != null && !feasible(initial)) throw new ArgumentException("Initial rig is not feasible.");
             int n = initial.Length;
             var result = new Result();
             var center = new float[residualSize];
@@ -32,7 +34,7 @@ namespace LightingMvp
             var probe = new double[n];
             double f = result.InitialLoss = Evaluate(x, "initial", center);
             double h = result.PilotH = BlackBoxOptimizer.Pilot(x, f, new Random(seed), budget - result.Queries,
-                (v, phase) => Evaluate(v, phase, trial));
+                (v, phase) => Evaluate(v, phase, trial), feasible == null ? null : (Func<double[], bool>)Legal);
             double mu = 0;
             while (budget - result.Queries >= 2 * n + 1)
             {
@@ -49,7 +51,9 @@ namespace LightingMvp
                 for (int i = 0; i < n; ++i)
                 {
                     var col = columns[i];
-                    if (x[i] >= step && 1 - x[i] >= step)
+                    if (feasible != null)
+                        ConstrainedColumn(i, step, col);
+                    else if (x[i] >= step && 1 - x[i] >= step)
                     {
                         probe[i] = x[i] + step; Evaluate(probe, "jac_plus", col);
                         probe[i] = x[i] - step; Evaluate(probe, "jac_minus", trial);
@@ -91,6 +95,18 @@ namespace LightingMvp
                         probe[i] = BlackBoxOptimizer.Clamp(x[i] + delta[i] * cap, 0, 1);
                         delta[i] = probe[i] - x[i];
                     }
+                    if (feasible != null && !Legal(probe))
+                    {
+                        // Shrink in parameter space; never substitute a penalty image for an illegal rig.
+                        bool legal = false;
+                        for (int shrink = 0; shrink < 12 && !legal; ++shrink)
+                        {
+                            for (int i = 0; i < n; ++i) probe[i] = x[i] + (delta[i] *= .5);
+                            legal = Legal(probe);
+                        }
+                        if (!legal) { mu *= 8; continue; }
+                        ++result.ShortenedTrials;
+                    }
                     // The projected/damped candidate is judged by its actual feasible displacement.
                     double predicted = 0;
                     for (int i = 0; i < n; ++i)
@@ -125,8 +141,52 @@ namespace LightingMvp
             result.Damping = mu;
             return result;
 
+            bool Legal(double[] v)
+            {
+                foreach (double u in v) if (!(u >= 0 && u <= 1)) { ++result.BlockedProbes; return false; }
+                if (feasible(v)) return true;
+                ++result.BlockedProbes;
+                return false;
+            }
+
+            void ConstrainedColumn(int i, double hColumn, float[] col)
+            {
+                for (int shrink = 0; shrink < 10; ++shrink, hColumn *= .5)
+                {
+                    probe[i] = x[i] + hColumn; bool plus = Legal(probe);
+                    probe[i] = x[i] - hColumn; bool minus = Legal(probe);
+                    if (plus && minus)
+                    {
+                        probe[i] = x[i] + hColumn; Evaluate(probe, "jac_plus", col);
+                        probe[i] = x[i] - hColumn; Evaluate(probe, "jac_minus", trial);
+                        float scale = (float)(.5 / hColumn);
+                        for (int k = 0; k < residualSize; ++k) col[k] = (col[k] - trial[k]) * scale;
+                        return;
+                    }
+                    if (!plus && !minus) continue;
+                    double dx = plus ? hColumn : -hColumn;
+                    probe[i] = x[i] + 2 * dx;
+                    bool secondOrder = Legal(probe);
+                    probe[i] = x[i] + dx; Evaluate(probe, "jac_one_sided", col);
+                    if (secondOrder)
+                    {
+                        probe[i] = x[i] + 2 * dx; Evaluate(probe, "jac_one_sided", trial);
+                        float scale = (float)(.5 / dx);
+                        for (int k = 0; k < residualSize; ++k) col[k] = (4 * col[k] - trial[k] - 3 * center[k]) * scale;
+                    }
+                    else
+                    {
+                        float scale = (float)(1 / dx);
+                        for (int k = 0; k < residualSize; ++k) col[k] = (col[k] - center[k]) * scale;
+                    }
+                    return;
+                }
+                Array.Clear(col, 0, col.Length);
+            }
+
             double Evaluate(double[] v, string phase, float[] buffer)
             {
+                if (feasible != null && !Legal(v)) throw new InvalidOperationException("LM attempted an infeasible render.");
                 if (++result.Queries > budget) throw new InvalidOperationException("Image Jacobian budget exceeded.");
                 double loss = query(v, phase, buffer);
                 if (!(loss >= 0) || double.IsInfinity(loss)) throw new InvalidOperationException("Expected finite nonnegative RGB loss.");
