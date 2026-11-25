@@ -1,0 +1,228 @@
+{
+  "e13": {
+    "shared": 621,
+    "training": 13716,
+    "recaptures": 286,
+    "arms": {
+      "e10/single/single_position_strength/Raw": {
+        "trials": 2,
+        "passed": 1,
+        "contribution_pass": 1,
+        "train": 0.07421872957150087,
+        "worst_train": 0.14843740484228257,
+        "high": 0.07243571388077318,
+        "held": 0.012564189282936209,
+        "queries": 633.0,
+        "seconds": 7.10265405
+      },
+      "e10_near/full/strength_lm/Raw": {
+        "trials": 3,
+        "passed": 3,
+        "contribution_pass": 0,
+        "train": 0.0,
+        "worst_train": 3.500697426939331e-08,
+        "high": 0.0,
+        "held": 0.0,
+        "queries": 207,
+        "seconds": 4.2161937
+      },
+      "e10_near/full/strength_nnls/Raw": {
+        "trials": 3,
+        "passed": 3,
+        "contribution_pass": 0,
+        "train": 4.373875857512012e-06,
+        "worst_train": 4.373875857512012e-06,
+        "high": 4.3727285206336135e-06,
+        "held": 1.458367387878518e-06,
+        "queries": 30,
+        "seconds": 2.4162402
+      },
+      "e10_near/single/single_position/Raw": {
+        "trials": 7,
+        "passed": 4,
+        "contribution_pass": 2,
+        "train": 0.04895670784711502,
+        "worst_train": 0.12516866143100625,
+        "high": 0.06521192533899792,
+        "held": 0.02075202094792125,
+        "queries": 600,
+        "seconds": 7.2048558
+      },
+      "e10_near/single/single_position_strength/Raw": {
+        "trials": 11,
+        "passed": 5,
+        "contribution_pass": 3,
+        "train": 0.1112888929344384,
+        "worst_train": 0.14727102175799348,
+        "high": 0.10882095557500135,
+        "held": 0.028141041332464832,
+        "queries": 933,
+        "seconds": 9.4797531
+      }
+    }
+  },
+  "e14": {
+    "shared": 79,
+    "training": 56559,
+    "recaptures": 165,
+    "arms": {
+      "e10_near/full/full_loss/Raw": {
+        "trials": 3,
+        "passed": 0,
+        "contribution_pass": 0,
+        "train": 0.32753119889791493,
+        "worst_train": 0.3467190862817481,
+        "high": 0.37255819832488596,
+        "held": 0.5732359205746472,
+        "queries": 5904,
+        "seconds": 74.3971832
+      },
+      "e10_near/full/full_loss/SignedLog": {
+        "trials": 3,
+        "passed": 0,
+        "contribution_pass": 0,
+        "train": 0.28900309985073724,
+        "worst_train": 0.4207196031257053,
+        "high": 0.2860750114283783,
+        "held": 0.5839625718666527,
+        "queries": 5937,
+        "seconds": 139.212535
+      },
+      "e10_near/full/full_loss/SignedSqrt": {
+        "trials": 3,
+        "passed": 0,
+        "contribution_pass": 0,
+        "train": 0.2722697135395855,
+        "worst_train": 0.30297487422589825,
+        "high": 0.28477932569476566,
+        "held": 0.622150899490218,
+        "queries": 5862,
+        "seconds": 110.9543513
+      },
+      "e10_near/single/single_loss/Raw": {
+        "trials": 2,
+        "passed": 1,
+        "contribution_pass": 1,
+        "train": 0.07363572318369663,
+        "worst_train": 0.14727101943012688,
+        "high": 0.07287371604469003,
+        "held": 0.01260183270649337,
+        "queries": 576.0,
+        "seconds": 7.39816755
+      },
+      "e10_near/single/single_loss/SignedLog": {
+        "trials": 2,
+        "passed": 0,
+        "contribution_pass": 0,
+        "train": 0.1100418882954449,
+        "worst_train": 0.15516070357722714,
+        "high": 0.1096300245252289,
+        "held": 0.016319326405669302,
+        "queries": 523.5,
+        "seconds": 12.316290549999998
+      },
+      "e10_near/single/single_loss/SignedSqrt": {
+        "trials": 2,
+        "passed": 1,
+        "contribution_pass": 1,
+        "train": 0.05047533901476429,
+        "worst_train": 0.10058908359380883,
+        "high": 0.04714549347457013,
+        "held": 0.0017056199797081566,
+        "queries": 625.5,
+        "seconds": 11.306838849999998
+      }
+    }
+  },
+  "e15": {
+    "shared": 79,
+    "training": 56022,
+    "recaptures": 132,
+    "arms": {
+      "e10_near/full/full_lm/Raw": {
+        "trials": 3,
+        "passed": 0,
+        "contribution_pass": 0,
+        "train": 0.32753119884303705,
+        "worst_train": 0.34693568918553874,
+        "high": 0.3703278652802807,
+        "held": 0.5732359208450927,
+        "queries": 5904,
+        "seconds": 89.0623964
+      },
+      "e10_near/full/world_diag_lm/Raw": {
+        "trials": 3,
+        "passed": 0,
+        "contribution_pass": 0,
+        "train": 0.36970620719210034,
+        "worst_train": 0.41453814681909923,
+        "high": 0.43660360273841153,
+        "held": 0.6684288984216,
+        "queries": 5904,
+        "seconds": 87.8640058
+      },
+      "e10_near/full/world_lm/Raw": {
+        "trials": 3,
+        "passed": 0,
+        "contribution_pass": 0,
+        "train": 0.3211089745495404,
+        "worst_train": 0.4028500349949922,
+        "high": 0.33381069108645683,
+        "held": 0.6734777495523254,
+        "queries": 5964,
+        "seconds": 85.1617389
+      },
+      "e10_near/single/full_lm/Raw": {
+        "trials": 1,
+        "passed": 0,
+        "contribution_pass": 0,
+        "train": 0.14727102171300552,
+        "worst_train": 0.14727102171300552,
+        "high": 0.14574700354163692,
+        "held": 0.02520317344326178,
+        "queries": 936,
+        "seconds": 10.6624251
+      },
+      "e10_near/single/world_diag_lm/Raw": {
+        "trials": 1,
+        "passed": 0,
+        "contribution_pass": 0,
+        "train": 0.13275829614674006,
+        "worst_train": 0.13275829614674006,
+        "high": 0.12934112710852116,
+        "held": 0.007180390189235366,
+        "queries": 984,
+        "seconds": 10.9505765
+      },
+      "e10_near/single/world_lm/Raw": {
+        "trials": 1,
+        "passed": 0,
+        "contribution_pass": 0,
+        "train": 0.11671597561486592,
+        "worst_train": 0.11671597561486592,
+        "high": 0.12416027050649854,
+        "held": 0.005874353683470864,
+        "queries": 825,
+        "seconds": 9.841894199999999
+      }
+    }
+  },
+  "e15-budget": {
+    "shared": 79,
+    "training": 14883,
+    "recaptures": 11,
+    "arms": {
+      "e10_near/full/world_lm/Raw": {
+        "trials": 1,
+        "passed": 0,
+        "contribution_pass": 0,
+        "train": 0.318211643241647,
+        "worst_train": 0.318211643241647,
+        "high": 0.39457264875350445,
+        "held": 0.6740217362657743,
+        "queries": 14883,
+        "seconds": 201.8196788
+      }
+    }
+  }
+}

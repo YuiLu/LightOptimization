@@ -160,9 +160,9 @@ namespace LightingMvp.Editor
 
             private T Own<T>(T obj) where T : Object { owned.Add(obj); return obj; }
             private GameObject New(string name) => Own(new GameObject(name));
-            private static Vector3 Position(double[] x, int i) => new Vector3(
+            internal static Vector3 Position(double[] x, int i) => new Vector3(
                 Mathf.Lerp(RoomMin.x, RoomMax.x, (float)x[i]), Mathf.Lerp(RoomMin.y, RoomMax.y, (float)x[i + 1]), Mathf.Lerp(RoomMin.z, RoomMax.z, (float)x[i + 2]));
-            private static double[] Encode(Vector3 p, double power) => new[] {
+            internal static double[] Encode(Vector3 p, double power) => new[] {
                 ((double)p.x - RoomMin.x) / (RoomMax.x - RoomMin.x), ((double)p.y - RoomMin.y) / (RoomMax.y - RoomMin.y),
                 ((double)p.z - RoomMin.z) / (RoomMax.z - RoomMin.z), PowerCoordinate(power) };
 
@@ -195,6 +195,24 @@ namespace LightingMvp.Editor
             }
 
             private NativeLamp[] Describe(double[] x) { Apply(x); return lights.Take(x.Length / LampDofs).Select(NativeLamp.Read).ToArray(); }
+
+            internal void Omit(int slot) => lights[slot].enabled = false;
+
+            internal bool RaycastGeometry(Vector3 origin, Vector3 direction, out RaycastHit hit) =>
+                Physics.Raycast(origin, direction, out hit, Camera.farClipPlane, 1 << CollisionLayer, QueryTriggerInteraction.Ignore);
+
+            internal void VerifyActiveRig(NativeLamp[] expected)
+            {
+                if (expected.Length != lights.Length) throw new InvalidDataException("Wrong saved GT lamp count.");
+                for (int i = 0; i < expected.Length; ++i)
+                {
+                    var lamp = lights[i]; var saved = expected[i];
+                    if (!lamp.isActiveAndEnabled || lamp.type.ToString() != saved.type || lamp.range != saved.range ||
+                        lamp.color != saved.color || Vector3.Distance(lamp.transform.position, saved.position) > 2e-6f ||
+                        Math.Abs(lamp.intensity - saved.intensity) > 2e-6f)
+                        throw new InvalidDataException("Classroom GT lamp state mismatch at slot " + i);
+                }
+            }
 
             internal double[] Perturb(int seed, bool near)
             {

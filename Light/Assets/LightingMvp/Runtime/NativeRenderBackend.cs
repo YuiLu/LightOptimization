@@ -160,6 +160,68 @@ namespace LightingMvp
             return energy / denominator;
         }
 
+        public enum HdrMapping { Raw, SignedLog, SignedSqrt }
+
+        public sealed class MappedTarget
+        {
+            internal readonly Frame Raw;
+            internal readonly float[] Rgb;
+            internal readonly double LogScale;
+            public double Energy { get; }
+            internal readonly HdrMapping Mapping;
+
+            public MappedTarget(Frame target, HdrMapping mapping, double logScale)
+            {
+                if (target == null || mapping == HdrMapping.Raw || !(logScale > 0)) throw new ArgumentException("Invalid mapped HDR target.");
+                Raw = target; Mapping = mapping; LogScale = logScale;
+                Rgb = new float[target.PixelCount * 3];
+                for (int i = 0, k = 0; i < target.PixelCount; ++i)
+                {
+                    var c = target.Pixels[i];
+                    Rgb[k++] = Map(c.r, mapping, logScale);
+                    Rgb[k++] = Map(c.g, mapping, logScale);
+                    Rgb[k++] = Map(c.b, mapping, logScale);
+                }
+                foreach (float value in Rgb) Energy += (double)value * value;
+            }
+        }
+
+        public static float Map(float value, HdrMapping mapping, double logScale)
+        {
+            if (mapping == HdrMapping.Raw || value == 0) return value;
+            double x = Math.Abs((double)value), y;
+            if (mapping == HdrMapping.SignedLog)
+            {
+                x /= logScale;
+                // Avoid cancellation near zero; error is below the float rounding scale here.
+                y = x < 1e-4 ? x * (1 + x * (-.5 + x / 3)) : Math.Log(1 + x);
+            }
+            else y = x / (Math.Sqrt(x + 1e-6) + .001); // sqrt(x + eps) - sqrt(eps)
+            return (float)(value < 0 ? -y : y);
+        }
+
+        public double MappedResidual(int view, MappedTarget target, float[] residual, int offset, int viewCount, out double rawLoss)
+        {
+            int count = checked(Width * Height * 3);
+            if (target?.Rgb.Length != count || offset < 0 || residual == null || offset > residual.Length - count || viewCount < 1)
+                throw new ArgumentException("Invalid mapped HDR residual dimensions.");
+            var pixels = Read(view);
+            double denominator = (target.Energy + 1e-12) * viewCount;
+            double scale = 1 / Math.Sqrt(denominator), mapped = 0, raw = 0;
+            for (int i = 0, k = 0; i < pixels.Length; ++i)
+            {
+                Color a = pixels[i], b = target.Raw.Pixels[i];
+                double r = a.r - b.r, g = a.g - b.g, blue = a.b - b.b;
+                raw += r * r + g * g + blue * blue;
+                r = Map(a.r, target.Mapping, target.LogScale) - target.Rgb[k]; residual[offset + k++] = (float)(r * scale);
+                g = Map(a.g, target.Mapping, target.LogScale) - target.Rgb[k]; residual[offset + k++] = (float)(g * scale);
+                blue = Map(a.b, target.Mapping, target.LogScale) - target.Rgb[k]; residual[offset + k++] = (float)(blue * scale);
+                mapped += r * r + g * g + blue * blue;
+            }
+            rawLoss = raw / ((target.Raw.Energy + 1e-12) * viewCount);
+            return mapped / denominator;
+        }
+
         private NativeArray<Color> Read(int view)
         {
             if (pipeline != GraphicsSettings.currentRenderPipeline) throw new InvalidOperationException("The URP pipeline changed during recovery.");
@@ -226,7 +288,7 @@ namespace LightingMvp
             finally { Destroy(raw); Destroy(preview); }
         }
 
-        private static float Display(float value) => Mathf.LinearToGammaSpace(1 - Mathf.Exp(-Mathf.Max(0, value)));
+        public static float Display(float value) => Mathf.LinearToGammaSpace(1 - Mathf.Exp(-Mathf.Max(0, value)));
 
         public void Dispose()
         {
