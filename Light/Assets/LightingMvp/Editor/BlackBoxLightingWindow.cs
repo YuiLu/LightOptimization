@@ -9,12 +9,12 @@ namespace LightingMvp.Editor
 {
     public sealed class BlackBoxLightingWindow : EditorWindow
     {
-        private static readonly string[] Methods = { "Central FD + L-BFGS", "SPSA + Adam" };
+        private static readonly string[] Methods = { "Central FD + L-BFGS", "SPSA + Adam", "Image Jacobian + LM" };
         private static readonly int[] Resolutions = { 128, 256, 512, 1024 };
         [SerializeField] private Camera[] views = { null };
         [SerializeField] private Light[] lights = { null };
         [SerializeField] private int resolution = 256, method, budget = 2000, seed = 17;
-        [SerializeField] private float extent = .75f, intensityFactor = 8, perturbDistance = .3f;
+        [SerializeField] private float extent = .75f, intensityFactor = 8, perturbDistance = .3f, spotAimExtent = 40;
         [SerializeField] private bool fitColor;
         private BlackBoxLightingSession session;
         private BlackBoxLightingSession.Fit fit;
@@ -73,7 +73,7 @@ namespace LightingMvp.Editor
             EditorGUILayout.LabelField("1. Capture reference", EditorStyles.boldLabel);
             EditorGUI.BeginChangeCheck();
             DrawObjects(ref views, "Cameras", 4);
-            DrawObjects(ref lights, "Realtime Point Lights", 8);
+            DrawObjects(ref lights, "Realtime Point / Spot Lights", 8);
             resolution = EditorGUILayout.IntPopup("Render long edge", resolution, Resolutions.Select(n => n.ToString()).ToArray(), Resolutions);
             if (EditorGUI.EndChangeCheck()) ClearTarget();
             EditorGUILayout.BeginHorizontal();
@@ -113,6 +113,8 @@ namespace LightingMvp.Editor
             fitColor = EditorGUILayout.Toggle("Fit hue and saturation", fitColor);
             extent = EditorGUILayout.FloatField(new GUIContent("Position ± per axis", "World units around each starting light position."), extent);
             intensityFactor = EditorGUILayout.FloatField(new GUIContent("Intensity factor", "Log-space bounds: start / factor to start × factor."), intensityFactor);
+            if (lights.Any(l => l && l.type == LightType.Spot))
+                spotAimExtent = EditorGUILayout.Slider("Spot aim ± per axis (°)", spotAimExtent, 5, 70);
             budget = Mathf.Clamp(EditorGUILayout.IntField("Training camera renders", budget), 1, 20000);
             seed = EditorGUILayout.IntField("Seed", seed);
             perturbDistance = EditorGUILayout.FloatField("Perturb distance", perturbDistance);
@@ -132,7 +134,7 @@ namespace LightingMvp.Editor
             double nextProgress = 0;
             try
             {
-                fit = session.Solve((BlackBoxOptimizer.Method)method, fitColor, extent, intensityFactor, budget, seed,
+                fit = session.Solve((BlackBoxLightingSession.Method)method, fitColor, extent, intensityFactor, budget, seed,
                     (used, max, phase, loss) =>
                     {
                         double now = EditorApplication.timeSinceStartup;
@@ -141,7 +143,7 @@ namespace LightingMvp.Editor
                         string detail = double.IsInfinity(loss) ? "" : $" | Best NRMSE {Math.Sqrt(loss):P2}";
                         if (EditorUtility.DisplayCancelableProgressBar("Unity RGB lighting optimization", $"{phase}: {used:N0}/{max:N0} training renders{detail}", (float)used / max))
                             throw new OperationCanceledException();
-                    });
+                    }, spotAimExtent);
                 RefreshComparison();
                 string ignored = fit.UnobservedLights.Length == 0 ? "" : " Little initial RGB response: " + string.Join(", ", fit.UnobservedLights) + ".";
                 Report("Best rig re-captured. The starting scene lights were restored." + ignored,
@@ -170,12 +172,12 @@ namespace LightingMvp.Editor
             if (fit != null) { DrawImage("Before", initialImage); DrawImage("Best re-capture", bestImage); }
             EditorGUILayout.EndHorizontal();
             if (fit == null) return;
-            EditorGUILayout.LabelField("RGB NRMSE (all views)", $"{Math.Sqrt(fit.Search.InitialLoss):P2} → {Math.Sqrt(fit.RecapturedLoss):P2}");
-            if (fit.Search.InitialLoss > 0)
-                EditorGUILayout.LabelField("Relative squared-error decrease", $"{1 - fit.RecapturedLoss / fit.Search.InitialLoss:P2}");
+            EditorGUILayout.LabelField("RGB NRMSE (all views)", $"{Math.Sqrt(fit.InitialLoss):P2} → {Math.Sqrt(fit.RecapturedLoss):P2}");
+            if (fit.InitialLoss > 0)
+                EditorGUILayout.LabelField("Relative squared-error decrease", $"{1 - fit.RecapturedLoss / fit.InitialLoss:P2}");
             EditorGUILayout.LabelField("Camera renders", $"{fit.TrainingRenders:N0} train + {session.TargetRenders + fit.CheckRenders:N0} capture/check");
-            EditorGUILayout.LabelField("Solve wall time / stop", $"{fit.Seconds:F2} s / {fit.Search.StopReason}");
-            using (new EditorGUI.DisabledScope(fit.Search.BestLoss >= fit.Search.InitialLoss))
+            EditorGUILayout.LabelField("Solve wall time / stop", $"{fit.Seconds:F2} s / {fit.StopReason}");
+            using (new EditorGUI.DisabledScope(fit.BestLoss >= fit.InitialLoss))
                 if (GUILayout.Button("Apply best rig to scene (Undoable)")) RunAction(() =>
                 {
                     session.Apply(fit.BestLights);

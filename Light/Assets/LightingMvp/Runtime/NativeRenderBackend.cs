@@ -134,6 +134,29 @@ namespace LightingMvp
             return error / (target.Energy + 1e-12);
         }
 
+        // Concatenate views at caller-provided offsets, with 1/sqrt(viewCount) weighting.
+        // Store the residual in float, but return the same double RGB MSE used by Loss.
+        public double Residual(int view, Frame target, float[] residual, int offset = 0, int viewCount = 1)
+        {
+            int count = checked(Width * Height * 3);
+            if (target == null || target.PixelCount * 3 != count || residual == null ||
+                offset < 0 || offset > residual.Length - count || viewCount < 1)
+                throw new ArgumentException("Target and residual buffer must match the capture size.");
+            var pixels = Read(view);
+            double denominator = (target.Energy + 1e-12) * viewCount;
+            double scale = 1 / Math.Sqrt(denominator), energy = 0;
+            for (int i = 0, k = offset; i < pixels.Length; ++i)
+            {
+                Color a = pixels[i], b = target.Pixels[i];
+                double r = a.r - b.r, g = a.g - b.g, blue = a.b - b.b;
+                energy += r * r + g * g + blue * blue;
+                residual[k++] = (float)(r * scale);
+                residual[k++] = (float)(g * scale);
+                residual[k++] = (float)(blue * scale);
+            }
+            return energy / denominator;
+        }
+
         private NativeArray<Color> Read(int view)
         {
             if (pipeline != GraphicsSettings.currentRenderPipeline) throw new InvalidOperationException("The URP pipeline changed during recovery.");

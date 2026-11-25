@@ -47,24 +47,24 @@ namespace LightingMvp
             var search = new Search(objective, budget);
             double f = search.Result.InitialLoss = search.Evaluate(x, "initial");
             var rng = new Random(seed);
-            double h = search.Result.PilotH = Pilot(search, x, f, rng);
+            double h = search.Result.PilotH = Pilot(x, f, rng, search.Remaining, search.Evaluate);
             if (method == Method.CentralLbfgs) Lbfgs(search, x, f, h);
             else if (method == Method.SpsaAdam) Spsa(search, x, f, h, rng);
             else throw new ArgumentOutOfRangeException(nameof(method));
             return search.Result;
         }
 
-        private static double Pilot(Search search, double[] x, double f, Random rng)
+        internal static double Pilot(double[] x, double f, Random rng, int remaining, Func<double[], string, double> evaluate)
         {
-            if (search.Remaining < 6 || InteriorRadius(x) < .001) return .03;
+            if (remaining < 6 || InteriorRadius(x) < .001) return .03;
             var signs = Signs(x.Length, rng);
             double chosen = .03;
             double bestScore = double.PositiveInfinity;
             foreach (double candidate in new[] { .01, .03, .1 })
             {
                 double h = Math.Min(candidate, InteriorRadius(x));
-                double a = search.Evaluate(Along(x, signs, h), "pilot_plus");
-                double b = search.Evaluate(Along(x, signs, -h), "pilot_minus");
+                double a = evaluate(Along(x, signs, h), "pilot_plus");
+                double b = evaluate(Along(x, signs, -h), "pilot_minus");
                 // Prefer slopes that are measurable, yet not dominated by the even (curvature) response.
                 double odd = Math.Abs(a - b), even = Math.Abs(a + b - 2 * f);
                 double score = (even + 1e-5 * Math.Max(f, 1e-8)) / (odd + 1e-15);
@@ -264,7 +264,7 @@ namespace LightingMvp
             return result;
         }
 
-        private static double Clamp(double x, double a, double b) => Math.Min(b, Math.Max(a, x));
+        internal static double Clamp(double x, double a, double b) => Math.Min(b, Math.Max(a, x));
         private static double Dot(double[] a, double[] b) { double sum = 0; for (int i = 0; i < a.Length; ++i) sum += a[i] * b[i]; return sum; }
         private static void AddScaled(double[] a, double[] b, double h) { for (int i = 0; i < a.Length; ++i) a[i] += h * b[i]; }
         private static double[] Along(double[] x, double[] d, double h) { var next = (double[])x.Clone(); AddScaled(next, d, h); return next; }

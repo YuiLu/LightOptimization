@@ -1,0 +1,18 @@
+{
+    "pipeline": "URP-HighFidelity",
+    "method": "ImageLm",
+    "lightTypes": "Point+Spot",
+    "passed": true,
+    "fitsColor": false,
+    "explicitlyDisabledStarRailTaa": false,
+    "viewCount": 2,
+    "lightCount": 2,
+    "width": 160,
+    "height": 120,
+    "trainingRenders": 508,
+    "checkRenders": 18,
+    "keyframes": 32,
+    "initialNrmse": 1.2218759059906006,
+    "recapturedNrmse": 0.007915659807622433,
+    "wallSeconds": 1.6614198684692383
+}

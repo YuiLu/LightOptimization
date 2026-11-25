@@ -1,0 +1,18 @@
+{
+    "pipeline": "CRP-PipelineAsset",
+    "method": "CentralLbfgs",
+    "lightTypes": "Point+Point",
+    "passed": true,
+    "fitsColor": false,
+    "explicitlyDisabledStarRailTaa": true,
+    "viewCount": 1,
+    "lightCount": 2,
+    "width": 160,
+    "height": 120,
+    "trainingRenders": 536,
+    "checkRenders": 9,
+    "keyframes": 93,
+    "initialNrmse": 0.11814910918474198,
+    "recapturedNrmse": 0.0038966615684330465,
+    "wallSeconds": 2.8460209369659426
+}
