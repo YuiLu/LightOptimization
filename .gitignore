@@ -34,3 +34,6 @@ Light/Assets/LightingMvp/Runtime/*
 Light/Assets/LightingMvp/Shaders/*
 !Light/Assets/LightingMvp/Shaders/*.compute
 !Light/Assets/LightingMvp/Shaders/*.shader
+
+# Temporary external repositories used for scene surveying
+.candidate_repos/
