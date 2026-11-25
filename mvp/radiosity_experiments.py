@@ -7,6 +7,7 @@ import csv
 import json
 import math
 import time
+from itertools import permutations
 from pathlib import Path
 
 import mitsuba as mi
@@ -141,11 +142,19 @@ def optimize_radiosity(
     optimizer_name,
     budget,
     weights=None,
+    color_mode="linear",
+    optimize=None,
 ):
     if weights is None:
         weights = samples.areas
     albedo = transport.albedo
-    rig = AnalyticLightRig([copy.deepcopy(initial)], {"position", "intensity"}, samples.positions.dtype, classic.occluder)
+    is_multi = isinstance(initial, (list, tuple))
+    initial_specs = [copy.deepcopy(spec) for spec in initial] if is_multi else [copy.deepcopy(initial)]
+    gt_specs = list(gt) if isinstance(gt, (list, tuple)) else [gt]
+    optimize_set = {"position", "intensity"} if optimize is None else set(optimize)
+    rig = AnalyticLightRig(
+        initial_specs, optimize_set, samples.positions.dtype, classic.occluder, color_mode
+    )
     history = []
 
     def evaluate():
@@ -166,7 +175,10 @@ def optimize_radiosity(
     started = time.perf_counter()
     if optimizer_name == "adam":
         groups = [
-            {"params": [parameter], "lr": {"position": 0.035, "log_intensity": 0.045}[name]}
+            {"params": [parameter], "lr": {
+                "position": 0.035, "log_intensity": 0.045,
+                "log_cct": 0.02, "color_logits": 0.03, "color": 0.03,
+            }.get(name, 0.03)}
             for name, parameter in rig.named_parameters() if parameter.requires_grad
         ]
         optimizer = torch.optim.Adam(groups, betas=(0.9, 0.999))
@@ -205,7 +217,7 @@ def optimize_radiosity(
     with torch.no_grad():
         initial_prediction = transport.propagate(
             direct_to_radiosity(
-                AnalyticLightRig([initial], set(), samples.positions.dtype, classic.occluder)(samples),
+                AnalyticLightRig(initial_specs, set(), samples.positions.dtype, classic.occluder, color_mode)(samples),
                 albedo,
             )
         )
@@ -219,22 +231,84 @@ def optimize_radiosity(
         float(parameter.grad.square().sum()) for parameter in rig.parameters()
         if parameter.requires_grad and parameter.grad is not None
     ))
-    result = rig.to_specs()[0]
+    results = rig.to_specs()
+    label_position_errors = [
+        float(np.linalg.norm(np.asarray(result.position) - np.asarray(gt_spec.position)))
+        for result, gt_spec in zip(results, gt_specs)
+    ]
+    label_cct_relative_errors = [
+        abs(result.cct_kelvin - gt_spec.cct_kelvin) / gt_spec.cct_kelvin
+        for result, gt_spec in zip(results, gt_specs)
+        if result.cct_kelvin is not None and gt_spec.cct_kelvin is not None
+    ]
+    best_assignment = (0,)
+    if len(results) > 1:
+        best_score = math.inf
+        for assignment in permutations(range(len(results))):
+            score = sum(
+                float(np.linalg.norm(np.asarray(results[assignment[i]].position) - np.asarray(gt_specs[i].position)))
+                for i in range(len(results))
+            )
+            if score < best_score:
+                best_score = score
+                best_assignment = assignment
+
+    position_errors = [
+        float(np.linalg.norm(np.asarray(results[best_assignment[i]].position) - np.asarray(gt_specs[i].position)))
+        for i in range(len(results))
+    ]
+    intensity_errors = [
+        abs(results[best_assignment[i]].intensity - gt_specs[i].intensity) / gt_specs[i].intensity
+        for i in range(len(results))
+    ]
+    cct_errors = [
+        abs(results[best_assignment[i]].cct_kelvin - gt_specs[i].cct_kelvin)
+        for i in range(len(results))
+        if results[best_assignment[i]].cct_kelvin is not None and gt_specs[i].cct_kelvin is not None
+    ]
+    cct_relative_errors = [
+        abs(results[best_assignment[i]].cct_kelvin - gt_specs[i].cct_kelvin) / gt_specs[i].cct_kelvin
+        for i in range(len(results))
+        if results[best_assignment[i]].cct_kelvin is not None and gt_specs[i].cct_kelvin is not None
+    ]
+
+    def mismatch(specs, assignment):
+        return float(np.mean([
+            visibility_mismatch(classic, specs[assignment[i]], gt_specs[i], samples)
+            for i in range(len(specs))
+        ]))
+
+    gt_render_specs = AnalyticLightRig(
+        gt_specs, set(), samples.positions.dtype, classic.occluder, color_mode
+    ).to_specs()
+    initial_render_specs = AnalyticLightRig(
+        initial_specs, set(), samples.positions.dtype, classic.occluder, color_mode
+    ).to_specs()
+
     return {
         "scene": classic.name,
         "optimizer": optimizer_name,
         "budget": budget,
         "function_evaluations": len(history),
         "seconds": elapsed,
-        "gt": gt.to_dict(),
-        "initial": initial.to_dict(),
-        "result": result.to_dict(),
+        "gt": [spec.to_dict() for spec in gt_render_specs] if is_multi else gt_render_specs[0].to_dict(),
+        "initial": [spec.to_dict() for spec in initial_render_specs] if is_multi else initial_render_specs[0].to_dict(),
+        "result": [spec.to_dict() for spec in results] if is_multi else results[0].to_dict(),
         "initial_field_nrmse": initial_nrmse,
         "final_field_nrmse": final_nrmse,
-        "final_position_error_m": float(np.linalg.norm(np.asarray(result.position) - np.asarray(gt.position))),
-        "final_intensity_relative_error": abs(result.intensity - gt.intensity) / gt.intensity,
-        "initial_visibility_mismatch": visibility_mismatch(classic, initial, gt, samples),
-        "final_visibility_mismatch": visibility_mismatch(classic, result, gt, samples),
+        "final_position_error_m": float(np.mean(position_errors)),
+        "max_position_error_m": float(np.max(position_errors)),
+        "parameter_permutation": list(best_assignment),
+        "final_label_position_error_m": float(np.mean(label_position_errors)),
+        "max_label_position_error_m": float(np.max(label_position_errors)),
+        "final_intensity_relative_error": float(np.mean(intensity_errors)),
+        "max_intensity_relative_error": float(np.max(intensity_errors)),
+        "final_cct_error_kelvin": float(np.mean(cct_errors)) if cct_errors else None,
+        "max_cct_error_kelvin": float(np.max(cct_errors)) if cct_errors else None,
+        "final_cct_relative_error": float(np.mean(cct_relative_errors)) if cct_relative_errors else None,
+        "final_label_cct_relative_error": float(np.mean(label_cct_relative_errors)) if label_cct_relative_errors else None,
+        "initial_visibility_mismatch": mismatch(initial_specs, tuple(range(len(initial_specs)))),
+        "final_visibility_mismatch": mismatch(results, best_assignment),
         "final_gradient_norm": final_gradient_norm,
         "success_field_lt_0_02": final_nrmse < FIELD_THRESHOLD,
         "history": history,

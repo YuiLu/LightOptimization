@@ -19,6 +19,7 @@ class LightSpec:
     attenuation: float = 1.0e-4
     inner_angle: float = 25.0
     outer_angle: float = 45.0
+    cct_kelvin: float | None = None
 
     def __post_init__(self) -> None:
         if self.color is None:
@@ -80,12 +81,44 @@ def cornell_samples(resolution: int = 20) -> SurfaceSamples:
     return samples
 
 
+def cct_to_rgb(kelvin: torch.Tensor):
+    """Tanner-Helland display-RGB approximation, normalized to unit chroma sum."""
+    temperature = (kelvin / 100.0).squeeze(-1).clamp(10.0, 400.0)
+    red = torch.where(
+        temperature <= 66.0,
+        torch.ones_like(temperature),
+        1.292936 * (temperature - 60.0).clamp_min(1e-6).pow(-0.1332047),
+    )
+    green = torch.where(
+        temperature <= 66.0,
+        0.3900816 * torch.log(temperature) - 0.6318414,
+        1.1298909 * (temperature - 60.0).clamp_min(1e-6).pow(-0.0755147),
+    )
+    blue = torch.where(
+        temperature >= 66.0,
+        torch.ones_like(temperature),
+        torch.where(
+            temperature <= 19.0,
+            torch.zeros_like(temperature),
+            0.5432068 * torch.log((temperature - 10.0).clamp_min(1e-6)) - 1.196254,
+        ),
+    )
+    rgb = torch.stack((red, green, blue), dim=-1).clamp(1e-6, 1.0)
+    return rgb / rgb.sum(dim=-1, keepdim=True).clamp_min(1e-12)
+
+
 class AnalyticLightRig(nn.Module):
     """Equations 3-5 of LightOpt, optionally modulated by hard visibility."""
 
-    def __init__(self, specs: Iterable[LightSpec], optimize: set[str], dtype=torch.float32, occluder=None):
+    def __init__(
+        self, specs: Iterable[LightSpec], optimize: set[str], dtype=torch.float32,
+        occluder=None, color_mode: str = "linear",
+    ):
         super().__init__()
+        if color_mode not in ("linear", "normalized_rgb", "cct"):
+            raise ValueError(f"Unknown color_mode: {color_mode}")
         self.occluder = occluder
+        self.color_mode = color_mode
         specs = list(specs)
         if not specs:
             raise ValueError("At least one light is required")
@@ -100,7 +133,18 @@ class AnalyticLightRig(nn.Module):
         self.log_intensity = parameter(
             [[torch.log(torch.tensor(s.intensity, dtype=dtype)).item()] for s in specs], "intensity"
         )
-        self.color = parameter([s.color for s in specs], "color")
+        if color_mode == "linear":
+            self.color = parameter([s.color for s in specs], "color")
+        elif color_mode == "normalized_rgb":
+            self.color_logits = parameter(
+                [torch.log(torch.tensor(s.color, dtype=dtype).clamp_min(1e-6)).tolist() for s in specs],
+                "color",
+            )
+        else:
+            self.log_cct = parameter(
+                [[torch.log(torch.tensor(s.cct_kelvin or 6500.0, dtype=dtype)).item()] for s in specs],
+                "color",
+            )
         self.raw_direction = parameter(
             [s.direction if s.direction is not None else [0.0, -1.0, 0.0] for s in specs],
             "direction",
@@ -120,6 +164,13 @@ class AnalyticLightRig(nn.Module):
 
     def normalized_direction(self):
         return self.raw_direction / self.raw_direction.norm(dim=-1, keepdim=True).clamp_min(1e-12)
+
+    def chromaticity(self):
+        if self.color_mode == "linear":
+            return self.color
+        if self.color_mode == "normalized_rgb":
+            return torch.softmax(self.color_logits - self.color_logits.mean(dim=-1, keepdim=True), dim=-1)
+        return cct_to_rgb(self.log_cct.exp())
 
     def forward(self, samples: SurfaceSamples):
         """Return the summed RGB irradiance with shape ``[samples, 3]``."""
@@ -154,24 +205,26 @@ class AnalyticLightRig(nn.Module):
         )
         if self.occluder is not None:
             strength = strength * self.occluder.visibility(self.position.detach(), samples)
-        return (strength[..., None] * self.color[:, None, :]).sum(dim=0)
+        return (strength[..., None] * self.chromaticity()[:, None, :]).sum(dim=0)
 
     def to_specs(self) -> list[LightSpec]:
         result = []
         with torch.no_grad():
             directions = self.normalized_direction().cpu().numpy()
+            colors = self.chromaticity().cpu().numpy()
             for i, kind in enumerate(self.kinds):
                 result.append(
                     LightSpec(
                         position=self.position[i].cpu().tolist(),
                         intensity=self.log_intensity[i].exp().item(),
-                        color=self.color[i].cpu().tolist(),
+                        color=colors[i].tolist(),
                         kind=kind,
                         direction=directions[i].tolist(),
                         range=self.light_range[i].item(),
                         attenuation=self.attenuation[i].item(),
                         inner_angle=torch.rad2deg(torch.acos(self.cos_inner[i])).item(),
                         outer_angle=torch.rad2deg(torch.acos(self.cos_outer[i])).item(),
+                        cct_kelvin=(self.log_cct[i].exp().item() if self.color_mode == "cct" else None),
                     )
                 )
         return result

@@ -10,7 +10,7 @@ import numpy as np
 from PIL import Image
 import torch
 
-from mvp.lighting import AnalyticLightRig, LightSpec, field_nrmse
+from mvp.lighting import AnalyticLightRig, LightSpec, cct_to_rgb, field_nrmse
 from mvp.radiosity import (
     RadiosityTransport,
     direct_to_radiosity,
@@ -24,17 +24,32 @@ from mvp.scene_assets import load_classic_scene, load_point_rig_scene
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def spec_list(value):
+    def with_chroma(spec):
+        if spec.cct_kelvin is not None:
+            spec.color = cct_to_rgb(torch.tensor(spec.cct_kelvin)).tolist()
+        return spec
+
+    if isinstance(value, LightSpec):
+        return [with_chroma(value)]
+    if isinstance(value, dict):
+        return [with_chroma(LightSpec(**value))]
+    return [with_chroma(LightSpec(**item) if isinstance(item, dict) else item) for item in value]
+
+
 def full_field(classic, samples, transport, spec):
-    rig = AnalyticLightRig([spec], set(), samples.positions.dtype, classic.occluder)
+    specs = spec_list(spec)
+    color_mode = "cct" if any(item.cct_kelvin is not None for item in specs) else "linear"
+    rig = AnalyticLightRig(specs, set(), samples.positions.dtype, classic.occluder, color_mode)
     with torch.no_grad():
         return transport.propagate(direct_to_radiosity(rig(samples), transport.albedo))
 
 
 def save_field_comparison(classic, samples, transport, run, output_dir):
     specs = {
-        "initial": LightSpec(**run["initial"]),
-        "gt": LightSpec(**run["gt"]),
-        "result": LightSpec(**run["result"]),
+        "initial": spec_list(run["initial"]),
+        "gt": spec_list(run["gt"]),
+        "result": spec_list(run["result"]),
     }
     fields = {name: full_field(classic, samples, transport, spec) for name, spec in specs.items()}
     computed_nrmse = field_nrmse(fields["result"], fields["gt"], samples).item()
@@ -74,7 +89,8 @@ def save_field_comparison(classic, samples, transport, run, output_dir):
         f"NRMSE={computed_nrmse:.3e}"
     )
     fig.colorbar(scatter, ax=axes, shrink=.75, label="Outgoing radiosity luminance")
-    stem = f"field_{run['regime']}_seed{run['seed']}"
+    prefix = f"{run['test']}_" if "test" in run else ""
+    stem = f"field_{prefix}{run['regime']}_seed{run['seed']}"
     fig.savefig(output_dir / f"{stem}.png", dpi=170, facecolor=fig.get_facecolor())
     plt.close(fig)
     np.savez_compressed(output_dir / f"{stem}.npz", **{name: value.numpy() for name, value in fields.items()})
@@ -83,14 +99,14 @@ def save_field_comparison(classic, samples, transport, run, output_dir):
 
 def save_path_comparison(classic, run, output_dir):
     specs = {
-        "initial": LightSpec(**run["initial"]),
-        "gt": LightSpec(**run["gt"]),
-        "result": LightSpec(**run["result"]),
+        "initial": spec_list(run["initial"]),
+        "gt": spec_list(run["gt"]),
+        "result": spec_list(run["result"]),
     }
     renders = {}
     for name, spec in specs.items():
         scene = load_point_rig_scene(
-            classic, [spec], f"round3_compare_{run['regime']}_{run['seed']}_{name}",
+            classic, spec, f"round3_compare_{run['regime']}_{run['seed']}_{name}",
             spp=64, resolution=(512, 512), integrator_type="path",
         )
         renders[name] = np.asarray(mi.render(scene))
