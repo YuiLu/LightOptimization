@@ -155,6 +155,9 @@ namespace LightingMvp.Editor
                 e7.camera.position != views[0].position || e7.camera.rotation != views[0].rotation || e7.camera.fov != views[0].fov)
                 throw new InvalidOperationException("E7 capture protocol does not match E8.");
             bool olat = e7.materials.Single(m => m.shader == "Lit").supportsOlat;
+            if (task == "e9-probe") { RunFrozenE9Probe(root, camera, views[0], rig, olat); return; }
+            if (task == "e9" || task == "e9-smoke")
+            { RunJointCornell(root, camera, views, rig, olat, task == "e9-smoke"); return; }
             if (!int.TryParse(Arg("-bbE8Budget", "2000"), out int budget) || (budget != 2000 && budget != 4000))
                 throw new ArgumentException("-bbE8Budget must be 2000 or 4000.");
             RunColdRigs(root, camera, views.Take(2).ToArray(), rig, olat, budget, task == "e8-smoke");

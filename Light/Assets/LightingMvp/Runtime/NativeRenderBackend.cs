@@ -44,18 +44,21 @@ namespace LightingMvp
         public double ReadbackSeconds { get; private set; }
 
         public NativeRenderBackend(Camera source, Vector3[] positions, Quaternion[] rotations, int size, int rendererIndex = -1)
+            : this(source, positions, rotations, size, size, rendererIndex) { }
+
+        public NativeRenderBackend(Camera source, Vector3[] positions, Quaternion[] rotations, int width, int height, int rendererIndex)
         {
-            if (!source || positions == null || rotations == null || positions.Length == 0 || positions.Length != rotations.Length || size < 1)
+            if (!source || positions == null || rotations == null || positions.Length == 0 || positions.Length != rotations.Length || width < 1 || height < 1)
                 throw new ArgumentException("Invalid offscreen camera configuration.");
             pipeline = RequirePipeline();
             ownsCameras = true;
             cameras = new Camera[positions.Length];
             try
             {
-                destination = new RenderTexture(size, size, 24, GraphicsFormat.R32G32B32A32_SFloat)
+                destination = new RenderTexture(width, height, 24, GraphicsFormat.R32G32B32A32_SFloat)
                     { name = "Black-box final linear HDR RGB", hideFlags = HideFlags.HideAndDontSave };
                 if (!destination.Create()) throw new InvalidOperationException("Could not create linear HDR target.");
-                readback = new Texture2D(size, size, TextureFormat.RGBAFloat, false, true) { hideFlags = HideFlags.HideAndDontSave };
+                readback = new Texture2D(width, height, TextureFormat.RGBAFloat, false, true) { hideFlags = HideFlags.HideAndDontSave };
                 for (int i = 0; i < positions.Length; ++i)
                 {
                     var go = new GameObject("Black-box view " + i) { hideFlags = HideFlags.HideAndDontSave };
@@ -64,7 +67,7 @@ namespace LightingMvp
                     camera.enabled = false;
                     camera.targetTexture = destination;
                     camera.rect = new Rect(0, 0, 1, 1);
-                    camera.aspect = 1;
+                    camera.aspect = (float)width / height;
                     camera.ResetProjectionMatrix();
                     camera.ResetWorldToCameraMatrix();
                     camera.clearFlags = CameraClearFlags.SolidColor;
@@ -200,10 +203,12 @@ namespace LightingMvp
             return error / (target.Energy + 1e-12);
         }
 
-        public static void Save(Frame frame, int size, string path)
+        public static void Save(Frame frame, int size, string path) => Save(frame, size, size, path);
+
+        public static void Save(Frame frame, int width, int height, string path)
         {
-            var raw = new Texture2D(size, size, TextureFormat.RGBAFloat, false, true);
-            var preview = new Texture2D(size, size, TextureFormat.RGB24, false, false);
+            var raw = new Texture2D(width, height, TextureFormat.RGBAFloat, false, true);
+            var preview = new Texture2D(width, height, TextureFormat.RGB24, false, false);
             try
             {
                 raw.SetPixels(frame.Pixels);

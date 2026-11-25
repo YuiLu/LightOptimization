@@ -69,7 +69,9 @@ namespace LightingMvp.Editor
             private readonly UniversalRenderPipelineAsset data;
             private readonly ScriptableRendererData renderer;
 
-            internal TestPipeline()
+            internal UniversalRenderPipelineAsset Asset => data;
+
+            internal TestPipeline(bool classroom = false)
             {
                 var source = AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(PipelinePath);
                 var sourceRenderer = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(RendererPath);
@@ -84,13 +86,20 @@ namespace LightingMvp.Editor
                     var serializedRenderer = new SerializedObject(renderer);
                     serializedRenderer.FindProperty("m_RendererFeatures").ClearArray();
                     serializedRenderer.FindProperty("m_RendererFeatureMap").ClearArray();
+                    if (classroom) serializedRenderer.FindProperty("m_RenderingMode").intValue = (int)RenderingMode.ForwardPlus;
                     serializedRenderer.ApplyModifiedPropertiesWithoutUndo();
                     var serializedPipeline = new SerializedObject(data);
                     var list = serializedPipeline.FindProperty("m_RendererDataList");
                     list.arraySize = 1;
                     list.GetArrayElementAtIndex(0).objectReferenceValue = renderer;
                     serializedPipeline.FindProperty("m_DefaultRendererIndex").intValue = 0;
+                    if (classroom)
+                    {
+                        serializedPipeline.FindProperty("m_AdditionalLightsShadowmapResolution").intValue = 2048;
+                        serializedPipeline.FindProperty("m_AdditionalLightsShadowResolutionTierMedium").intValue = 256;
+                    }
                     serializedPipeline.ApplyModifiedPropertiesWithoutUndo();
+                    if (classroom) { data.name = "Black-box Classroom reference URP Forward+"; data.shadowDistance = 22; }
                     data.msaaSampleCount = 1;
                     data.renderScale = 1;
                     data.hdrColorBufferPrecision = HDRColorBufferPrecision._64Bits;
@@ -217,7 +226,9 @@ namespace LightingMvp.Editor
             if (seedCount < 1 || seedCount > Seeds.Length) throw new ArgumentOutOfRangeException(nameof(seedCount));
             if (!GraphicsSettings.lightsUseLinearIntensity) throw new InvalidOperationException("Enable linear light intensity for calibrated color coordinates.");
             test = test.ToLowerInvariant();
-            if (!new[] { "e0", "smoke", "all", "e1", "e2", "e2-fixed", "e2-lit", "e2-stylized", "e2-stylized-fixed", "e3", "diagnose", "zerograds", "zerograds-stylized", "e4", "e5", "e6", "e7", "e8", "e8-smoke" }.Contains(test))
+            if (test == "e10" || test == "e10-smoke" || test == "e10-near" || test == "e11" || test == "e11-smoke")
+            { RunClassroomScale(test, output); return; }
+            if (!new[] { "e0", "smoke", "all", "e1", "e2", "e2-fixed", "e2-lit", "e2-stylized", "e2-stylized-fixed", "e3", "diagnose", "zerograds", "zerograds-stylized", "e4", "e5", "e6", "e7", "e8", "e8-smoke", "e9", "e9-smoke", "e9-probe" }.Contains(test))
                 throw new ArgumentException("Unknown black-box case: " + test);
             SelfTest();
             LightingDebugWindow.EndCornellPreviews();
@@ -245,7 +256,7 @@ namespace LightingMvp.Editor
                     throw new InvalidOperationException("The reference Cornell scene must not contain other active lights.");
                 var gt = lights.Select(RecoveryLightState.Read).ToArray();
                 var views = BuildViews(camera);
-                if (test == "e7" || test == "e8" || test == "e8-smoke")
+                if (test == "e7" || test == "e8" || test == "e8-smoke" || test == "e9" || test == "e9-smoke" || test == "e9-probe")
                 {
                     RunStructureExperiments(test, output, camera, views, room, lights, block);
                     return;

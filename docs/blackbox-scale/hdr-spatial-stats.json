@@ -1,0 +1,20 @@
+{
+  "target": "target_view0.exr",
+  "targetPeak": 7.721436500549316,
+  "pixels": 458752,
+  "orderedPixels": 4587,
+  "samples": [
+    {
+      "file": "initial_view0.exr",
+      "peak": 600.93212890625,
+      "nrmse": 14.498085130065927,
+      "topPixelSquaredErrorShare": 0.9986374016868196
+    },
+    {
+      "file": "best_view0.exr",
+      "peak": 5.704305648803711,
+      "nrmse": 0.6373765845604221,
+      "topPixelSquaredErrorShare": 0.7137014076639026
+    }
+  ]
+}

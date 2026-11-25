@@ -197,11 +197,11 @@ namespace LightingMvp.Editor
 
         // Stratify normalized coordinates (not a claim of uniform physical-volume sampling).
         // Fixed cold-start intensity is the midpoint of the public log-intensity bounds, independent of GT.
-        private static double[][] CandidateSet(int count, int dims, int seed, bool fixedPower, Func<double[], bool> admissible)
+        private static double[][] CandidateSet(int count, int dims, int seed, bool fixedPower, Func<double[], bool> admissible, int maxBatches = 8)
         {
             var random = new System.Random(seed);
             var result = new List<double[]>(count);
-            for (int batch = 0; batch < 8 && result.Count < count; ++batch)
+            for (int batch = 0; batch < maxBatches && result.Count < count; ++batch)
             {
                 int n = count - result.Count;
                 var z = Enumerable.Range(0, n).Select(i => new double[dims]).ToArray();

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace LightingMvp
 {
@@ -12,11 +13,12 @@ namespace LightingMvp
             public double[] Best;
             public double InitialLoss, BestLoss = double.PositiveInfinity, PilotH, Damping;
             public int Queries, Jacobians, Accepted, Rejected, BlockedProbes, ShortenedTrials;
+            public double JacobianSeconds, NormalSeconds, LinearSolveSeconds, QuerySeconds;
             public string StopReason = "budget";
         }
 
         public static Result Run(double[] initial, int residualSize, ResidualQuery query, int budget, int seed,
-            Func<double[], bool> feasible = null)
+            Func<double[], bool> feasible = null, bool profile = false)
         {
             if (initial == null || initial.Length == 0 || residualSize < 1 || query == null || budget < 1)
                 throw new ArgumentException("Initial parameters, residual callback, and positive sizes/budget are required.");
@@ -46,6 +48,8 @@ namespace LightingMvp
                     Array.Copy(bestResidual, center, residualSize);
                 }
                 double step = Math.Max(.00125, h * Math.Min(1, Math.Pow(f / Math.Max(1e-20, result.InitialLoss), .25)));
+                long jacobianStart = Stamp();
+                double queryBefore = result.QuerySeconds;
                 ++result.Jacobians;
                 Array.Copy(x, probe, n);
                 for (int i = 0; i < n; ++i)
@@ -70,6 +74,8 @@ namespace LightingMvp
                     }
                     probe[i] = x[i];
                 }
+                result.JacobianSeconds += Math.Max(0, Elapsed(jacobianStart) - (result.QuerySeconds - queryBefore));
+                long normalStart = Stamp();
                 var g = new double[n];
                 var normal = new double[n, n];
                 double diagonal = 0;
@@ -79,6 +85,7 @@ namespace LightingMvp
                     for (int j = 0; j <= i; ++j) normal[i, j] = normal[j, i] = Dot(columns[i], columns[j]);
                     diagonal = Math.Max(diagonal, normal[i, i]);
                 }
+                result.NormalSeconds += Elapsed(normalStart);
                 if (!(diagonal > 1e-18)) { result.StopReason = "zero_image_jacobian"; break; }
                 double minMu = Math.Max(1e-12, diagonal * 1e-8);
                 mu = Math.Max(minMu, mu == 0 ? diagonal * .002 : mu);
@@ -86,7 +93,9 @@ namespace LightingMvp
                 double previousBest = result.BestLoss;
                 for (int attempt = 0; attempt < 9 && result.Queries < budget; ++attempt)
                 {
+                    long solveStart = Stamp();
                     var delta = SolveDamped(normal, g, x, mu);
+                    result.LinearSolveSeconds += Elapsed(solveStart);
                     double max = 0;
                     for (int i = 0; i < n; ++i) max = Math.Max(max, Math.Abs(delta[i]));
                     double cap = max > .25 ? .25 / max : 1;
@@ -184,11 +193,16 @@ namespace LightingMvp
                 Array.Clear(col, 0, col.Length);
             }
 
+            long Stamp() => profile ? Stopwatch.GetTimestamp() : 0;
+            double Elapsed(long start) => profile ? (Stopwatch.GetTimestamp() - start) / (double)Stopwatch.Frequency : 0;
+
             double Evaluate(double[] v, string phase, float[] buffer)
             {
                 if (feasible != null && !Legal(v)) throw new InvalidOperationException("LM attempted an infeasible render.");
                 if (++result.Queries > budget) throw new InvalidOperationException("Image Jacobian budget exceeded.");
+                long queryStart = Stamp();
                 double loss = query(v, phase, buffer);
+                result.QuerySeconds += Elapsed(queryStart);
                 if (!(loss >= 0) || double.IsInfinity(loss)) throw new InvalidOperationException("Expected finite nonnegative RGB loss.");
                 if (loss < result.BestLoss)
                 {
