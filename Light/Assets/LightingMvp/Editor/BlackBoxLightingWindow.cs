@@ -18,10 +18,8 @@ namespace LightingMvp.Editor
         [SerializeField] private bool fitColor;
         private BlackBoxLightingSession session;
         private BlackBoxLightingSession.Fit fit;
-        private Texture2D targetImage, initialImage, bestImage, replayImage;
-        private int view, keyframe, isolation;
-        private bool playing;
-        private double nextFrame;
+        private Texture2D targetImage, initialImage, bestImage;
+        private int view;
         private string status;
         private MessageType severity;
         private Vector2 scroll;
@@ -35,7 +33,6 @@ namespace LightingMvp.Editor
             EditorSceneManager.activeSceneChangedInEditMode += SceneChanged;
             EditorSceneManager.sceneClosed += SceneClosed;
             EditorApplication.playModeStateChanged += PlayModeChanged;
-            EditorApplication.update += TickReplay;
         }
 
         private void OnDisable()
@@ -43,7 +40,6 @@ namespace LightingMvp.Editor
             EditorSceneManager.activeSceneChangedInEditMode -= SceneChanged;
             EditorSceneManager.sceneClosed -= SceneClosed;
             EditorApplication.playModeStateChanged -= PlayModeChanged;
-            EditorApplication.update -= TickReplay;
             ClearTarget();
         }
 
@@ -53,8 +49,13 @@ namespace LightingMvp.Editor
 
         private void OnGUI()
         {
+            using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
+            {
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button("Debug", EditorStyles.toolbarButton)) LightingDebugWindow.Open();
+            }
+
             scroll = EditorGUILayout.BeginScrollView(scroll);
-            EditorGUILayout.HelpBox("Match Unity's own final RGB. Capture the reference rig, move/recolor the lights, then fit the perturbed rig. Only Apply writes the optimized rig to the scene.", MessageType.Info);
             using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
             {
                 DrawTargetControls();
@@ -144,6 +145,7 @@ namespace LightingMvp.Editor
                         if (EditorUtility.DisplayCancelableProgressBar("Unity RGB lighting optimization", $"{phase}: {used:N0}/{max:N0} training renders{detail}", (float)used / max))
                             throw new OperationCanceledException();
                     }, spotAimExtent);
+                LightingDebugWindow.SetRecording(session, fit.History);
                 RefreshComparison();
                 string ignored = fit.UnobservedLights.Length == 0 ? "" : " Little initial RGB response: " + string.Join(", ", fit.UnobservedLights) + ".";
                 Report("Best rig re-captured. The starting scene lights were restored." + ignored,
@@ -165,7 +167,6 @@ namespace LightingMvp.Editor
             {
                 view = chosen;
                 RefreshComparison();
-                if (replayImage) RunAction(UpdateReplay);
             }
             EditorGUILayout.BeginHorizontal();
             DrawImage("Target", targetImage);
@@ -183,46 +184,7 @@ namespace LightingMvp.Editor
                     session.Apply(fit.BestLights);
                     Report("Applied the best rig. Undo restores the previous lights.");
                 });
-            DrawReplay();
-        }
-
-        private void DrawReplay()
-        {
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Replay best-so-far states", EditorStyles.boldLabel);
-            EditorGUILayout.HelpBox("Isolate shows one fitted light at a time; other scene lighting stays visible. Scores always use all lights.", MessageType.None);
-            EditorGUI.BeginChangeCheck();
-            isolation = EditorGUILayout.Popup("Preview lighting", isolation,
-                new[] { "All lights" }.Concat(Enumerable.Range(0, session.LightCount).Select(i => "Selected light only: " + session.LightName(i))).ToArray());
-            keyframe = EditorGUILayout.IntSlider("Recorded state", keyframe, 0, fit.History.Count - 1);
-            if (EditorGUI.EndChangeCheck()) RunAction(UpdateReplay);
-            var entry = fit.History[keyframe];
-            EditorGUILayout.LabelField($"Query {entry.Query} / all-lights NRMSE {Math.Sqrt(entry.Loss):P2}");
-            EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Preview frame")) RunAction(UpdateReplay);
-            using (new EditorGUI.DisabledScope(fit.History.Count < 2))
-                if (GUILayout.Button(playing ? "Pause" : "Play"))
-                {
-                    playing = !playing;
-                    if (playing)
-                    {
-                        if (keyframe == fit.History.Count - 1) keyframe = 0;
-                        RunAction(UpdateReplay);
-                        nextFrame = EditorApplication.timeSinceStartup + .25;
-                    }
-                }
-            EditorGUILayout.EndHorizontal();
-            if (replayImage) DrawImage("Replay", replayImage);
-        }
-
-        private void TickReplay()
-        {
-            if (!playing || fit == null || EditorApplication.timeSinceStartup < nextFrame) return;
-            keyframe = Math.Min(keyframe + 1, fit.History.Count - 1);
-            RunAction(UpdateReplay);
-            playing &= keyframe < fit.History.Count - 1;
-            nextFrame = EditorApplication.timeSinceStartup + .25;
-            Repaint();
+            if (GUILayout.Button("Open replay in Debug")) LightingDebugWindow.OpenReplay(session, fit.History, view);
         }
 
         private static void DrawImage(string label, Texture2D image)
@@ -234,7 +196,6 @@ namespace LightingMvp.Editor
             EditorGUILayout.EndVertical();
         }
 
-        private void UpdateReplay() => Replace(ref replayImage, session.Replay(fit.History[keyframe], view, isolation - 1).Preview());
         private void RefreshComparison()
         {
             Replace(ref targetImage, session.Target[view].Preview());
@@ -246,7 +207,7 @@ namespace LightingMvp.Editor
         {
             try { action(); }
             catch (OperationCanceledException) { Report("Canceled. Starting lights restored."); }
-            catch (Exception e) { playing = false; Report(e.Message, MessageType.Error); }
+            catch (Exception e) { Report(e.Message, MessageType.Error); }
         }
 
         private void Report(string message, MessageType type = MessageType.Info)
@@ -257,8 +218,8 @@ namespace LightingMvp.Editor
 
         private void ClearFit()
         {
-            fit = null; playing = false; keyframe = 0; isolation = 0;
-            Replace(ref initialImage); Replace(ref bestImage); Replace(ref replayImage);
+            fit = null;
+            Replace(ref initialImage); Replace(ref bestImage);
         }
 
         private void ClearTarget()

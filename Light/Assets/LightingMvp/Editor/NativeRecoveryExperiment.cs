@@ -216,7 +216,7 @@ namespace LightingMvp.Editor
             return index < 0 ? fallback : args[index + 1];
         }
 
-        private static string DefaultOutput() => Path.Combine(CornellBoxMvpEditor.OutputRoot, "blackbox_rgb", DateTime.Now.ToString("yyyyMMdd_HHmmss", Invariant));
+        private static string DefaultOutput() => Path.Combine(LightingExperimentPaths.OutputRoot, "blackbox_rgb", DateTime.Now.ToString("yyyyMMdd_HHmmss", Invariant));
         private static string F(double v) => v.ToString("G17", Invariant);
         private static void WriteJson<T>(string directory, string file, T obj) => File.WriteAllText(Path.Combine(directory, file), JsonUtility.ToJson(obj, true));
 
@@ -233,12 +233,11 @@ namespace LightingMvp.Editor
             if (!new[] { "e0", "smoke", "all", "e1", "e2", "e2-fixed", "e2-lit", "e2-stylized", "e2-stylized-fixed", "e3", "diagnose", "zerograds", "zerograds-stylized", "e4", "e5", "e6", "e7", "e8", "e8-smoke", "e9", "e9-smoke", "e9-probe" }.Contains(test))
                 throw new ArgumentException("Unknown black-box case: " + test);
             SelfTest();
-            LightingDebugWindow.EndCornellPreviews();
             var scene = SceneManager.GetActiveScene();
-            if (scene.path != CornellBoxMvpEditor.ScenePath)
+            if (scene.path != LightingExperimentPaths.CornellScene)
             {
                 if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
-                scene = EditorSceneManager.OpenScene(CornellBoxMvpEditor.ScenePath);
+                scene = EditorSceneManager.OpenScene(LightingExperimentPaths.CornellScene);
             }
             var room = GameObject.Find("Cornell Box - 2m open front");
             var camera = GameObject.Find("Validation Camera")?.GetComponent<Camera>();

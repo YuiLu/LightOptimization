@@ -87,7 +87,7 @@ namespace LightingMvp.Editor
                 if (!feature.Pass.Executed) throw new InvalidOperationException("The native capture pass did not execute.");
                 RenderTexture.active = buffer;
                 readback.ReadPixels(new Rect(0, 0, buffer.width, buffer.height), 0, 0, false);
-                return new Frame(buffer.width, buffer.height, readback.GetPixels(), feature.Pass.VisibleColors);
+                return new Frame(buffer.width, buffer.height, readback.GetPixels());
             }
             finally
             {
@@ -129,7 +129,6 @@ namespace LightingMvp.Editor
         }
 
         public void SaveRaw(string path) => File.WriteAllBytes(path, readback.EncodeToEXR(Texture2D.EXRFlags.OutputAsFloat));
-        public Camera ProjectionCamera => camera;
 
         public void Dispose()
         {
@@ -144,13 +143,12 @@ namespace LightingMvp.Editor
         {
             public readonly int Width, Height;
             public readonly Color[] Pixels;
-            public readonly Dictionary<int, Color> VisibleLightColors;
             public readonly int Covered, Lit;
             public readonly float WhitePoint;
 
-            public Frame(int width, int height, Color[] pixels, Dictionary<int, Color> colors)
+            public Frame(int width, int height, Color[] pixels)
             {
-                Width = width; Height = height; Pixels = pixels; VisibleLightColors = colors;
+                Width = width; Height = height; Pixels = pixels;
                 var values = new List<float>();
                 foreach (var pixel in pixels)
                 {
@@ -219,7 +217,6 @@ namespace LightingMvp.Editor
             private readonly RTHandle target;
             private readonly Shader shader;
             public bool Executed;
-            public Dictionary<int, Color> VisibleColors;
 
             public CapturePass(RenderTexture buffer, Shader overrideShader)
             {
@@ -234,9 +231,6 @@ namespace LightingMvp.Editor
             }
             public override void Execute(ScriptableRenderContext context, ref RenderingData data)
             {
-                VisibleColors = new Dictionary<int, Color>();
-                foreach (var entry in data.lightData.visibleLights)
-                    if (entry.light) VisibleColors[entry.light.GetInstanceID()] = entry.finalColor;
                 var draw = CreateDrawingSettings(Tags, ref data, data.cameraData.defaultOpaqueSortFlags);
                 // Keep the material's raster culling mode (for example Mar7thRoom's two-sided room meshes).
                 draw.overrideShader = shader;

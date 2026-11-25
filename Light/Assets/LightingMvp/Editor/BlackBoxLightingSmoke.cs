@@ -25,7 +25,7 @@ namespace LightingMvp.Editor
             bool starRailTaaDisabled = false;
             try
             {
-                string path = room ? "Assets/Unity_StarRail_CRP_Sample/Scenes/Mar7thRoom/Mar7thRoom.unity" : CornellBoxMvpEditor.ScenePath;
+                string path = room ? "Assets/Unity_StarRail_CRP_Sample/Scenes/Mar7thRoom/Mar7thRoom.unity" : LightingExperimentPaths.CornellScene;
                 EditorSceneManager.OpenScene(path);
                 temporary = new GameObject("Black-box workflow smoke setup");
                 Camera[] views;

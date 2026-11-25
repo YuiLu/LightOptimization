@@ -29,22 +29,6 @@ namespace LightingMvp.Editor
         public int Count=>lights.Length;
         public Light this[int index]=>lights[index];
 
-        public void Apply(LightSpec[] specs,bool shadows,int onlyLight=-1)
-        {
-            if(Count<specs.Length)throw new InvalidOperationException("Cornell scene requires "+specs.Length+" saved candidate lights.");
-            if(onlyLight < -1||onlyLight>=specs.Length)throw new ArgumentOutOfRangeException(nameof(onlyLight));
-            for(int i=0;i<Count;i++)
-            {
-                bool visible=i<specs.Length&&(onlyLight<0||onlyLight==i);
-                if(visible)
-                {
-                    UnityLightAdapter.Apply(lights[i],specs[i],shadows);
-                    lights[i].enabled=true;
-                }
-                lights[i].gameObject.SetActive(visible);
-            }
-        }
-
         public void Dispose()
         {
             for(int i=0;i<Count;i++)

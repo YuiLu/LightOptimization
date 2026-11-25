@@ -415,8 +415,6 @@ namespace LightingMvp.Editor
 
         private static void ValidateSetup(Camera[] views, Light[] lights)
         {
-            if (Resources.FindObjectsOfTypeAll<LightingDebugWindow>().Any(window => window.HasScenePreview))
-                throw new InvalidOperationException("Close the legacy field/replay window or turn off its scene preview before capturing RGB.");
             if (views.Length == 0 || views.Distinct().Count() != views.Length || lights.Length == 0 || lights.Distinct().Count() != lights.Length)
                 throw new ArgumentException("Select at least one camera and one unique realtime Point or Spot Light; remove duplicate entries.");
             foreach (Camera c in views)
