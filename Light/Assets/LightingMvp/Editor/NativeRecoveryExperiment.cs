@@ -226,6 +226,7 @@ namespace LightingMvp.Editor
             if (seedCount < 1 || seedCount > Seeds.Length) throw new ArgumentOutOfRangeException(nameof(seedCount));
             if (!GraphicsSettings.lightsUseLinearIntensity) throw new InvalidOperationException("Enable linear light intensity for calibrated color coordinates.");
             test = test.ToLowerInvariant();
+            if (test.StartsWith("e17-", StringComparison.Ordinal)) { RunSensitivity(test, output); return; }
             if (new[] { "e13-smoke", "e13", "e13-position", "e14", "e14-smoke", "e14-large", "e15", "e15-smoke", "e15-budget", "e15-block" }.Contains(test))
             { RunClassroomDiagnosis(test, output); return; }
             if (test == "e10" || test == "e10-smoke" || test == "e10-near" || test == "e11" || test == "e11-smoke")

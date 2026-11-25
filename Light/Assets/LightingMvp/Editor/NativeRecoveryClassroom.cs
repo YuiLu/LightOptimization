@@ -198,6 +198,10 @@ namespace LightingMvp.Editor
 
             internal void Omit(int slot) => lights[slot].enabled = false;
 
+            internal void SetShadows(int slot, bool enabled) => lights[slot].shadows = enabled ? LightShadows.Hard : LightShadows.None;
+
+            internal void ResetShadows() { foreach (var lamp in lights) lamp.shadows = LightShadows.Hard; }
+
             internal bool RaycastGeometry(Vector3 origin, Vector3 direction, out RaycastHit hit) =>
                 Physics.Raycast(origin, direction, out hit, Camera.farClipPlane, 1 << CollisionLayer, QueryTriggerInteraction.Ignore);
 
