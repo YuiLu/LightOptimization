@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace LightingMvp
 {
     /// <summary>Finite-difference image Jacobian with a bounded, damped Gauss–Newton step.</summary>
-    public static class ImageJacobianLm
+    public static partial class ImageJacobianLm
     {
         public delegate double ResidualQuery(double[] theta, string phase, float[] residual);
 

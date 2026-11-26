@@ -192,6 +192,31 @@ namespace LightingMvp.Editor
                 return visible / (float)count;
             }
 
+            internal float FilteredRadialRayVisibility(Vector3 receiver, Vector3 light, float angularRadius, int count,
+                float near, float far, float depthBias)
+            {
+                var delta = receiver - light;
+                float distance = delta.magnitude;
+                if (rayTree == null || distance <= near || distance >= far) return 1;
+                var forward = delta / distance;
+                var right = Vector3.Cross(Mathf.Abs(forward.y) < .9f ? Vector3.up : Vector3.right, forward).normalized;
+                var up = Vector3.Cross(forward, right);
+                float threshold = distance - depthBias;
+                int visible = 0;
+                for (int i = 0; i < count; ++i)
+                {
+                    float theta = 2.39996323f * i;
+                    float radius = angularRadius * Mathf.Sqrt((i + .5f) / count);
+                    var direction = (forward + radius * (Mathf.Cos(theta) * right + Mathf.Sin(theta) * up)).normalized;
+                    // Keep the receiver's radial depth while querying nearby light rays. Clip along each cube face's axis.
+                    float dominant = Mathf.Max(Mathf.Abs(direction.x), Mathf.Max(Mathf.Abs(direction.y), Mathf.Abs(direction.z)));
+                    float offset = near / dominant;
+                    if (threshold <= offset || !rayTree.Intersects(rayTriangles, new Ray(light + offset * direction, direction), threshold - offset))
+                        ++visible;
+                }
+                return visible / (float)count;
+            }
+
             public void Dispose()
             {
                 foreach (var m in materials.Values) if (m) Object.DestroyImmediate(m);

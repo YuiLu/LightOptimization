@@ -133,19 +133,22 @@ namespace LightingMvp.Editor
                 }
             }
 
-            internal float[] Render(Vector3 position, bool profile = false)
+            internal float[] Render(Vector3 position, bool profile = false) =>
+                Render(position, position, position, position, profile);
+
+            internal float[] Render(Vector3 projectionOrigin, Vector3 casterDepthOrigin, Vector3 uvOrigin, Vector3 receiverDepthOrigin, bool profile = false)
             {
                 var timer = Stopwatch.StartNew();
                 using (var draw = new CommandBuffer { name = "E20 six point-light moment faces" })
                 {
-                    draw.SetGlobalVector(ProxyGeometry.LightId, new Vector4(position.x, position.y, position.z, 1 / settings.far));
+                    draw.SetGlobalVector(ProxyGeometry.LightId, new Vector4(casterDepthOrigin.x, casterDepthOrigin.y, casterDepthOrigin.z, 1 / settings.far));
                     for (int i = 0; i < Directions.Length; i++)
                     {
                         var rotation = Quaternion.LookRotation(Directions[i], Up[i]);
                         draw.SetRenderTarget(face);
                         draw.SetViewport(new Rect(0, 0, settings.size, settings.size));
                         draw.ClearRenderTarget(true, true, Color.white);
-                        draw.SetGlobalMatrix(ProxyGeometry.ViewProjectionId, projection * ProxyGeometry.View(position, rotation));
+                        draw.SetGlobalMatrix(ProxyGeometry.ViewProjectionId, projection * ProxyGeometry.View(projectionOrigin, rotation));
                         drawCasters(draw);
                         if (resolved) draw.ResolveAntiAliasedSurface(face, resolved);
                         draw.CopyTexture(resolved ? resolved : face, 0, 0, raw, i, 0);
@@ -179,7 +182,7 @@ namespace LightingMvp.Editor
                     ProfileFilterSeconds = timer.Elapsed.TotalSeconds;
                 }
                 timer.Restart();
-                var measured = Query(position);
+                var measured = Query(uvOrigin, receiverDepthOrigin);
                 if (profile) ProfileForwardSeconds = timer.Elapsed.TotalSeconds;
                 return measured;
             }
@@ -191,10 +194,12 @@ namespace LightingMvp.Editor
                 if (request.hasError) throw new InvalidOperationException("Synchronized cubemap timing readback failed.");
             }
 
-            internal float[] Query(Vector3 position)
+            internal float[] Query(Vector3 position) => Query(position, position);
+
+            internal float[] Query(Vector3 uvOrigin, Vector3 receiverDepthOrigin)
             {
                 var timer = Stopwatch.StartNew();
-                BindQuery(visibilityKernel, position);
+                BindQuery(visibilityKernel, uvOrigin, receiverDepthOrigin);
                 compute.Dispatch(visibilityKernel, (pixels.Length + 127) / 128, 1, 1);
                 results.GetData(pixels);
                 ForwardSyncSeconds += timer.Elapsed.TotalSeconds;
@@ -232,7 +237,7 @@ namespace LightingMvp.Editor
             {
                 if (adjointKernel < 0) throw new InvalidOperationException("This map does not use MBD.");
                 var timer = Stopwatch.StartNew();
-                BindQuery(adjointKernel, position);
+                BindQuery(adjointKernel, position, position);
                 compute.Dispatch(adjointKernel, (pixels.Length + 127) / 128, 1, 1);
                 results.GetData(pixels);
                 BackwardSyncSeconds += timer.Elapsed.TotalSeconds;
@@ -241,10 +246,11 @@ namespace LightingMvp.Editor
                 return adjoint;
             }
 
-            private void BindQuery(int kernel, Vector3 position)
+            private void BindQuery(int kernel, Vector3 position, Vector3 receiverDepthOrigin)
             {
                 compute.SetTexture(kernel, "_MomentsIn", settings.blurRadius > 0 ? filtered : raw);
                 compute.SetVector("_LightAndRange", new Vector4(position.x, position.y, position.z, settings.far));
+                compute.SetVector("_ReceiverDepthOrigin", receiverDepthOrigin);
                 compute.SetVector("_ClipAndBias", new Vector4(settings.near, settings.depthBiasMetres, 0, 0));
                 compute.SetVector("_MomentAndLeakBias", new Vector4(settings.momentBias, settings.leakBias, 0, 0));
                 compute.SetInt("_UseVariance", settings.variance ? 1 : 0);

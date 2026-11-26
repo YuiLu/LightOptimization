@@ -143,11 +143,18 @@ namespace LightingMvp.Editor
 
             public bool Contains(double[] theta)
             {
+                if (!InSurveyDomain(theta)) return false;
+                for (int i = 0; i < theta.Length; i += LampDofs)
+                    if (Physics.CheckSphere(Decode(theta, i), .06f, ~0, QueryTriggerInteraction.Ignore)) return false;
+                return true;
+            }
+
+            internal bool InSurveyDomain(double[] theta)
+            {
                 if (theta == null || theta.Length % LampDofs != 0 || theta.Length > Count * LampDofs || theta.Any(u => !(u >= 0 && u <= 1))) return false;
                 for (int i = 0; i < theta.Length; i += LampDofs)
                 {
                     var p = Decode(theta, i);
-                    if (Physics.CheckSphere(p, .06f, ~0, QueryTriggerInteraction.Ignore)) return false;
                     if ((Mathf.Abs(p.x) > 4.2f) || (Mathf.Abs(p.z) > 3.35f) || p.y < .35f || p.y > 2.80f) return false;
                 }
                 return true;

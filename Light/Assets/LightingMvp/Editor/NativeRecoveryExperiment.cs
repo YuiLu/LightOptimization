@@ -231,6 +231,10 @@ namespace LightingMvp.Editor
             if (seedCount < 1 || seedCount > Seeds.Length) throw new ArgumentOutOfRangeException(nameof(seedCount));
             if (!GraphicsSettings.lightsUseLinearIntensity) throw new InvalidOperationException("Enable linear light intensity for calibrated color coordinates.");
             test = test.ToLowerInvariant();
+            if (test == "e21-a" || test == "e21-a-smoke") { RunE21GradientStages(test, output); return; }
+            if (test == "e21-b" || test == "e21-b-smoke" || test == "e21-c" || test == "e21-c-smoke" ||
+                test == "e21-d" || test == "e21-d-smoke" || test == "e21-e" || test == "e21-e-smoke")
+            { RunE21RoomStages(test, output); return; }
             if (test.StartsWith("e20-mbd-", StringComparison.Ordinal)) { RunMbdStage(test.Substring(8), output); return; }
             if (test.StartsWith("e17-", StringComparison.Ordinal)) { RunSensitivity(test, output); return; }
             if (test.StartsWith("e18-", StringComparison.Ordinal)) { RunShadowStudy(test, output); return; }

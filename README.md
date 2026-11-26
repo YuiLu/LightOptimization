@@ -6,6 +6,7 @@ Unity 插件用**场景自身渲染的最终 RGB**优化可编辑的 3D 灯具�
 - 通过 `Lighting MVP > Debug` 或 RGB Lighting Optimizer 顶部的 **Debug** 按钮打开调试面板，查看直接入射光和深度，或拖动时间轴回放最近一次 RGB 优化。
 - **实验：** [E0–E3：黑盒可行性](docs/blackbox/README.md) · [E4–E6：LM、初始化与 Spot](docs/blackbox-next/README.md) · [E7–E8：原生响应与三灯冷启动](docs/blackbox-structure/README.md) · [E9–E12：联合强度与七灯场景](docs/blackbox-scale/README.md) · [E13–E16：Classroom 失败诊断](docs/blackbox-diagnosis/README.md) · [Unity 安装、使用和批处理](Light/Assets/LightingMvp/README.md)。
 - E20 的对照、原始查询和复现命令见 [单灯信号与点光源 MSM](docs/blackbox-e20/README.md) 和 [MBD、直接辐照度与可见性拓扑](docs/blackbox-e20-mbd/README.md)。
+- E21 的梯度校准、108 组恢复试次和复跑命令见 [完整灯位差分、联合恢复与阴影代理](docs/blackbox-e21/README.md)。
 
 | 路径 | 内容 |
 |---|---|

@@ -200,7 +200,7 @@ namespace LightingMvp.Editor
                 });
             }
 
-            private static float IncidentIrradiance(MbdSurface sample, Vector3 p, double intensity, float range)
+            internal static float IncidentIrradiance(MbdSurface sample, Vector3 p, double intensity, float range)
             {
                 var delta = p - sample.position;
                 float squared = Mathf.Max(6.10352e-5f, delta.sqrMagnitude);

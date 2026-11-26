@@ -13,6 +13,7 @@ float4 _CubeForward[6];
 float4 _CubeRight[6];
 float4 _CubeUp[6];
 float4 _LightAndRange;
+float3 _ReceiverDepthOrigin;
 float2 _ClipAndBias;
 float2 _MomentAndLeakBias;
 float _CubeYSign;
@@ -165,7 +166,7 @@ void EvaluateVisibility(uint index : SV_DispatchThreadID)
     if (index >= (uint)_Count) return;
     float4 sampleSite = _Receivers[index];
     float3 d = sampleSite.w > 0 ? sampleSite.xyz * _LightAndRange.w : sampleSite.xyz - _LightAndRange.xyz;
-    float distance = length(d);
+    float distance = length(sampleSite.w > 0 ? d : sampleSite.xyz - _ReceiverDepthOrigin);
     if (distance < _ClipAndBias.x || distance >= _LightAndRange.w)
     {
         _Visibility[index] = float4(1, 0, 0, 0);
