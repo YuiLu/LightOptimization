@@ -14,6 +14,7 @@ namespace LightingMvp
             public double[] ProbeSteps;
             public bool DiagonalDamping;
             public Action<int, int, double, double[], int[], double[,]> Jacobian;
+            public Action<int, int, float[][]> Columns;
             public Action<int, int, double, double, double, double, int, int, string> Trial;
         }
 
@@ -105,6 +106,7 @@ namespace LightingMvp
                 }
                 result.NormalSeconds += Elapsed(normalStart);
                 diagnostics?.Jacobian?.Invoke(result.Jacobians, result.Queries, f, effective, stencil, normal);
+                diagnostics?.Columns?.Invoke(result.Jacobians, result.Queries, columns);
                 if (!(diagonal > 1e-18)) { result.StopReason = "zero_image_jacobian"; break; }
                 bool diagonalDamping = diagnostics?.DiagonalDamping == true;
                 double minMu = diagonalDamping ? 1e-8 : Math.Max(1e-12, diagonal * 1e-8);

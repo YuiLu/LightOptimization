@@ -51,6 +51,9 @@ namespace LightingMvp.Editor
             internal readonly double[] Truth;
             private readonly List<Object> owned = new List<Object>();
             private readonly Light[] lights;
+            private readonly Dictionary<string, MeshRenderer> materialRenderers = new Dictionary<string, MeshRenderer>();
+            private readonly Dictionary<int, List<Renderer>> fixtureCasters = new Dictionary<int, List<Renderer>>();
+            internal int[] FixtureTriangles { get; private set; }
 
             internal ClassroomFixture(UniversalRenderPipelineAsset pipeline)
             {
@@ -112,6 +115,7 @@ namespace LightingMvp.Editor
                         go.AddComponent<MeshFilter>().sharedMesh = mesh;
                         var renderer = go.AddComponent<MeshRenderer>();
                         renderer.sharedMaterial = mat; renderer.lightProbeUsage = LightProbeUsage.Off; renderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
+                        materialRenderers[def.name] = renderer;
                         // Non-convex render mesh handles clearance; the separate architectural domain excludes the solid walls.
                         go.AddComponent<MeshCollider>().sharedMesh = mesh;
                     }
@@ -133,6 +137,7 @@ namespace LightingMvp.Editor
                     }).ToArray();
                     Rig = new ScaleRig { Count = lights.Length, Apply = Apply, Contains = Contains, Describe = Describe };
                     Truth = source.lamps.SelectMany(l => Encode(new Vector3(l.position[0], l.position[1], l.position[2]), Math.Min(6, l.watts * 1.1))).ToArray();
+                    SplitFixtureCasters(source.lamps.Select(l => new Vector3(l.position[0], l.position[1], l.position[2])).ToArray());
                     if (!Contains(Truth))
                         throw new InvalidOperationException("Authored lamp outside scene domain: " + string.Join(" ", Enumerable.Range(0, lights.Length).Where(i => !Contains(SingleLamp(Truth, i))).Select(i => (i + 1).ToString())));
                     var eyes = new[] { new Vector3(2.85f, 1.38f, -4.04f), new Vector3(-1.95f, 1.62f, 2.79f), new Vector3(-4.73f, 1.49f, -.65f),
@@ -156,6 +161,94 @@ namespace LightingMvp.Editor
                     if (Config.maxRequestedFaces > Config.theoreticalTiles) throw new InvalidOperationException("Classroom shadow requests exceed configured atlas capacity.");
                 }
                 catch { Dispose(); throw; }
+            }
+            private static readonly string[] FixtureMaterials = { "ceilingLamp_BlackPlastic", "ceilingLamp_metal", "ceillingLamp_light" };
+
+            // The six ceiling fixtures share three materials, so the meshes are re-split by nearest lamp.
+            // The source renderers stay alive (disabled) purely to keep their MeshColliders in the search domain.
+            private void SplitFixtureCasters(Vector3[] anchors)
+            {
+                var counts = new int[anchors.Length];
+                int rest = 0, total = 0;
+                foreach (string name in FixtureMaterials)
+                {
+                    if (!materialRenderers.TryGetValue(name, out var source) || !source) continue;
+                    var mesh = source.GetComponent<MeshFilter>().sharedMesh;
+                    var verts = mesh.vertices; var normals = mesh.normals; var uv = mesh.uv; var tris = mesh.triangles;
+                    var buckets = new List<int>[anchors.Length + 1];
+                    for (int b = 0; b < buckets.Length; ++b) buckets[b] = new List<int>();
+                    for (int t = 0; t < tris.Length; t += 3)
+                    {
+                        Vector3 c = source.transform.TransformPoint((verts[tris[t]] + verts[tris[t + 1]] + verts[tris[t + 2]]) / 3f);
+                        int best = anchors.Length; float bestDist = 1.2f;
+                        for (int i = 0; i < anchors.Length; ++i)
+                        {
+                            float d = Vector3.Distance(c, anchors[i]);
+                            if (d < bestDist) { bestDist = d; best = i; }
+                        }
+                        var bucket = buckets[best];
+                        bucket.Add(tris[t]); bucket.Add(tris[t + 1]); bucket.Add(tris[t + 2]);
+                    }
+                    for (int b = 0; b < buckets.Length; ++b)
+                    {
+                        if (buckets[b].Count == 0) continue;
+                        var used = new Dictionary<int, int>();
+                        var remap = new List<int>(buckets[b].Count);
+                        foreach (int vi in buckets[b])
+                        {
+                            if (!used.TryGetValue(vi, out int ni)) { ni = used.Count; used[vi] = ni; }
+                            remap.Add(ni);
+                        }
+                        var pv = new Vector3[used.Count]; var pn = new Vector3[used.Count]; var pu = new Vector2[used.Count];
+                        foreach (var kv in used) { pv[kv.Value] = verts[kv.Key]; pn[kv.Value] = normals[kv.Key]; pu[kv.Value] = uv[kv.Key]; }
+                        var part = Own(new Mesh { name = name + (b < anchors.Length ? " fixture L" + (b + 1) : " rest") });
+                        part.vertices = pv; part.normals = pn; part.uv = pu;
+                        part.triangles = remap.ToArray(); part.RecalculateBounds();
+                        var go = New(part.name);
+                        go.layer = CollisionLayer;
+                        go.transform.SetParent(source.transform.parent, false);
+                        go.transform.localPosition = source.transform.localPosition;
+                        go.transform.localRotation = source.transform.localRotation;
+                        go.transform.localScale = source.transform.localScale;
+                        go.AddComponent<MeshFilter>().sharedMesh = part;
+                        var split = go.AddComponent<MeshRenderer>();
+                        split.sharedMaterial = source.sharedMaterial;
+                        split.lightProbeUsage = LightProbeUsage.Off; split.reflectionProbeUsage = ReflectionProbeUsage.Off;
+                        split.shadowCastingMode = source.shadowCastingMode;
+                        if (b < anchors.Length)
+                        {
+                            if (!fixtureCasters.TryGetValue(b, out var list)) fixtureCasters[b] = list = new List<Renderer>();
+                            list.Add(split); counts[b] += buckets[b].Count / 3;
+                        }
+                        else rest += buckets[b].Count / 3;
+                    }
+                    source.enabled = false;
+                    total += tris.Length / 3;
+                }
+                FixtureTriangles = counts;
+                Debug.Log("[E18] fixture caster split (triangles per lamp): " + string.Join("/", counts) + ", other " + rest + " of " + total);
+            }
+
+            internal bool SupportsFixtureShadows => FixtureTriangles != null;
+            internal void SetFixtureShadows(int slot, bool cast)
+            {
+                if (!fixtureCasters.TryGetValue(slot, out var list)) return;
+                foreach (var renderer in list)
+                    renderer.shadowCastingMode = cast ? UnityEngine.Rendering.ShadowCastingMode.On : UnityEngine.Rendering.ShadowCastingMode.Off;
+            }
+            internal void SetShadowStrength(int slot, float strength) => lights[slot].shadowStrength = Mathf.Clamp01(strength);
+            internal List<string> FixtureRendererNames(int slot)
+            {
+                var names = new List<string>();
+                if (fixtureCasters.TryGetValue(slot, out var list)) foreach (var r in list) if (r) names.Add(r.name);
+                return names;
+            }
+            internal Bounds FixtureBounds(int slot)
+            {
+                if (!fixtureCasters.TryGetValue(slot, out var list) || list.Count == 0) return default;
+                Bounds bounds = list[0].bounds;
+                for (int i = 1; i < list.Count; ++i) bounds.Encapsulate(list[i].bounds);
+                return bounds;
             }
 
             private T Own<T>(T obj) where T : Object { owned.Add(obj); return obj; }
@@ -200,7 +293,7 @@ namespace LightingMvp.Editor
 
             internal void SetShadows(int slot, bool enabled) => lights[slot].shadows = enabled ? LightShadows.Hard : LightShadows.None;
 
-            internal void ResetShadows() { foreach (var lamp in lights) lamp.shadows = LightShadows.Hard; }
+            internal void ResetShadows() { foreach (var lamp in lights) { lamp.shadows = LightShadows.Hard; lamp.shadowStrength = 1; } }
 
             internal bool RaycastGeometry(Vector3 origin, Vector3 direction, out RaycastHit hit) =>
                 Physics.Raycast(origin, direction, out hit, Camera.farClipPlane, 1 << CollisionLayer, QueryTriggerInteraction.Ignore);
@@ -496,3 +589,6 @@ namespace LightingMvp.Editor
         }
     }
 }
+
+
+

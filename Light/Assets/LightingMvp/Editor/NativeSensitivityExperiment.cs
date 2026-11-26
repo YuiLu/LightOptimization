@@ -74,10 +74,19 @@ namespace LightingMvp.Editor
             void Apply(double[] theta);
             void SetShadows(int lamp, bool shadows);
             void ResetShadows();
+            bool SupportsFixtureShadows { get; }
+            void SetFixtureShadows(int lamp, bool casting);
+            void SetShadowStrength(int lamp, float strength);
             Vector3 PositionOf(double[] theta, int lamp);
             double PowerOf(double[] theta, int lamp);
             bool Contains(double[] theta);
             E17Config Describe();
+            string SourceName(int lamp);
+            string UnityName(int lamp);
+            string[] FixtureRenderers(int lamp);
+            int[] FixtureTriangleCounts();
+            Bounds FixtureBounds(int lamp);
+            double[] WithPosition(double[] theta, int lamp, Vector3 position);
         }
 
         private static void RunSensitivity(string task, string output)
@@ -141,6 +150,21 @@ namespace LightingMvp.Editor
             public void Apply(double[] theta) => fixture.Rig.Apply(theta);
             public void SetShadows(int lamp, bool shadows) => fixture.SetShadows(lamp, shadows);
             public void ResetShadows() => fixture.ResetShadows();
+            public bool SupportsFixtureShadows => fixture.SupportsFixtureShadows;
+            public void SetFixtureShadows(int lamp, bool casting) => fixture.SetFixtureShadows(lamp, casting);
+            public void SetShadowStrength(int lamp, float strength) => fixture.SetShadowStrength(lamp, strength);
+            public string SourceName(int lamp) => fixture.Config.original[lamp].name;
+            public string UnityName(int lamp) => "Classroom point " + (lamp + 1).ToString(Invariant);
+            public string[] FixtureRenderers(int lamp) { var list = fixture.FixtureRendererNames(lamp); return list.Count == 0 ? Array.Empty<string>() : list.ToArray(); }
+            public int[] FixtureTriangleCounts() => fixture.FixtureTriangles == null ? new int[Count] : (int[])fixture.FixtureTriangles.Clone();
+            public Bounds FixtureBounds(int lamp) => fixture.FixtureBounds(lamp);
+            public double[] WithPosition(double[] theta, int lamp, Vector3 position)
+            {
+                var x = (double[])theta.Clone(); int k = lamp * LampDofs;
+                var moved = ClassroomFixture.Encode(position, PowerMin * Math.Exp(theta[k + 3] * LogPowerSpan));
+                Array.Copy(moved, 0, x, k, 3);
+                return x;
+            }
             public Vector3 PositionOf(double[] theta, int lamp) => ClassroomFixture.Position(theta, lamp * LampDofs);
             public double PowerOf(double[] theta, int lamp) => PowerMin * Math.Exp(theta[lamp * LampDofs + 3] * LogPowerSpan);
             public bool Contains(double[] theta) => fixture.Rig.Contains(theta);
@@ -239,7 +263,22 @@ namespace LightingMvp.Editor
                 }
             }
             public void SetShadows(int lamp, bool shadows) => lights[lamp].shadows = shadows ? LightShadows.Hard : LightShadows.None;
-            public void ResetShadows() { foreach (var lamp in lights) lamp.shadows = LightShadows.Hard; }
+            public void ResetShadows() { foreach (var lamp in lights) { lamp.shadows = LightShadows.Hard; lamp.shadowStrength = 1; } }
+            public bool SupportsFixtureShadows => false;
+            public void SetFixtureShadows(int lamp, bool casting) { }
+            public void SetShadowStrength(int lamp, float strength) => lights[lamp].shadowStrength = Mathf.Clamp01(strength);
+            public string SourceName(int lamp) => "Candidate Light " + (lamp + 1).ToString("00", Invariant);
+            public string UnityName(int lamp) => "Candidate Light " + (lamp + 1).ToString("00", Invariant);
+            public string[] FixtureRenderers(int lamp) => Array.Empty<string>();
+            public int[] FixtureTriangleCounts() => new int[Count];
+            public Bounds FixtureBounds(int lamp) => default;
+            public double[] WithPosition(double[] theta, int lamp, Vector3 position)
+            {
+                var x = (double[])theta.Clone(); int k = lamp * LampDofs;
+                var moved = Encode(position, Power(theta[k + 3]));
+                Array.Copy(moved, 0, x, k, 3);
+                return x;
+            }
             public Vector3 PositionOf(double[] theta, int lamp) => Decode(theta, lamp * LampDofs);
             public double PowerOf(double[] theta, int lamp) => Power(theta[lamp * LampDofs + 3]);
             public bool Contains(double[] theta)
