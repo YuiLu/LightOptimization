@@ -20,6 +20,28 @@ namespace LightingMvp.Editor
             new Vector3(0, 0, -1), new Vector3(0, 1, 0), new Vector3(.7071f, .45f, .45f)
         };
 
+        private static double[] E18LampStart(ISensitivityScene scene, int lamp, float distanceCm, int direction, out float usedCm)
+        {
+            var origin = scene.PositionOf(scene.Truth, lamp);
+            var unit = E18Directions[direction % E18Directions.Length].normalized;
+            for (float scale = 1; scale >= .3f; scale *= .82f)
+            {
+                var candidate = scene.WithPosition(scene.Truth, lamp, origin + unit * (distanceCm / 100f * scale));
+                if (!scene.Contains(candidate)) continue;
+                usedCm = distanceCm * scale;
+                return candidate;
+            }
+            for (int k = 1; k < 12; ++k)
+            {
+                var rotated = Quaternion.Euler(0, 30 * k, 0) * unit;
+                var candidate = scene.WithPosition(scene.Truth, lamp, origin + rotated * (distanceCm / 100f));
+                if (!scene.Contains(candidate)) continue;
+                usedCm = distanceCm;
+                return candidate;
+            }
+            throw new InvalidOperationException($"No feasible {distanceCm} cm start for L{lamp + 1}.");
+        }
+
         [Serializable] private sealed class E18MapRow
         {
             public int slot, fixtureTriangles;
@@ -488,27 +510,8 @@ namespace LightingMvp.Editor
                 }
             }
 
-            private double[] LampStart(int lamp, float distanceCm, int direction, out float usedCm)
-            {
-                var origin = scene.PositionOf(scene.Truth, lamp);
-                var unit = E18Directions[direction % E18Directions.Length].normalized;
-                for (float scale = 1; scale >= .3f; scale *= .82f)
-                {
-                    var candidate = scene.WithPosition(scene.Truth, lamp, origin + unit * (distanceCm / 100f * scale));
-                    if (!scene.Contains(candidate)) continue;
-                    usedCm = distanceCm * scale;
-                    return candidate;
-                }
-                for (int k = 1; k < 12; ++k)
-                {
-                    var rotated = Quaternion.Euler(0, 30 * k, 0) * unit;
-                    var candidate = scene.WithPosition(scene.Truth, lamp, origin + rotated * (distanceCm / 100f));
-                    if (!scene.Contains(candidate)) continue;
-                    usedCm = distanceCm;
-                    return candidate;
-                }
-                throw new InvalidOperationException($"No feasible {distanceCm} cm start for L{lamp + 1}.");
-            }
+            private double[] LampStart(int lamp, float distanceCm, int direction, out float usedCm) =>
+                E18LampStart(scene, lamp, distanceCm, direction, out usedCm);
 
             private E18Condition ConditionStats(int lamp, string condition, double[] start, float[][] reference, out float[][] own)
             {

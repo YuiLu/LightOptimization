@@ -234,7 +234,7 @@ namespace LightingMvp.Editor
             public void Dispose() => shared.Dispose();
             private static double Sq(double x) => x * x;
             private static string JoinFields(IEnumerable<double> x) => string.Join(";", x.Select(F));
-            private static Spectrum GetSpectrum(double[,] gram, int n)
+            internal static Spectrum GetSpectrum(double[,] gram, int n)
             {
                 var h = (double[,])gram.Clone();
                 var norms = Enumerable.Range(0, n).Select(i => Math.Sqrt(Math.Max(0, h[i, i]))).ToArray();

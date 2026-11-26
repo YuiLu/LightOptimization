@@ -12,6 +12,16 @@ namespace LightingMvp.Editor
     {
         private const int E19FitW = 448, E19FitH = 256, E19HighW = 896, E19HighH = 512, E19FitViews = 3;
 
+        private static double[] E19Start(ISensitivityScene scene, double[] far, float scale)
+        {
+            if (scale >= 1f) return (double[])far.Clone();
+            var truth = scene.Truth;
+            var theta = new double[far.Length];
+            for (int i = 0; i < theta.Length; ++i)
+                theta[i] = Math.Max(0, Math.Min(1, truth[i] + scale * (far[i] - truth[i])));
+            return scene.Contains(theta) ? theta : far;
+        }
+
         [Serializable] private sealed class E19LampResult
         {
             public int lamp;
@@ -153,14 +163,6 @@ namespace LightingMvp.Editor
                 return Math.Sqrt(sum / views);
             }
 
-            private double[] ScaleStart(double[] far, float scale)
-            {
-                var truth = scene.Truth;
-                var theta = new double[far.Length];
-                for (int i = 0; i < theta.Length; ++i) theta[i] = Math.Max(0, Math.Min(1, truth[i] + scale * (far[i] - truth[i])));
-                return scene.Contains(theta) ? theta : far;
-            }
-
             private E19Arm OneArm(string condition, int seed, float scale)
             {
                 var truth = scene.Truth;
@@ -171,7 +173,7 @@ namespace LightingMvp.Editor
                 NativeRenderBackend.Save(targetHigh[0], E19HighW, E19HighH, Path.Combine(dir, "gt-" + condition + "-v0-" + seed.ToString(Invariant)));
 
                 var far = scene.Start(seed);
-                var startTheta = scale >= 1f ? (double[])far.Clone() : ScaleStart(far, scale);
+                var startTheta = E19Start(scene, far, scale);
                 string startLabel = scale >= 1f ? "far" : "near";
                 Debug.Log($"[E19] {scene.Name} {condition} seed {seed} {startLabel}: start " + string.Join("/", Enumerable.Range(0, scene.Count)
                     .Select(i => ((scene.PositionOf(startTheta, i) - scene.PositionOf(truth, i)).magnitude * 100).ToString("F1", Invariant))) + " cm");

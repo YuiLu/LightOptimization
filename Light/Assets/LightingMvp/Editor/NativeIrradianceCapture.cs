@@ -70,7 +70,31 @@ namespace LightingMvp.Editor
             catch { Dispose(); throw; }
         }
 
-        public Frame Read()
+        public Frame Read() => new Frame(buffer.width, buffer.height, ReadPixels());
+
+        internal void SetSurfaceSamples(Vector3[] positions, Vector3[] normals, Bounds bounds)
+        {
+            feature.Pass.SetSurfaceSamples(positions, normals);
+            float radius = bounds.extents.magnitude + .5f;
+            camera.orthographic = true;
+            camera.aspect = buffer.width / (float)buffer.height;
+            camera.orthographicSize = radius * Mathf.Max(1, 1 / camera.aspect);
+            camera.nearClipPlane = .03f;
+            camera.farClipPlane = 2 * radius + 1;
+            cameraData.renderShadows = true;
+            camera.transform.SetPositionAndRotation(bounds.center + Vector3.up * radius, Quaternion.LookRotation(Vector3.down, Vector3.forward));
+            camera.ResetProjectionMatrix();
+            camera.ResetWorldToCameraMatrix();
+        }
+
+        internal Color[] ReadSurfaces(Light[] lights)
+        {
+            feature.Pass.SurfaceLights = lights;
+            try { return ReadPixels(); }
+            finally { feature.Pass.SurfaceLights = null; }
+        }
+
+        private Color[] ReadPixels()
         {
             var request = new UniversalRenderPipeline.SingleCameraRequest { destination = destination };
             if (!RenderPipeline.SupportsRenderRequest(camera, request))
@@ -87,7 +111,7 @@ namespace LightingMvp.Editor
                 if (!feature.Pass.Executed) throw new InvalidOperationException("The native capture pass did not execute.");
                 RenderTexture.active = buffer;
                 readback.ReadPixels(new Rect(0, 0, buffer.width, buffer.height), 0, 0, false);
-                return new Frame(buffer.width, buffer.height, readback.GetPixels());
+                return readback.GetRawTextureData<Color>().ToArray();
             }
             finally
             {
@@ -216,11 +240,17 @@ namespace LightingMvp.Editor
             };
             private readonly RTHandle target;
             private readonly Shader shader;
+            private readonly int width, height;
+            private ComputeBuffer positions, normals;
+            private Material surfaceMaterial;
+            private int count;
+            internal Light[] SurfaceLights;
             public bool Executed;
 
             public CapturePass(RenderTexture buffer, Shader overrideShader)
             {
                 target = RTHandles.Alloc(new RenderTargetIdentifier(buffer), "Native irradiance");
+                width = buffer.width; height = buffer.height;
                 shader = overrideShader;
                 renderPassEvent = RenderPassEvent.BeforeRenderingOpaques;
             }
@@ -231,6 +261,12 @@ namespace LightingMvp.Editor
             }
             public override void Execute(ScriptableRenderContext context, ref RenderingData data)
             {
+                if (SurfaceLights != null)
+                {
+                    DrawSamples(context, ref data);
+                    Executed = true;
+                    return;
+                }
                 var draw = CreateDrawingSettings(Tags, ref data, data.cameraData.defaultOpaqueSortFlags);
                 // Keep the material's raster culling mode (for example Mar7thRoom's two-sided room meshes).
                 draw.overrideShader = shader;
@@ -239,7 +275,49 @@ namespace LightingMvp.Editor
                 context.DrawRenderers(data.cullResults, ref draw, ref filter);
                 Executed = true;
             }
-            public void Release() => target.Release();
+
+            internal void SetSurfaceSamples(Vector3[] points, Vector3[] directions)
+            {
+                if (positions != null || points.Length == 0 || points.Length != directions.Length || points.Length > width * height)
+                    throw new ArgumentException("Invalid fixed surface sample set.");
+                count = points.Length;
+                positions = new ComputeBuffer(count, 12);
+                normals = new ComputeBuffer(count, 12);
+                positions.SetData(points); normals.SetData(directions);
+                surfaceMaterial = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
+            }
+
+            private void DrawSamples(ScriptableRenderContext context, ref RenderingData data)
+            {
+                if (count == 0 || SurfaceLights.Length * count > width * height)
+                    throw new InvalidOperationException("Surface irradiance does not fit its render target.");
+                using var cmd = new CommandBuffer { name = "Native per-light surface irradiance" };
+                cmd.SetViewport(new Rect(0, 0, width, height));
+                cmd.SetGlobalBuffer("_SurfacePositions", positions);
+                cmd.SetGlobalBuffer("_SurfaceNormals", normals);
+                cmd.SetGlobalVector("_SurfaceDimensions", new Vector4(width, height, SystemInfo.graphicsUVStartsAtTop ? -1 : 1, 0));
+                var visible = data.lightData.visibleLights;
+                int main = data.lightData.mainLightIndex;
+                for (int lamp = 0; lamp < SurfaceLights.Length; ++lamp)
+                {
+                    int found = -1;
+                    for (int index = 0; index < visible.Length; ++index)
+                        if (visible[index].light == SurfaceLights[lamp]) { found = index; break; }
+                    if (found < 0 || found == main)
+                        throw new InvalidOperationException("Fixed surface capture needs each requested point light in the native additional-light list.");
+                    cmd.SetGlobalInt("_SurfaceLightIndex", found - (main >= 0 && main < found ? 1 : 0));
+                    cmd.SetGlobalInt("_SurfaceOffset", lamp * count);
+                    cmd.DrawProcedural(Matrix4x4.identity, surfaceMaterial, 1, MeshTopology.Points, count, 1);
+                }
+                context.ExecuteCommandBuffer(cmd);
+            }
+
+            public void Release()
+            {
+                positions?.Dispose(); normals?.Dispose();
+                if (surfaceMaterial) UnityEngine.Object.DestroyImmediate(surfaceMaterial);
+                target.Release();
+            }
         }
     }
 }

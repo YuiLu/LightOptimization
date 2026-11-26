@@ -1,0 +1,233 @@
+#pragma kernel BlurCube
+#pragma kernel EvaluateVisibility
+#pragma kernel EvaluateMbdPositionAdjoint
+
+#include "MomentBounds.hlsl"
+
+Texture2DArray<float4> _MomentsIn;
+RWTexture2DArray<float4> _MomentsOut;
+StructuredBuffer<float4> _Receivers;
+RWStructuredBuffer<float4> _Visibility;
+
+float4 _CubeForward[6];
+float4 _CubeRight[6];
+float4 _CubeUp[6];
+float4 _LightAndRange;
+float2 _ClipAndBias;
+float2 _MomentAndLeakBias;
+float _CubeYSign;
+int _Size;
+int _Radius;
+int _Vertical;
+int _Count;
+int _UseVariance;
+int _UseMbd;
+float _MbdBlend;
+
+int DominantFace(float3 direction)
+{
+    float3 a = abs(direction);
+    if (a.x >= a.y && a.x >= a.z) return direction.x >= 0 ? 0 : 1;
+    if (a.y >= a.z) return direction.y >= 0 ? 2 : 3;
+    return direction.z >= 0 ? 4 : 5;
+}
+
+float2 FaceUv(float3 d, int face)
+{
+    float divisor = dot(d, _CubeForward[face].xyz);
+    float2 plane = float2(dot(d, _CubeRight[face].xyz), dot(d, _CubeUp[face].xyz) * _CubeYSign);
+    return plane * (0.5 / divisor) + 0.5;
+}
+
+float4 CubeTexel(int2 pixel, int face)
+{
+    if (all(pixel >= 0) && all(pixel < _Size))
+        return _MomentsIn.Load(int4(pixel, face, 0));
+    float2 uv = (float2(pixel) + 0.5) * (2.0 / _Size) - 1.0;
+    float3 d = _CubeForward[face].xyz + uv.x * _CubeRight[face].xyz + uv.y * _CubeYSign * _CubeUp[face].xyz;
+    int other = DominantFace(d);
+    int2 neighbour = clamp(int2(floor(FaceUv(d, other) * _Size)), 0, _Size - 1);
+    return _MomentsIn.Load(int4(neighbour, other, 0));
+}
+
+float4 SampleMoments(float3 d, int face)
+{
+    float2 pixel = FaceUv(d, face) * _Size - 0.5;
+    int2 i = int2(floor(pixel));
+    float2 t = frac(pixel);
+    float4 a = lerp(CubeTexel(i, face), CubeTexel(i + int2(1, 0), face), t.x);
+    float4 b = lerp(CubeTexel(i + int2(0, 1), face), CubeTexel(i + 1, face), t.x);
+    return lerp(a, b, t.y);
+}
+
+[numthreads(8, 8, 1)]
+void BlurCube(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= (uint)_Size || id.y >= (uint)_Size || id.z >= 6) return;
+    float4 total = 0;
+    float weightSum = 0;
+    float sigma = max(0.65, _Radius * 0.55);
+    for (int i = -_Radius; i <= _Radius; i++)
+    {
+        float w = exp(-0.5 * (i * i) / (sigma * sigma));
+        int2 offset = _Vertical != 0 ? int2(0, i) : int2(i, 0);
+        total += w * CubeTexel(int2(id.xy) + offset, id.z);
+        weightSum += w;
+    }
+    _MomentsOut[id] = total / weightSum;
+}
+
+float VarianceVisibility(float4 b, float depth)
+{
+    float offset = depth - b.x;
+    if (offset <= 0) return 1.0;
+    float variance = max(1e-7, b.y - b.x * b.x);
+    return variance / (variance + offset * offset);
+}
+
+float Visibility(float4 measured, float depth, out float status)
+{
+    status = 0.0;
+    if (!all(isfinite(measured)) || !isfinite(depth))
+    {
+        status = _UseMbd != 0 ? 5.0 : 2.0;
+        return 1.0;
+    }
+    if (measured.x >= 0.999999) return 1.0;
+    if (_UseMbd != 0)
+    {
+        MbdState mbd = MbdPrimal(1.0, measured, depth * 2.0 - 1.0, _MomentAndLeakBias.x, _MbdBlend, 2);
+        status = mbd.status;
+        return MbdValid(mbd.status) ? saturate(1.0 - mbd.bound) : 1.0;
+    }
+    if (_UseVariance != 0)
+        return saturate((VarianceVisibility(measured, depth) - _MomentAndLeakBias.y) / (1.0 - _MomentAndLeakBias.y));
+
+    // Hamburger four-moment bound. Solve H q = [1, depth, depth^2] by an LDL^T factorization
+    // of the Hankel moment matrix. Pull toward moments of a uniform [0, 1] depth distribution.
+    float4 m = lerp(measured, float4(0.5, 1.0 / 3.0, 0.25, 0.2), _MomentAndLeakBias.x);
+    float d1 = m.y - m.x * m.x;
+    float crossTerm = m.z - m.x * m.y;
+    if (d1 <= 1e-8)
+    {
+        status = 1.0;
+        return VarianceVisibility(measured, depth);
+    }
+    float l21 = crossTerm / d1;
+    float d2 = m.w - m.y * m.y - l21 * crossTerm;
+    if (d2 <= 1e-8)
+    {
+        status = 1.0;
+        return VarianceVisibility(measured, depth);
+    }
+    float y1 = depth - m.x;
+    float y2 = depth * depth - m.y - l21 * y1;
+    float q2 = y2 / d2;
+    float q1 = y1 / d1 - l21 * q2;
+    float q0 = 1.0 - m.x * q1 - m.y * q2;
+    if (abs(q2) < 1e-7)
+    {
+        status = 1.0;
+        return VarianceVisibility(measured, depth);
+    }
+    float p = q1 / q2, q = q0 / q2;
+    float discriminant = 0.25 * p * p - q;
+    if (discriminant < 0)
+    {
+        status = 1.0;
+        return VarianceVisibility(measured, depth);
+    }
+    float root = sqrt(discriminant);
+    float a = -0.5 * p - root, b = -0.5 * p + root;
+    if (depth <= a) return 1.0;
+    bool pastBoth = depth > b;
+    float first = pastBoth ? a : depth;
+    float second = pastBoth ? depth : a;
+    float denom = (b - second) * (depth - a);
+    if (abs(denom) < 1e-8)
+    {
+        status = 1.0;
+        return VarianceVisibility(measured, depth);
+    }
+    float occluded = (pastBoth ? 1.0 : 0.0) + (first * b - m.x * (first + b) + m.y) / denom;
+    if (!isfinite(occluded))
+    {
+        status = 2.0;
+        return VarianceVisibility(measured, depth);
+    }
+    float visibility = 1.0 - saturate(occluded);
+    return saturate((visibility - _MomentAndLeakBias.y) / (1.0 - _MomentAndLeakBias.y));
+}
+
+[numthreads(128, 1, 1)]
+void EvaluateVisibility(uint index : SV_DispatchThreadID)
+{
+    if (index >= (uint)_Count) return;
+    float4 sampleSite = _Receivers[index];
+    float3 d = sampleSite.w > 0 ? sampleSite.xyz * _LightAndRange.w : sampleSite.xyz - _LightAndRange.xyz;
+    float distance = length(d);
+    if (distance < _ClipAndBias.x || distance >= _LightAndRange.w)
+    {
+        _Visibility[index] = float4(1, 0, 0, 0);
+        return;
+    }
+    int face = DominantFace(d);
+    float depth = saturate((distance - _ClipAndBias.y) / _LightAndRange.w);
+    float status;
+    float v = Visibility(SampleMoments(d, face), depth, status);
+    float seam = 0.0;
+    if (sampleSite.w > 0)
+    {
+        int major = face / 2;
+        float3 withoutDominant = d * float3(major == 0 ? 0.0 : 1.0, major == 1 ? 0.0 : 1.0, major == 2 ? 0.0 : 1.0);
+        int adjacent = DominantFace(withoutDominant);
+        float adjacentStatus;
+        seam = abs(v - Visibility(SampleMoments(d, adjacent), depth, adjacentStatus));
+        status = max(status, adjacentStatus);
+    }
+    _Visibility[index] = float4(v, status, seam, face);
+}
+
+[numthreads(128, 1, 1)]
+void EvaluateMbdPositionAdjoint(uint index : SV_DispatchThreadID)
+{
+    if (index >= (uint)_Count) return;
+    float4 site = _Receivers[index];
+    float3 d = site.xyz - _LightAndRange.xyz;
+    float distance = length(d);
+    _Visibility[index] = 0;
+    if (site.w != 0 || distance < _ClipAndBias.x || distance >= _LightAndRange.w) return;
+    int face = DominantFace(d);
+    float3 forward = _CubeForward[face].xyz;
+    float3 right = _CubeRight[face].xyz;
+    float3 up = _CubeUp[face].xyz * _CubeYSign;
+    float divisor = dot(d, forward);
+    float2 uv = FaceUv(d, face);
+    float2 px = uv * _Size - 0.5;
+    int2 i = int2(floor(px));
+    float2 t = frac(px);
+    float4 a = CubeTexel(i, face);
+    float4 b = CubeTexel(i + int2(1, 0), face);
+    float4 c = CubeTexel(i + int2(0, 1), face);
+    float4 f = CubeTexel(i + 1, face);
+    float4 value = lerp(lerp(a, b, t.x), lerp(c, f, t.x), t.y);
+    if (value.x >= 0.999999) return;
+    float rawDepth = (distance - _ClipAndBias.y) / _LightAndRange.w;
+    float eta = 2.0 * saturate(rawDepth) - 1.0;
+    MbdState state = MbdPrimal(1.0, value, eta, _MomentAndLeakBias.x, _MbdBlend, 2);
+    float4 gm;
+    float2 g0;
+    uint status = MbdAdjoint(state, eta, _MomentAndLeakBias.x, 2, gm, g0);
+    float3 gradient = 0;
+    if (MbdValid(status) && state.bound > 0 && state.bound < 1)
+    {
+        // The light-space map is held fixed. Position only changes receiver UV and radial depth.
+        float3 du = (right - 2.0 * (uv.x - 0.5) * forward) * (0.5 / divisor);
+        float3 dv = (up - 2.0 * (uv.y - 0.5) * forward) * (0.5 / divisor);
+        gradient = _Size * (du * dot(gm, lerp(b - a, f - c, t.y)) + dv * dot(gm, lerp(c - a, f - b, t.x)));
+        if (rawDepth > 0 && rawDepth < 1)
+            gradient += g0.y * (2.0 / _LightAndRange.w) * (d / distance);
+    }
+    if (!all(isfinite(gradient))) { gradient = 0; status = 5; }
+    _Visibility[index] = float4(gradient, status);
+}

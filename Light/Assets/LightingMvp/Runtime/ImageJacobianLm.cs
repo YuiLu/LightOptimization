@@ -15,6 +15,7 @@ namespace LightingMvp
             public bool DiagonalDamping;
             public Action<int, int, double, double[], int[], double[,]> Jacobian;
             public Action<int, int, float[][]> Columns;
+            public Action<int, int, double> Probe;
             public Action<int, int, double, double, double, double, int, int, string> Trial;
         }
 
@@ -76,8 +77,8 @@ namespace LightingMvp
                         ConstrainedColumn(i, axisStep, col);
                     else if (x[i] >= step && 1 - x[i] >= step)
                     {
-                        probe[i] = x[i] + step; Evaluate(probe, "jac_plus", col);
-                        probe[i] = x[i] - step; Evaluate(probe, "jac_minus", trial);
+                        probe[i] = x[i] + step; EvaluateProbe(i, step, "jac_plus", col);
+                        probe[i] = x[i] - step; EvaluateProbe(i, -step, "jac_minus", trial);
                         RecordColumn(i, step, 3);
                         float scale = (float)(.5 / step);
                         for (int k = 0; k < residualSize; ++k) col[k] = (col[k] - trial[k]) * scale;
@@ -85,8 +86,8 @@ namespace LightingMvp
                     else
                     {
                         double dx = x[i] < .5 ? step : -step;
-                        probe[i] = x[i] + dx; Evaluate(probe, "jac_one_sided", col);
-                        probe[i] = x[i] + 2 * dx; Evaluate(probe, "jac_one_sided", trial);
+                        probe[i] = x[i] + dx; EvaluateProbe(i, dx, "jac_one_sided", col);
+                        probe[i] = x[i] + 2 * dx; EvaluateProbe(i, 2 * dx, "jac_one_sided", trial);
                         RecordColumn(i, dx, 2);
                         float scale = (float)(.5 / dx);
                         for (int k = 0; k < residualSize; ++k) col[k] = (4 * col[k] - trial[k] - 3 * center[k]) * scale;
@@ -197,8 +198,8 @@ namespace LightingMvp
                     probe[i] = x[i] - hColumn; bool minus = Legal(probe);
                     if (plus && minus)
                     {
-                        probe[i] = x[i] + hColumn; Evaluate(probe, "jac_plus", col);
-                        probe[i] = x[i] - hColumn; Evaluate(probe, "jac_minus", trial);
+                        probe[i] = x[i] + hColumn; EvaluateProbe(i, hColumn, "jac_plus", col);
+                        probe[i] = x[i] - hColumn; EvaluateProbe(i, -hColumn, "jac_minus", trial);
                         RecordColumn(i, hColumn, 3);
                         float scale = (float)(.5 / hColumn);
                         for (int k = 0; k < residualSize; ++k) col[k] = (col[k] - trial[k]) * scale;
@@ -208,11 +209,11 @@ namespace LightingMvp
                     double dx = plus ? hColumn : -hColumn;
                     probe[i] = x[i] + 2 * dx;
                     bool secondOrder = Legal(probe);
-                    probe[i] = x[i] + dx; Evaluate(probe, "jac_one_sided", col);
+                    probe[i] = x[i] + dx; EvaluateProbe(i, dx, "jac_one_sided", col);
                     RecordColumn(i, dx, secondOrder ? 2 : 1);
                     if (secondOrder)
                     {
-                        probe[i] = x[i] + 2 * dx; Evaluate(probe, "jac_one_sided", trial);
+                        probe[i] = x[i] + 2 * dx; EvaluateProbe(i, 2 * dx, "jac_one_sided", trial);
                         float scale = (float)(.5 / dx);
                         for (int k = 0; k < residualSize; ++k) col[k] = (4 * col[k] - trial[k] - 3 * center[k]) * scale;
                     }
@@ -231,6 +232,12 @@ namespace LightingMvp
             {
                 if (effective == null) return;
                 effective[axis] = hActual; stencil[axis] = kind;
+            }
+
+            void EvaluateProbe(int axis, double offset, string phase, float[] buffer)
+            {
+                diagnostics?.Probe?.Invoke(result.Queries + 1, axis, offset);
+                Evaluate(probe, phase, buffer);
             }
 
             long Stamp() => profile ? Stopwatch.GetTimestamp() : 0;

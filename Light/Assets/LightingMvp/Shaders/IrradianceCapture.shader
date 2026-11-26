@@ -100,5 +100,57 @@ Shader "Hidden/LightingMvp/IrradianceCapture"
             }
             ENDHLSL
         }
+        Pass
+        {
+            Name "FixedSurfaceIrradiance"
+            Cull Off ZWrite Off ZTest Always Blend Off
+            HLSLPROGRAM
+            #pragma target 4.5
+            #pragma vertex SurfaceVertex
+            #pragma fragment SurfaceFragment
+            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+
+            StructuredBuffer<float3> _SurfacePositions;
+            StructuredBuffer<float3> _SurfaceNormals;
+            float4 _SurfaceDimensions;
+            uint _SurfaceOffset;
+            uint _SurfaceLightIndex;
+
+            struct SurfaceVaryings
+            {
+                float4 clip : SV_POSITION;
+                nointerpolation float3 world : TEXCOORD0;
+                nointerpolation float3 normal : TEXCOORD1;
+                float size : PSIZE;
+            };
+
+            SurfaceVaryings SurfaceVertex(uint i : SV_VertexID)
+            {
+                uint index = i + _SurfaceOffset;
+                uint width = (uint)_SurfaceDimensions.x;
+                float2 pixel = float2(index % width, index / width) + 0.5;
+                SurfaceVaryings o;
+                float2 clipPosition = pixel / _SurfaceDimensions.xy * 2.0 - 1.0;
+                clipPosition.y *= _SurfaceDimensions.z;
+                o.clip = float4(clipPosition, 0.5, 1);
+                o.world = _SurfacePositions[i];
+                o.normal = _SurfaceNormals[i];
+                o.size = 1;
+                return o;
+            }
+
+            float4 SurfaceFragment(SurfaceVaryings input) : SV_Target
+            {
+                // The CPU supplies the index in the renderer's global additional-light
+                // table. This lookup does not depend on a screen-space Forward+ tile.
+                Light light = GetAdditionalPerObjectLight(_SurfaceLightIndex, input.world);
+                float shadow = AdditionalLightRealtimeShadow(_SurfaceLightIndex, input.world, light.direction);
+                float irradiance = light.distanceAttenuation * saturate(dot(input.normal, light.direction));
+                return float4(float3(light.color) * (irradiance * shadow), shadow);
+            }
+            ENDHLSL
+        }
     }
 }

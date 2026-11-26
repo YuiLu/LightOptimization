@@ -1,0 +1,35 @@
+#pragma kernel ForwardBounds
+#pragma kernel BackwardBounds
+
+#include "MomentBounds.hlsl"
+
+StructuredBuffer<float4> _Moments;
+StructuredBuffer<float4> _Parameters; // mass, eta, bias, blend
+StructuredBuffer<int> _Orders;
+RWStructuredBuffer<float2> _Bounds;
+RWStructuredBuffer<float4> _PowerGradient;
+RWStructuredBuffer<float4> _OtherGradient;
+int _Count;
+
+[numthreads(64, 1, 1)]
+void ForwardBounds(uint i : SV_DispatchThreadID)
+{
+    if (i >= (uint)_Count) return;
+    float4 p = _Parameters[i];
+    MbdState state = MbdPrimal(p.x, _Moments[i], p.y, p.z, p.w, _Orders[i]);
+    _Bounds[i] = float2(state.bound, state.status);
+}
+
+[numthreads(64, 1, 1)]
+void BackwardBounds(uint i : SV_DispatchThreadID)
+{
+    if (i >= (uint)_Count) return;
+    float4 p = _Parameters[i];
+    int n = _Orders[i];
+    MbdState state = MbdPrimal(p.x, _Moments[i], p.y, p.z, p.w, n);
+    float4 m;
+    float2 rest;
+    uint status = MbdAdjoint(state, p.y, p.z, n, m, rest);
+    _PowerGradient[i] = m;
+    _OtherGradient[i] = float4(rest, status, 0);
+}
