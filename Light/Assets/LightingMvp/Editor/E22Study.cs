@@ -51,38 +51,41 @@ namespace LightingMvp.Editor
             private int olatFrames, geometryPasses;
             private double geometrySeconds;
 
-            internal void RunE22(string key)
+            internal void RunE22(string key) => WithRoomMetrics(() =>
+            {
+                switch (key)
+                {
+                    case "a8": E22SolvePairs(); break;
+                    case "a28": E22SolveSeven(); break;
+                    case "a-fd": E22AdaptiveStudy(); break;
+                    case "b-screen": E22ToneScreen(); break;
+                    case "b-off": E22ToneValidate(false, false, new[] { 131, 157, 733 }); break;
+                    case "b-on": E22ToneValidate(true, false, new[] { 131, 157, 733 }); break;
+                    case "b-confirm": E22ToneValidate(false, false, new[] { 181 }); break;
+                    case "b-far": E22ToneValidate(true, true, new[] { 131, 157, 733 }); break;
+                    case "b-switch": E22ToneSwitch(); break;
+                    case "b-hotspots": E22Hotspots(); break;
+                    case "c": E22GeometryValidate(false, false, new[] { 131, 157 }); break;
+                    case "c-mean": E22GeometryValidate(true, false, new[] { 131, 157 }); break;
+                    case "c-off-733": E22GeometryValidate(false, false, new[] { 733 }); break;
+                    case "c-on": E22GeometryValidate(false, true, new[] { 131, 157, 733 }); break;
+                    case "d-audit": E22OlatAudit(); break;
+                    case "d-8d": E22StructuredOlat(false, false); break;
+                    case "d-8d-on": E22StructuredOlat(false, true); break;
+                    case "d-28d": E22StructuredOlat(true, false); break;
+                    case "d-28d-on": E22StructuredOlat(true, true); break;
+                    case "e-calibration": E22ShadowStudy(false); break;
+                    case "e-recovery": E22ShadowStudy(true); break;
+                    default: throw new ArgumentException("Unknown E22 stage " + key);
+                }
+            });
+
+            private void WithRoomMetrics(Action run)
             {
                 using (e22Damping = Csv("damping.csv", "arm,segment,query,lambda,diagonal_scale"))
                 using (e22Checks = Csv("loss-checks.csv", "arm,checkpoint,scalar,residual_loss,scalar_without_buffer,absolute_difference"))
                 using (e22ViewMetrics = Csv("rgb-views.csv", "arm,checkpoint,measurement,view,raw_nrmse,display_nrmse"))
-                {
-                    switch (key)
-                    {
-                        case "a8": E22SolvePairs(); break;
-                        case "a28": E22SolveSeven(); break;
-                        case "a-fd": E22AdaptiveStudy(); break;
-                        case "b-screen": E22ToneScreen(); break;
-                        case "b-off": E22ToneValidate(false, false, new[] { 131, 157, 733 }); break;
-                        case "b-on": E22ToneValidate(true, false, new[] { 131, 157, 733 }); break;
-                        case "b-confirm": E22ToneValidate(false, false, new[] { 181 }); break;
-                        case "b-far": E22ToneValidate(true, true, new[] { 131, 157, 733 }); break;
-                        case "b-switch": E22ToneSwitch(); break;
-                        case "b-hotspots": E22Hotspots(); break;
-                        case "c": E22GeometryValidate(false, false, new[] { 131, 157 }); break;
-                        case "c-mean": E22GeometryValidate(true, false, new[] { 131, 157 }); break;
-                        case "c-off-733": E22GeometryValidate(false, false, new[] { 733 }); break;
-                        case "c-on": E22GeometryValidate(false, true, new[] { 131, 157, 733 }); break;
-                        case "d-audit": E22OlatAudit(); break;
-                        case "d-8d": E22StructuredOlat(false, false); break;
-                        case "d-8d-on": E22StructuredOlat(false, true); break;
-                        case "d-28d": E22StructuredOlat(true, false); break;
-                        case "d-28d-on": E22StructuredOlat(true, true); break;
-                        case "e-calibration": E22ShadowStudy(false); break;
-                        case "e-recovery": E22ShadowStudy(true); break;
-                        default: throw new ArgumentException("Unknown E22 stage " + key);
-                    }
-                }
+                    run();
                 using var process = Process.GetCurrentProcess();
                 WriteJson(directory, "metrics.json", new E22Supplement { metrics = e22Metrics.ToArray(),
                     geometryPasses = geometryPasses, geometrySeconds = geometrySeconds, processPeakWorkingBytes = E22Memory.Working(process, peak: true),
@@ -133,7 +136,7 @@ namespace LightingMvp.Editor
                 if (!fresh) return gt;
                 displayTargets.Add(shadows, new E22DisplayTarget(gt));
                 Apply(room.Truth, shadows);
-                using var report = Csv(shadows ? "repeat-on.csv" : "repeat-off.csv", "resolution,view,raw_nrmse,exposure,shadows");
+                using var report = Csv(shadows ? e23SoftTarget ? "repeat-soft.csv" : "repeat-on.csv" : "repeat-off.csv", "resolution,view,raw_nrmse,exposure,shadows");
                 for (int v = 0; v < room.Views.Length; ++v)
                 {
                     if (v < E19FitViews) Repeat(low, gt.fit[v], v);

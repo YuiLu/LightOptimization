@@ -44,14 +44,14 @@ namespace LightingMvp.Editor
 
                 void MeasureLegacy(string label, string source, int lamp, double[] theta)
                 {
-                    probes.WriteLine(string.Join(",", label, source, -1, 0, 0, Flag(room.Contains(theta)), Flag(room.InSurveyDomain(theta)), F(NativeLoss(off, theta, null))));
+                    probes.WriteLine(string.Join(",", label, source, -1, 0, 0, Flag(room.Contains(theta)), Flag(inSurveyDomain(theta)), F(NativeLoss(off, theta, null))));
                     foreach (double step in new[] { .005, .02, .05 })
                     for (int axis = 0; axis < 3; ++axis)
                     foreach (int sign in new[] { -1, 1 })
                     {
                         var x = (double[])theta.Clone();
                         x[4 * lamp + axis] += sign * step / units[axis];
-                        bool inside = room.InSurveyDomain(x);
+                        bool inside = inSurveyDomain(x);
                         probes.WriteLine(string.Join(",", label, source, axis, F(step), sign, Flag(room.Contains(x)), Flag(inside),
                             F(inside ? NativeLoss(off, x, null) : double.NaN)));
                     }

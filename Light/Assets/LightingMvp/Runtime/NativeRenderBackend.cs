@@ -122,6 +122,18 @@ namespace LightingMvp
         public int Size => Width;
         public Frame Capture(int view) => new Frame(Read(view));
 
+        public void CaptureRgb(int view, float[] rgb, int offset = 0)
+        {
+            int count = checked(Width * Height * 3);
+            if (rgb == null || offset < 0 || offset > rgb.Length - count) throw new ArgumentException("Invalid RGB capture buffer.");
+            var source = Read(view);
+            for (int i = 0; i < source.Length; ++i)
+            {
+                Color c = source[i];
+                rgb[offset++] = c.r; rgb[offset++] = c.g; rgb[offset++] = c.b;
+            }
+        }
+
         public double Loss(int view, Frame target)
         {
             if (target == null || target.Pixels.Length != Width * Height)

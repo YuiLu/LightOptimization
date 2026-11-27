@@ -64,8 +64,9 @@ namespace LightingMvp.Editor
 
         private sealed partial class E21RoomStudy : IDisposable
         {
-            private readonly ComplexRoomSensitivityScene room;
-            private readonly string stage, directory;
+            private readonly ISensitivityScene room;
+            private readonly string stage, directory, scenePath;
+            private readonly Func<double[], bool> inSurveyDomain;
             private readonly NativeRenderBackend low, high;
             private readonly Light[] lights;
             private readonly double[] units;
@@ -77,9 +78,10 @@ namespace LightingMvp.Editor
             private int shadowFaces, surfaceRenders;
             private long rayQueries;
 
-            internal E21RoomStudy(ComplexRoomSensitivityScene room, string stage, string directory)
+            internal E21RoomStudy(ISensitivityScene room, string stage, string directory, string scenePath = NativeComplexRoomBuilder.ScenePath)
             {
-                this.room = room; this.stage = stage; this.directory = directory;
+                this.room = room; this.stage = stage; this.directory = directory; this.scenePath = scenePath;
+                inSurveyDomain = room is ComplexRoomSensitivityScene complex ? complex.InSurveyDomain : room.Contains;
                 smoke = stage.EndsWith("-smoke", StringComparison.Ordinal);
                 Directory.CreateDirectory(directory);
                 units = new[] { (double)room.Extents.x, room.Extents.y, room.Extents.z, LogPowerSpan };
@@ -109,16 +111,19 @@ namespace LightingMvp.Editor
                 return x;
             }
 
-            private void Apply(double[] theta, bool shadows)
+            private void Apply(double[] theta, bool shadows, LightShadows? modeOverride = null)
             {
                 // E21's solver independently audits probe/candidate policies before rendering.
+                var mode = modeOverride ?? (shadows ? (e23SoftTarget ? LightShadows.Soft : LightShadows.Hard) : LightShadows.None);
+                e23ShadowSettings?.Invoke(mode);
                 for (int i = 0; i < lights.Length; ++i)
                 {
                     var lamp = lights[i];
                     lamp.transform.position = room.PositionOf(theta, i);
                     lamp.intensity = (float)room.PowerOf(theta, i);
                     lamp.enabled = true;
-                    room.SetShadows(i, shadows);
+                    room.SetShadows(i, mode != LightShadows.None);
+                    if (mode == LightShadows.Soft) lamp.shadows = LightShadows.Soft;
                 }
             }
 
@@ -134,7 +139,7 @@ namespace LightingMvp.Editor
                 var highFrames = Enumerable.Range(0, room.Views.Length).Select(high.Capture).ToArray();
                 var target = new MbdRgbTarget(fitFrames, highFrames, shadows);
                 targets.Add(shadows, target);
-                string path = CapturePath(shadows ? "gt_on" : "gt_off");
+                string path = CapturePath(shadows ? e23SoftTarget ? "gt_soft" : "gt_on" : "gt_off");
                 SaveFrames(highFrames, path, "gt", stage[4] == 'd');
                 return target;
             }
@@ -228,7 +233,7 @@ namespace LightingMvp.Editor
                     return full;
                 }
                 bool Strict(double[] local) => room.Contains(Expand(local));
-                bool Survey(double[] local) => room.InSurveyDomain(Expand(local));
+                bool Survey(double[] local) => inSurveyDomain(Expand(local));
                 var startLocal = indices.Select(i => start[i]).ToArray();
                 int queryOffset = arm.evaluations;
                 var settings = new ImageJacobianLm.TrustSettings
@@ -244,7 +249,7 @@ namespace LightingMvp.Editor
                     {
                         var rig = Expand(x);
                         queryLog.WriteLine(string.Join(",", arm.id, segment, queryOffset + q, phase, axis < 0 ? -1 : indices[axis], F(offset),
-                            Flag(room.Contains(rig)), Flag(room.InSurveyDomain(rig)), F(loss), Series(rig), F(clock.Elapsed.TotalSeconds)));
+                            Flag(room.Contains(rig)), Flag(inSurveyDomain(rig)), F(loss), Series(rig), F(clock.Elapsed.TotalSeconds)));
                     },
                     Jacobian = j =>
                     {
@@ -295,7 +300,7 @@ namespace LightingMvp.Editor
                             Flag(a.legal), Flag(a.pass), F(a.seconds), a.stop));
                 WriteJson(directory, "summary.json", new E21StageSummary { stage = stage,
                     branch = Arg("-bbE20Branch", "blackbox"), commit = Arg("-bbE20BaseCommit", "22c00f9"),
-                    sceneHash = E21Sha(NativeComplexRoomBuilder.ScenePath), scene = room.Describe(), truth = room.Truth,
+                    sceneHash = E21Sha(scenePath), scene = room.Describe(), truth = room.Truth,
                     views = new[] { "train:0", "train:1", "train:2", "held:3", "held:4" },
                     nativeCameraRenders = low.RenderCount + high.RenderCount, surfaceRenders = surfaceRenders, shadowFaces = shadowFaces,
                     rayQueries = rayQueries, arms = arms.ToArray(), seconds = clock.Elapsed.TotalSeconds });

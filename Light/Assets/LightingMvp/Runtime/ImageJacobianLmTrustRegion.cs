@@ -19,9 +19,28 @@ namespace LightingMvp
             public Func<double[], bool> ProbeAllowed, CandidateAllowed, FinalAllowed;
             public Func<double[], double> NativeAcceptance;
             public Action<double[], int, float[]> LogIntensityJacobian;
+            public TrustPositionModel PositionModel;
             public Action<int, string, double[], double, int, double> Query;
             public Action<TrustJacobian> Jacobian;
             public Action<TrustTrial> Trial;
+        }
+
+        /// <summary>Supplies XYZ columns on the solver's legal stencil. Costs are in objective evaluation equivalents.</summary>
+        public sealed class TrustPositionModel
+        {
+            public readonly int AnchorCost, ProbeCost;
+            internal readonly Action<int, double[]> Anchor;
+            internal readonly Action<int, double[], int, double, int, float[]> Column;
+
+            public TrustPositionModel(int anchorCost, int probeCost, Action<int, double[]> anchor,
+                Action<int, double[], int, double, int, float[]> column)
+            {
+                if (anchorCost < 0 || probeCost < 1) throw new ArgumentException("Invalid position model costs.");
+                AnchorCost = anchorCost;
+                ProbeCost = probeCost;
+                Anchor = anchor ?? throw new ArgumentNullException(nameof(anchor));
+                Column = column ?? throw new ArgumentNullException(nameof(column));
+            }
         }
 
         public sealed class TrustJacobian
@@ -86,6 +105,9 @@ namespace LightingMvp
             double probeScale = 1;
             int checkCost = settings.NativeAcceptance == null ? 0 : 1;
             int maxProbes = 2 * (n - (settings.LogIntensityJacobian == null ? 0 : lamps));
+            var positionModel = settings.PositionModel;
+            if (positionModel != null)
+                maxProbes += positionModel.AnchorCost + 6 * lamps * (positionModel.ProbeCost - 1);
 
             while (result.Evaluations + maxProbes + 1 + checkCost <= settings.Budget && result.Jacobians < settings.Iterations)
             {
@@ -95,6 +117,11 @@ namespace LightingMvp
                 var steps = new double[n];
                 var stencils = new int[n];
                 Array.Copy(x, probe, n);
+                if (positionModel != null)
+                {
+                    positionModel.Anchor(result.Evaluations + 1, x);
+                    result.Evaluations += positionModel.AnchorCost;
+                }
                 for (int j = 0; j < n; ++j)
                 {
                     var col = columns[j];
@@ -110,7 +137,22 @@ namespace LightingMvp
                         probe[j] = x[j] + h; bool plus = CanProbe();
                         probe[j] = x[j] - h; bool minus = CanProbe();
                         if (!plus && !minus) continue;
-                        if (plus && minus)
+                        bool central = plus && minus;
+                        double d = plus ? h : -h;
+                        bool second = false;
+                        if (!central)
+                        {
+                            probe[j] = x[j] + 2 * d;
+                            second = CanProbe();
+                        }
+                        if (positionModel != null && j % 4 != 3)
+                        {
+                            int stencil = central ? 3 : second ? 2 : 1;
+                            positionModel.Column(result.Evaluations + 1, x, j, d, stencil, col);
+                            result.Evaluations += (stencil == 1 ? 1 : 2) * positionModel.ProbeCost;
+                            steps[j] = d * settings.Units[j]; stencils[j] = stencil;
+                        }
+                        else if (central)
                         {
                             probe[j] = x[j] + h; Evaluate(probe, "fd_plus", col, j, h);
                             probe[j] = x[j] - h; Evaluate(probe, "fd_minus", temporary, j, -h);
@@ -120,8 +162,6 @@ namespace LightingMvp
                         }
                         else
                         {
-                            double d = plus ? h : -h;
-                            probe[j] = x[j] + 2 * d; bool second = CanProbe();
                             probe[j] = x[j] + d; Evaluate(probe, "fd_one_sided", col, j, d);
                             if (second)
                             {
@@ -162,12 +202,7 @@ namespace LightingMvp
                         model[i, j] = gram[i, j];
                 }
                 else if (settings.NormalMode == TrustNormalMode.LampScaledDense)
-                {
-                    var scale = new double[lamps];
-                    for (int i = 0; i < n; ++i) scale[i / 4] = Math.Max(scale[i / 4], gram[i, i]);
-                    double floor = Math.Max(1e-10, 1e-6 * scale.Max());
-                    dampingScale = Enumerable.Range(0, n).Select(i => Math.Max(floor, scale[i / 4])).ToArray();
-                }
+                    dampingScale = LampDampingScale(gram, n);
                 for (int group = 0; group < groups; ++group)
                 {
                     double maxDiagonal = 0;
@@ -191,23 +226,9 @@ namespace LightingMvp
                             Array.Copy(SolveDamped(block, gradient.Skip(k).Take(4).ToArray(), x.Skip(k).Take(4).ToArray(),
                                 damping[group], 0), 0, delta, k, 4);
                         }
-                        double dx = delta[k] * settings.Units[k], dy = delta[k + 1] * settings.Units[k + 1], dz = delta[k + 2] * settings.Units[k + 2];
-                        double limit = positionRadius[group] / Math.Max(1e-30, Math.Sqrt(dx * dx + dy * dy + dz * dz));
-                        for (int j = 0; j < 3; ++j) delta[k + j] *= Math.Min(1, limit);
-                        double intensityLimit = intensityRadius[group] / settings.Units[k + 3];
-                        delta[k + 3] = BlackBoxOptimizer.Clamp(delta[k + 3], -intensityLimit, intensityLimit);
+                        LimitLampStep(delta, k, settings.Units, positionRadius[group], intensityRadius[group]);
                     }
-                    for (int j = 0; j < n; ++j)
-                    {
-                        probe[j] = BlackBoxOptimizer.Clamp(x[j] + delta[j], 0, 1);
-                        delta[j] = probe[j] - x[j];
-                    }
-                    int shrinks = 0;
-                    while (!Allowed(probe, settings.CandidateAllowed) && shrinks < 10)
-                    {
-                        for (int j = 0; j < n; ++j) probe[j] = x[j] + (delta[j] *= .5);
-                        ++shrinks;
-                    }
+                    int shrinks = FormCandidate(x, delta, probe, settings.CandidateAllowed);
                     bool legal = Allowed(probe, settings.FinalAllowed);
                     bool trialAllowed = Allowed(probe, settings.CandidateAllowed);
                     var predictedByLamp = new double[lamps];
@@ -322,6 +343,50 @@ namespace LightingMvp
                 settings.Query?.Invoke(result.Evaluations, phase, theta, loss, -1, 0);
                 return loss;
             }
+        }
+
+        /// <summary>The first A2 proposal, using the same damping, radii and feasibility backtracking as RunTrust.</summary>
+        public static double[] LampScaledTrustProposal(double[,] gram, double[] gradient, double[] theta, double[] units,
+            Func<double[], bool> legal, out int shrinks)
+        {
+            var step = SolveDamped(gram, gradient, theta, .002, 0, LampDampingScale(gram, theta.Length));
+            for (int k = 0; k < theta.Length; k += 4) LimitLampStep(step, k, units, .24, .28);
+            var candidate = new double[theta.Length];
+            shrinks = FormCandidate(theta, step, candidate, legal);
+            return step;
+        }
+
+        private static double[] LampDampingScale(double[,] gram, int n)
+        {
+            var scale = new double[n / 4];
+            for (int i = 0; i < n; ++i) scale[i / 4] = Math.Max(scale[i / 4], gram[i, i]);
+            double floor = Math.Max(1e-10, 1e-6 * scale.Max());
+            return Enumerable.Range(0, n).Select(i => Math.Max(floor, scale[i / 4])).ToArray();
+        }
+
+        private static void LimitLampStep(double[] delta, int k, double[] units, double positionRadius, double intensityRadius)
+        {
+            double dx = delta[k] * units[k], dy = delta[k + 1] * units[k + 1], dz = delta[k + 2] * units[k + 2];
+            double limit = positionRadius / Math.Max(1e-30, Math.Sqrt(dx * dx + dy * dy + dz * dz));
+            for (int j = 0; j < 3; ++j) delta[k + j] *= Math.Min(1, limit);
+            double intensityLimit = intensityRadius / units[k + 3];
+            delta[k + 3] = BlackBoxOptimizer.Clamp(delta[k + 3], -intensityLimit, intensityLimit);
+        }
+
+        private static int FormCandidate(double[] theta, double[] delta, double[] candidate, Func<double[], bool> legal)
+        {
+            for (int j = 0; j < theta.Length; ++j)
+            {
+                candidate[j] = BlackBoxOptimizer.Clamp(theta[j] + delta[j], 0, 1);
+                delta[j] = candidate[j] - theta[j];
+            }
+            int shrinks = 0;
+            while (!Allowed(candidate, legal) && shrinks < 10)
+            {
+                for (int j = 0; j < theta.Length; ++j) candidate[j] = theta[j] + (delta[j] *= .5);
+                ++shrinks;
+            }
+            return shrinks;
         }
 
         private static double SliceNorm(float[] residual, int from, int to)
