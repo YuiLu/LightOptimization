@@ -18,7 +18,7 @@ namespace LightingMvp.Editor
             private sealed class E25GpuColumns : IDisposable
             {
                 private readonly ComputeShader shader;
-                private readonly ComputeBuffer hard, off, plus, minus, mask, output;
+                private readonly ComputeBuffer hard, off, plus, minus, mask, output, weights;
                 private readonly int kernel, size;
                 private int maskLamp = -1;
                 internal int Columns { get; private set; }
@@ -44,7 +44,8 @@ namespace LightingMvp.Editor
                         shader.SetBuffer(kernel, "_Mask", mask); shader.SetBuffer(kernel, "_Column", output);
                         shader.SetFloat("_Scale", (float)fit.scale); shader.SetInt("_Length", size);
                         shader.SetInt("_ViewChannels", E23ChannelsPerView);
-                        shader.SetVector("_Weights", new Vector4((float)fit.weights[0], (float)fit.weights[1], (float)fit.weights[2], 0));
+                        weights = new ComputeBuffer(fit.weights.Length, sizeof(float));
+                        weights.SetData(fit.weights.Select(w => (float)w).ToArray()); shader.SetBuffer(kernel, "_Weights", weights);
                     }
                     catch { Dispose(); throw; }
                 }
@@ -74,7 +75,7 @@ namespace LightingMvp.Editor
 
                 public void Dispose()
                 {
-                    hard?.Dispose(); off?.Dispose(); plus?.Dispose(); minus?.Dispose(); mask?.Dispose(); output?.Dispose();
+                    hard?.Dispose(); off?.Dispose(); plus?.Dispose(); minus?.Dispose(); mask?.Dispose(); output?.Dispose(); weights?.Dispose();
                     if (shader) Object.DestroyImmediate(shader);
                 }
             }
@@ -115,7 +116,8 @@ namespace LightingMvp.Editor
                     compute.SetBuffer(k, "_Plus", plusBuf); compute.SetBuffer(k, "_Minus", minusBuf);
                     compute.SetBuffer(k, "_Mask", maskBuf); compute.SetBuffer(k, "_Column", outBuf);
                     compute.SetFloat("_Scale", (float)fit.scale);
-                    compute.SetVector("_Weights", new Vector4((float)fit.weights[0], (float)fit.weights[1], (float)fit.weights[2], 0));
+                    using var viewWeights = new ComputeBuffer(fit.weights.Length, sizeof(float));
+                viewWeights.SetData(fit.weights.Select(w => (float)w).ToArray()); compute.SetBuffer(k, "_Weights", viewWeights);
                     compute.SetInt("_Length", fit.Size); compute.SetInt("_ViewChannels", E23ChannelsPerView);
                     foreach (var (label, pose, lamp) in new[] { ("success", success.final, 0), ("failure", failure.final, 0), ("hdr_gt", room.Truth, 0) })
                     {

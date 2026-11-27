@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LightingMvp
@@ -14,6 +15,12 @@ namespace LightingMvp
             public int MaxConsecutiveCandidateRejects; // 0 preserves the default trust-region schedule.
             public double[] Units, PhysicalSteps;
             public int[] ResidualBlocks;
+            public TrustLayout Layout;
+            public TrustFallback Fallback;
+            public int[] ViewBlocks;
+            public bool FixedProbeScale;
+            // Optional physical, per-lamp position test. The original whole-rig check still runs.
+            public Func<double[], int, bool> LampPositionAllowed;
             public bool IndependentLampDamping;
             public TrustNormalMode NormalMode;
             public double PositionRadius = .24, IntensityRadius = .28;
@@ -23,6 +30,8 @@ namespace LightingMvp
             public TrustPositionModel PositionModel;
             public Action<int, string, double[], double, int, double> Query;
             public Action<TrustJacobian> Jacobian;
+            // Diagnostic observer receives borrowed columns, valid only during the callback.
+            public Action<int, float[][]> AuditColumns;
             public Action<TrustTrial> Trial;
             public TrustTiming Timing;
             public bool TraceProposalClipping;
@@ -72,7 +81,9 @@ namespace LightingMvp
             public double[] Damping, PositionRadius, IntensityRadius, Step, PredictedByLamp, ActualByLamp;
             public double[] DampingScale, Theta, UnclippedStep, RadiusLimitedStep;
             public bool Accepted, Legal;
-            public string Status;
+            public string Status, Source, Constraint;
+            public int[] LampShrinks;
+            public double CurrentLoss, ReferenceLoss, ReferenceRatio, BestLoss;
         }
 
         public sealed class TrustResult
@@ -87,10 +98,17 @@ namespace LightingMvp
         public static TrustResult RunTrust(double[] initial, int residualSize, ResidualQuery query, TrustSettings settings)
         {
             int n = initial.Length;
-            if (n <= 0 || n % 4 != 0 || residualSize < 1 || settings.Budget < 2 || settings.Units?.Length != n ||
-                settings.PhysicalSteps?.Length != n || settings.Units.Any(u => !(u > 0)) || settings.PhysicalSteps.Any(h => !(h > 0)))
-                throw new ArgumentException("Expected XYZ/log-intensity units, positive physical steps and a budget.");
-            int lamps = n / 4;
+            var layout = settings.Layout ?? TrustLayout.Legacy(settings.Units, settings.PhysicalSteps);
+            if (n != layout.Count || residualSize < 1 || settings.Budget < 2)
+                throw new ArgumentException("Parameter layout, residual size and budget must agree.");
+            var units = layout.Axes.Select(a => a.Unit).ToArray();
+            int lamps = layout.Lamps;
+            bool viewPool = settings.Fallback is TrustFallback.ViewPool or TrustFallback.ViewPairPool;
+            if (settings.Fallback != TrustFallback.None && (settings.IndependentLampDamping || settings.NativeAcceptance != null))
+                throw new ArgumentException("Recovery proposals require the single native objective.");
+            if (viewPool && (settings.ViewBlocks == null || settings.ViewBlocks.Length != 3 ||
+                settings.ViewBlocks.Any(v => v <= 0) || settings.ViewBlocks.Sum() != residualSize))
+                throw new ArgumentException("The view pool requires three contiguous view blocks.");
             if (settings.ResidualBlocks != null && (settings.ResidualBlocks.Length != lamps || settings.ResidualBlocks.Any(x => x <= 0) ||
                 settings.ResidualBlocks.Sum() != residualSize))
                 throw new ArgumentException("Residual blocks must match the active lamps and residual size.");
@@ -119,17 +137,20 @@ namespace LightingMvp
             double probeScale = 1;
             int consecutiveCandidateRejects = 0;
             int checkCost = settings.NativeAcceptance == null ? 0 : 1;
-            int maxProbes = 2 * (n - (settings.LogIntensityJacobian == null ? 0 : lamps));
+            var history = new Queue<double>();
+            history.Enqueue(f);
+            int uphillInARow = 0, firstUphillModel = 0;
+            int maxProbes = 2 * (n - (settings.LogIntensityJacobian == null ? 0 : layout.Axes.Count(a => a.IsIntensity)));
             var positionModel = settings.PositionModel;
             bool modelIntensity = positionModel?.IntensityColumn != null;
             if (modelIntensity && settings.LogIntensityJacobian != null)
                 throw new ArgumentException("Only one intensity Jacobian provider may be used.");
             if (positionModel != null)
-                maxProbes += positionModel.AnchorCost + 6 * lamps * (positionModel.ProbeCost - 1) +
-                    2 * lamps * (positionModel.IntensityProbeCost - 1);
+                maxProbes += positionModel.AnchorCost + 2 * layout.Axes.Count(a => a.IsPosition) * (positionModel.ProbeCost - 1) +
+                    2 * layout.Axes.Count(a => a.IsIntensity) * (positionModel.IntensityProbeCost - 1);
             // Paired intensity captures are shared with the position model before building XYZ columns.
             var columnOrder = Enumerable.Range(0, n).ToArray();
-            if (modelIntensity) columnOrder = columnOrder.OrderBy(j => j % 4 != 3).ToArray();
+            if (modelIntensity) columnOrder = columnOrder.OrderBy(j => !layout.Axes[j].IsIntensity).ToArray();
 
             while (result.Evaluations + maxProbes + 1 + checkCost <= settings.Budget && result.Jacobians < settings.Iterations)
             {
@@ -147,13 +168,13 @@ namespace LightingMvp
                 foreach (int j in columnOrder)
                 {
                     var col = columns[j];
-                    if (settings.LogIntensityJacobian != null && j % 4 == 3)
+                    if (settings.LogIntensityJacobian != null && layout.Axes[j].IsIntensity)
                     {
-                        settings.LogIntensityJacobian(x, j / 4, col);
+                        settings.LogIntensityJacobian(x, layout.Owners[j], col);
                         stencils[j] = 4;
                         continue;
                     }
-                    double h = settings.PhysicalSteps[j] * probeScale / settings.Units[j];
+                    double h = layout.Axes[j].Step * probeScale / units[j];
                     for (int shrink = 0; shrink < 8; ++shrink, h *= .5)
                     {
                         probe[j] = x[j] + h; bool plus = CanProbe();
@@ -167,14 +188,14 @@ namespace LightingMvp
                             probe[j] = x[j] + 2 * d;
                             second = CanProbe();
                         }
-                        bool intensity = j % 4 == 3;
-                        if (positionModel != null && (!intensity || modelIntensity))
+                        bool intensity = layout.Axes[j].IsIntensity;
+                        if (positionModel != null && (layout.Axes[j].IsPosition || (intensity && modelIntensity)))
                         {
                             int stencil = central ? 3 : second ? 2 : 1;
                             var build = intensity ? positionModel.IntensityColumn : positionModel.Column;
                             build(result.Evaluations + 1, x, j, d, stencil, col);
                             result.Evaluations += (stencil == 1 ? 1 : 2) * (intensity ? positionModel.IntensityProbeCost : positionModel.ProbeCost);
-                            steps[j] = d * settings.Units[j]; stencils[j] = stencil;
+                            steps[j] = d * units[j]; stencils[j] = stencil;
                         }
                         else if (central)
                         {
@@ -182,7 +203,7 @@ namespace LightingMvp
                             probe[j] = x[j] - h; Evaluate(probe, "fd_minus", temporary, j, -h);
                             float scale = (float)(.5 / h);
                             for (int i = 0; i < residualSize; ++i) col[i] = (col[i] - temporary[i]) * scale;
-                            steps[j] = h * settings.Units[j]; stencils[j] = 3;
+                            steps[j] = h * units[j]; stencils[j] = 3;
                         }
                         else
                         {
@@ -198,13 +219,14 @@ namespace LightingMvp
                                 float scale = (float)(1 / d);
                                 for (int i = 0; i < residualSize; ++i) col[i] = (col[i] - center[i]) * scale;
                             }
-                            steps[j] = d * settings.Units[j]; stencils[j] = second ? 2 : 1;
+                            steps[j] = d * units[j]; stencils[j] = second ? 2 : 1;
                         }
                         break;
                     }
                     if (stencils[j] == 0) Array.Clear(col, 0, col.Length);
                     probe[j] = x[j];
                 }
+                settings.AuditColumns?.Invoke(result.Jacobians, columns);
                 long normalStart = settings.Timing == null ? 0 : System.Diagnostics.Stopwatch.GetTimestamp();
                 var gradient = new double[n];
                 var gram = new double[n, n];
@@ -224,11 +246,11 @@ namespace LightingMvp
                 {
                     model = new double[n, n];
                     for (int i = 0; i < n; ++i)
-                    for (int j = 4 * (i / 4); j < 4 * (i / 4 + 1); ++j)
+                    for (int j = layout.Starts[layout.Owners[i]]; j < layout.Starts[layout.Owners[i]] + layout.Widths[layout.Owners[i]]; ++j)
                         model[i, j] = gram[i, j];
                 }
                 else if (settings.NormalMode == TrustNormalMode.LampScaledDense)
-                    dampingScale = LampDampingScale(gram, n);
+                    dampingScale = LampDampingScale(gram, layout);
                 else if (settings.NormalMode == TrustNormalMode.ParameterScaledDense)
                 {
                     var diag = Enumerable.Range(0, n).Select(i => gram[i, i]).ToArray();
@@ -238,10 +260,13 @@ namespace LightingMvp
                 for (int group = 0; group < groups; ++group)
                 {
                     double maxDiagonal = 0;
-                    for (int j = groups == 1 ? 0 : 4 * group; j < (groups == 1 ? n : 4 * (group + 1)); ++j)
+                    for (int j = groups == 1 ? 0 : layout.Starts[group]; j < (groups == 1 ? n : layout.Starts[group] + layout.Widths[group]); ++j)
                         maxDiagonal = Math.Max(maxDiagonal, gram[j, j]);
                     if (damping[group] == 0) damping[group] = dampingScale == null ? Math.Max(1e-10, .002 * maxDiagonal) : .002;
                 }
+                double modelRadius = positionRadius[0], modelIntensityRadius = intensityRadius[0], modelLambda = damping[0];
+                bool poolUsed = false;
+                var uphill = new List<(double[] theta, double[] delta, double predicted, double next, int shrinks)>();
                 bool acceptedIteration = false;
                 for (int attempt = 0; attempt < 7 && result.Evaluations + 1 + checkCost <= settings.Budget; ++attempt)
                 {
@@ -250,20 +275,22 @@ namespace LightingMvp
                     for (int lamp = 0; lamp < lamps; ++lamp)
                     {
                         int group = groups == 1 ? 0 : lamp;
-                        int k = 4 * lamp;
+                        int k = layout.Starts[lamp], width = layout.Widths[lamp];
                         if (groups > 1)
                         {
-                            var block = new double[4, 4];
-                            for (int i = 0; i < 4; ++i)
-                            for (int j = 0; j < 4; ++j) block[i, j] = gram[k + i, k + j];
-                            Array.Copy(TimedSolve(block, gradient.Skip(k).Take(4).ToArray(), x.Skip(k).Take(4).ToArray(),
-                                damping[group], null), 0, delta, k, 4);
+                            var block = new double[width, width];
+                            for (int i = 0; i < width; ++i)
+                            for (int j = 0; j < width; ++j) block[i, j] = gram[k + i, k + j];
+                            Array.Copy(TimedSolve(block, gradient.Skip(k).Take(width).ToArray(), x.Skip(k).Take(width).ToArray(),
+                                damping[group], null), 0, delta, k, width);
                         }
-                        if (unclipped != null) Array.Copy(delta, k, unclipped, k, 4);
-                        LimitLampStep(delta, k, settings.Units, positionRadius[group], intensityRadius[group]);
+                        if (unclipped != null) Array.Copy(delta, k, unclipped, k, width);
+                        LimitLampStep(delta, layout, lamp, positionRadius[group], intensityRadius[group]);
                     }
                     var radiusLimited = settings.TraceProposalClipping ? (double[])delta.Clone() : null;
-                    int shrinks = FormCandidate(x, delta, probe, settings.CandidateAllowed);
+                    int[] lampShrinks = settings.LampPositionAllowed == null ? null : new int[lamps];
+                    string constraint = "none";
+                    int shrinks = BuildCandidate(x, delta, probe, layout, settings.CandidateAllowed, settings.LampPositionAllowed, lampShrinks, out constraint);
                     bool legal = Allowed(probe, settings.FinalAllowed);
                     bool trialAllowed = Allowed(probe, settings.CandidateAllowed);
                     var predictedByLamp = new double[lamps];
@@ -272,7 +299,7 @@ namespace LightingMvp
                     {
                         double p = -2 * gradient[i] * delta[i];
                         for (int j = 0; j < n; ++j) p -= delta[i] * gram[i, j] * delta[j];
-                        predictedByLamp[i / 4] += p;
+                        predictedByLamp[layout.Owners[i]] += p;
                     }
                     double predicted = predictedByLamp.Sum();
                     double actual = double.NaN, ratio = double.NaN, nativeActual = double.NaN, next = f;
@@ -296,8 +323,10 @@ namespace LightingMvp
                             if (!accepted) status = "native_rejected";
                         }
                     }
+                    if (settings.Fallback == TrustFallback.Nonmonotone && legal && !accepted && actual <= 0 && predicted > 0)
+                        uphill.Add(((double[])probe.Clone(), delta, predicted, next, shrinks));
                     settings.Trial?.Invoke(new TrustTrial { Iteration = result.Jacobians, Query = result.Evaluations, Shrinks = shrinks, Status = status,
-                        Accepted = accepted, Legal = legal, Predicted = predicted, Actual = actual, Ratio = ratio, NativeActual = nativeActual,
+                        Accepted = accepted, Legal = legal, Source = "full", Constraint = constraint, LampShrinks = lampShrinks, CurrentLoss = f, BestLoss = result.BestLoss, Predicted = predicted, Actual = actual, Ratio = ratio, NativeActual = nativeActual,
                         PositionRadius = positionRadius, IntensityRadius = intensityRadius, Damping = damping, Step = delta,
                         DampingScale = dampingScale, Theta = probe, UnclippedStep = unclipped, RadiusLimitedStep = radiusLimited,
                         PredictedByLamp = predictedByLamp, ActualByLamp = actualByLamp });
@@ -327,6 +356,8 @@ namespace LightingMvp
                             result.Stop = "consecutive_candidate_rejects_shrunk";
                             break;
                         }
+                        if (viewPool && consecutiveCandidateRejects >= 2 && !poolUsed && TryFallback())
+                        { acceptedIteration = true; break; }
                         continue;
                     }
                     ++result.Accepted;
@@ -337,23 +368,121 @@ namespace LightingMvp
                     if (settings.NativeAcceptance != null) native -= nativeActual;
                     if (legal && f < result.BestLoss)
                     {
+                        firstUphillModel = 0;
                         result.BestLoss = f;
                         result.Best = (double[])x.Clone();
                     }
+                    Remember(f, uphillStep: false);
                     acceptedIteration = true;
                     break;
                 }
                 if (result.Stop == "consecutive_candidate_rejects_shrunk") break;
+                if (!acceptedIteration && !poolUsed && settings.Fallback != TrustFallback.None &&
+                    (!viewPool || settings.FixedProbeScale || probeScale <= .125)) acceptedIteration = TryFallback();
+                if (firstUphillModel > 0 && result.Jacobians - firstUphillModel >= 3)
+                { result.Stop = "nonmonotone_rollback"; f = result.BestLoss; break; }
                 if (!acceptedIteration)
                 {
                     if (result.Evaluations + maxProbes + 1 + checkCost > settings.Budget) break;
-                    if (probeScale <= .125) { result.Stop = "no_decreasing_step"; break; }
+                    if (settings.FixedProbeScale || probeScale <= .125) { result.Stop = "no_decreasing_step"; break; }
                     probeScale *= .5;
                     for (int group = 0; group < groups; ++group)
                     {
                         positionRadius[group] = Math.Max(.012, positionRadius[group]);
                         intensityRadius[group] = Math.Max(.03, intensityRadius[group]);
                         damping[group] = 0;
+                    }
+                }
+
+                bool TryFallback()
+                {
+                    poolUsed = true;
+                    var proposals = new List<(string source, double[] theta, double[] delta, double predicted, int shrinks)>();
+                    if (viewPool)
+                    {
+                        int[] masks = settings.Fallback == TrustFallback.ViewPairPool ? new[] { 1, 2, 4, 3, 5, 6 } : new[] { 1, 2, 4 };
+                        foreach (int mask in masks)
+                        {
+                            var (h, g) = SubsetNormal(columns, center, settings.ViewBlocks, mask);
+                            Add("views_" + mask, TimedSolve(h, g, x, modelLambda, LampDampingScale(h, layout)), 1);
+                        }
+                        proposals = proposals.OrderByDescending(p => p.predicted).ToList();
+                        if (proposals.Count > 0 && proposals[0].predicted <= 0) proposals = proposals.Take(1).ToList();
+                    }
+                    else if (settings.Fallback == TrustFallback.Cauchy)
+                    {
+                        var d = gradient.Select((g, j) => -g / (dampingScale == null ? 1 : dampingScale[j])).ToArray();
+                        double slope = d.Select((v, i) => -v * gradient[i]).Sum();
+                        double curvature = d.Select((v, i) => v * d.Select((w, j) => gram[i, j] * w).Sum()).Sum();
+                        if (slope > 0 && curvature > 0)
+                            foreach (double fraction in new[] { 1d, .5, .25 }) Add("cauchy", d.Select(v => v * slope / curvature).ToArray(), fraction);
+                    }
+                    else if (settings.Fallback == TrustFallback.Nonmonotone && uphillInARow < 2)
+                    {
+                        // Retest, against the bounded reference, only candidates that received a real render.
+                        double reference = history.Max();
+                        foreach (var p in uphill.OrderBy(u => u.next))
+                        {
+                            double rhoRef = (reference - p.next) / p.predicted;
+                            bool take = p.next <= Math.Min(reference, 1.05 * result.BestLoss) && rhoRef >= .02;
+                            Array.Copy(p.theta, probe, n);
+                            if (!take) { Audit("nonmonotone", p.delta, p.predicted, p.next, p.shrinks, false, reference); continue; }
+                            // A rejected trial's residual buffer may have been overwritten. Meter the recapture.
+                            if (result.Evaluations >= settings.Budget) break;
+                            double observed = Evaluate(probe, "nonmonotone_recheck", trialResidual);
+                            take = observed <= Math.Min(reference, 1.05 * result.BestLoss) && (reference - observed) / p.predicted >= .02;
+                            Audit("nonmonotone", p.delta, p.predicted, observed, p.shrinks, take, reference);
+                            if (take) { Accept(observed, true); return true; }
+                            ++result.Rejected;
+                        }
+                    }
+                    foreach (var p in proposals.Take(3))
+                    {
+                        if (result.Evaluations >= settings.Budget) break;
+                        Array.Copy(p.theta, probe, n);
+                        double next = Evaluate(probe, p.source, trialResidual);
+                        bool take = f - next > Math.Max(1e-14, 1e-9 * f);
+                        Audit(p.source, p.delta, p.predicted, next, p.shrinks, take, f);
+                        if (take) { Accept(next, false); return true; }
+                        ++result.Rejected;
+                    }
+                    return false;
+
+                    void Add(string source, double[] d, double fraction)
+                    {
+                        for (int lamp = 0; lamp < lamps; ++lamp) LimitLampStep(d, layout, lamp, modelRadius, modelIntensityRadius);
+                        for (int j = 0; j < n; ++j) d[j] *= fraction;
+                        var candidate = new double[n];
+                        int shrinks = BuildCandidate(x, d, candidate, layout, settings.CandidateAllowed, settings.LampPositionAllowed, null, out _);
+                        double predicted = TrustPredicted(gram, gradient, d);
+                        if (!Allowed(candidate, settings.CandidateAllowed) || !Allowed(candidate, settings.FinalAllowed))
+                        {
+                            settings.Trial?.Invoke(new TrustTrial { Iteration = result.Jacobians, Query = result.Evaluations,
+                                Status = "infeasible", Source = source, Theta = candidate, Step = d, Shrinks = shrinks,
+                                CurrentLoss = f, Predicted = predicted, Actual = double.NaN, PositionRadius = positionRadius,
+                                IntensityRadius = intensityRadius, Damping = damping });
+                            return;
+                        }
+                        if (d.Any(v => v != 0)) proposals.Add((source, candidate, d, predicted, shrinks));
+                    }
+                    void Audit(string source, double[] d, double predicted, double next, int shrinks, bool accepted, double reference)
+                    {
+                        settings.Trial?.Invoke(new TrustTrial { Iteration = result.Jacobians, Query = result.Evaluations,
+                            Source = source, Status = !accepted ? "fallback_rejected" : source == "nonmonotone" ? "nonmonotone_accepted" :
+                                predicted <= 0 ? "accepted_nonpositive_prediction" : "fallback_accepted",
+                            Legal = true, Accepted = accepted, Theta = probe, Step = d, Predicted = predicted, Actual = f - next,
+                            Ratio = predicted > 0 ? (f - next) / predicted : double.NaN, CurrentLoss = f, ReferenceLoss = reference,
+                            ReferenceRatio = predicted > 0 ? (reference - next) / predicted : double.NaN, BestLoss = result.BestLoss,
+                            Shrinks = shrinks, PositionRadius = positionRadius, IntensityRadius = intensityRadius, Damping = damping });
+                    }
+                    void Accept(double next, bool isUphill)
+                    {
+                        ++result.Accepted; consecutiveCandidateRejects = 0;
+                        Array.Copy(probe, x, n); (center, trialResidual) = (trialResidual, center); f = next;
+                        if (f < result.BestLoss) { firstUphillModel = 0; result.BestLoss = f; result.Best = (double[])x.Clone(); }
+                        Remember(f, isUphill);
+                        // Rebuild around the observed point; no trust update from a proxy/reference rho.
+                        positionRadius[0] = modelRadius; intensityRadius[0] = modelIntensityRadius; damping[0] = modelLambda;
                     }
                 }
 
@@ -367,6 +496,15 @@ namespace LightingMvp
             if (result.Jacobians >= settings.Iterations && result.Stop == "budget") result.Stop = "iteration_cap";
             result.LastLoss = f;
             return result;
+
+            void Remember(double loss, bool uphillStep)
+            {
+                if (settings.Fallback != TrustFallback.Nonmonotone) return;
+                if (history.Count == 5) history.Dequeue();
+                history.Enqueue(loss);
+                uphillInARow = uphillStep ? uphillInARow + 1 : 0;
+                if (uphillStep && firstUphillModel == 0) firstUphillModel = result.Jacobians;
+            }
 
             bool CanProbe()
             {
@@ -389,7 +527,7 @@ namespace LightingMvp
                 ++result.Evaluations;
                 double loss = query(theta, phase, values);
                 if (!(loss >= 0) || double.IsInfinity(loss)) throw new InvalidOperationException("Nonfinite residual objective.");
-                settings.Query?.Invoke(result.Evaluations, phase, theta, loss, axis, axis < 0 ? 0 : h * settings.Units[axis]);
+                settings.Query?.Invoke(result.Evaluations, phase, theta, loss, axis, axis < 0 ? 0 : h * units[axis]);
                 return loss;
             }
             double CheckNative(double[] theta, string phase)
@@ -407,28 +545,122 @@ namespace LightingMvp
         public static double[] LampScaledTrustProposal(double[,] gram, double[] gradient, double[] theta, double[] units,
             Func<double[], bool> legal, out int shrinks)
         {
-            var step = SolveDamped(gram, gradient, theta, .002, 0, LampDampingScale(gram, theta.Length));
-            for (int k = 0; k < theta.Length; k += 4) LimitLampStep(step, k, units, .24, .28);
-            var candidate = new double[theta.Length];
-            shrinks = FormCandidate(theta, step, candidate, legal);
+            return LampScaledTrustProposal(gram, gradient, theta, TrustLayout.Legacy(units, units), legal, out shrinks);
+        }
+
+        public static double[] LampScaledTrustProposal(double[,] gram, double[] gradient, double[] theta, TrustLayout layout,
+            Func<double[], bool> legal, out int shrinks, double fraction = 1, bool cauchy = false)
+        {
+            var scale = LampDampingScale(gram, layout);
+            var step = cauchy ? gradient.Select((g, i) => -g / scale[i]).ToArray() : SolveDamped(gram, gradient, theta, .002, 0, scale);
+            if (cauchy)
+            {
+                double slope = -step.Select((v, i) => v * gradient[i]).Sum();
+                double curvature = 2 * slope - TrustPredicted(gram, gradient, step);
+                if (curvature > 0) for (int i = 0; i < step.Length; ++i) step[i] *= slope / curvature;
+            }
+            for (int lamp = 0; lamp < layout.Lamps; ++lamp) LimitLampStep(step, layout, lamp, .24, .28);
+            for (int i = 0; i < step.Length; ++i) step[i] *= fraction;
+            shrinks = FormCandidate(theta, step, new double[theta.Length], legal);
             return step;
         }
 
-        private static double[] LampDampingScale(double[,] gram, int n)
+        public static double TrustPredicted(double[,] h, double[] g, double[] d)
         {
-            var scale = new double[n / 4];
-            for (int i = 0; i < n; ++i) scale[i / 4] = Math.Max(scale[i / 4], gram[i, i]);
-            double floor = Math.Max(1e-10, 1e-6 * scale.Max());
-            return Enumerable.Range(0, n).Select(i => Math.Max(floor, scale[i / 4])).ToArray();
+            double total = 0;
+            for (int i = 0; i < d.Length; ++i)
+            {
+                double p = -2 * g[i] * d[i];
+                for (int j = 0; j < d.Length; ++j) p -= d[i] * h[i, j] * d[j];
+                total += p;
+            }
+            return total;
         }
 
-        private static void LimitLampStep(double[] delta, int k, double[] units, double positionRadius, double intensityRadius)
+        private static (double[,] h, double[] g) SubsetNormal(float[][] columns, float[] residual, int[] blocks, int mask)
         {
-            double dx = delta[k] * units[k], dy = delta[k + 1] * units[k + 1], dz = delta[k + 2] * units[k + 2];
-            double limit = positionRadius / Math.Max(1e-30, Math.Sqrt(dx * dx + dy * dy + dz * dz));
-            for (int j = 0; j < 3; ++j) delta[k + j] *= Math.Min(1, limit);
-            double intensityLimit = intensityRadius / units[k + 3];
-            delta[k + 3] = BlackBoxOptimizer.Clamp(delta[k + 3], -intensityLimit, intensityLimit);
+            int n = columns.Length, start = 0;
+            var h = new double[n, n]; var g = new double[n];
+            for (int v = 0; v < blocks.Length; ++v)
+            {
+                int end = start + blocks[v];
+                if ((mask & (1 << v)) != 0)
+                    for (int i = 0; i < n; ++i)
+                    {
+                        for (int k = start; k < end; ++k) g[i] += (double)columns[i][k] * residual[k];
+                        for (int j = 0; j <= i; ++j)
+                            for (int k = start; k < end; ++k) h[i, j] += (double)columns[i][k] * columns[j][k];
+                    }
+                start = end;
+            }
+            for (int i = 0; i < n; ++i) for (int j = 0; j < i; ++j) h[j, i] = h[i, j];
+            return (h, g);
+        }
+
+        private static double[] LampDampingScale(double[,] gram, TrustLayout layout)
+        {
+            var scale = new double[layout.Lamps];
+            for (int i = 0; i < layout.Count; ++i) scale[layout.Owners[i]] = Math.Max(scale[layout.Owners[i]], gram[i, i]);
+            double floor = Math.Max(1e-10, 1e-6 * scale.Max());
+            return Enumerable.Range(0, layout.Count).Select(i => Math.Max(floor, scale[layout.Owners[i]])).ToArray();
+        }
+
+        private static void LimitLampStep(double[] delta, TrustLayout layout, int lamp, double positionRadius, double intensityRadius)
+        {
+            int from = layout.Starts[lamp], end = from + layout.Widths[lamp];
+            double norm = 0;
+            for (int i = from; i < end; ++i)
+                if (layout.Axes[i].IsPosition) { double dx = delta[i] * layout.Axes[i].Unit; norm += dx * dx; }
+            for (int i = from; i < end; ++i)
+            {
+                var axis = layout.Axes[i];
+                if (axis.IsPosition) delta[i] *= Math.Min(1, (axis.Radius == .24 ? positionRadius : positionRadius * (axis.Radius / .24)) / Math.Max(1e-30, Math.Sqrt(norm)));
+                else
+                {
+                    double radius = axis.IsIntensity ? (axis.Radius == .28 ? intensityRadius : intensityRadius * (axis.Radius / .28)) : Math.Min(axis.MaximumRadius, axis.Radius * intensityRadius / .28);
+                    double limit = radius / axis.Unit;
+                    delta[i] = BlackBoxOptimizer.Clamp(delta[i], -limit, limit);
+                }
+            }
+        }
+
+        private static int BuildCandidate(double[] theta, double[] delta, double[] candidate, TrustLayout layout,
+            Func<double[], bool> legal, Func<double[], int, bool> lampLegal, int[] shrinksByLamp, out string reason)
+        {
+            reason = "none";
+            if (lampLegal == null)
+            {
+                int shrinks = FormCandidate(theta, delta, candidate, legal);
+                if (shrinks != 0) reason = "whole_rig";
+                return shrinks;
+            }
+            for (int j = 0; j < theta.Length; ++j)
+            {
+                candidate[j] = BlackBoxOptimizer.Clamp(theta[j] + delta[j], 0, 1);
+                delta[j] = candidate[j] - theta[j];
+            }
+            for (int lamp = 0; lamp < layout.Lamps; ++lamp)
+            {
+                if (lampLegal(candidate, lamp)) continue;
+                int count = 0, from = layout.Starts[lamp], end = from + layout.Widths[lamp];
+                reason = "lamp_position";
+                do
+                {
+                    for (int j = from; j < end; ++j)
+                        if (layout.Axes[j].IsPosition) candidate[j] = theta[j] + (delta[j] *= .5);
+                    ++count;
+                } while (count < 10 && !lampLegal(candidate, lamp));
+                if (!lampLegal(candidate, lamp))
+                {
+                    for (int j = from; j < end; ++j)
+                        if (layout.Axes[j].IsPosition) { candidate[j] = theta[j]; delta[j] = 0; }
+                    ++count;
+                }
+                if (shrinksByLamp != null) shrinksByLamp[lamp] = count;
+            }
+            if (Allowed(candidate, legal)) return 0;
+            reason = "rig_after_local";
+            return FormCandidate(theta, delta, candidate, legal);
         }
 
         private static int FormCandidate(double[] theta, double[] delta, double[] candidate, Func<double[], bool> legal)

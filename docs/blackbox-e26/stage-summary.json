@@ -1,0 +1,1032 @@
+{
+  "baseline": "81fbfef466efa021d997cdd5482cc557c13a31e3",
+  "total": {
+    "all_camera": 141113,
+    "opt_camera": 134508,
+    "validation_camera": 2299,
+    "diagnostic_camera": 3822,
+    "setup_or_target_camera": 484,
+    "stage_wall_s": 3481.9617248,
+    "opt_wall_s": 2788.5952749,
+    "trials": 103
+  },
+  "stages": {
+    "e26-a-diagnostic-classroom": {
+      "all_camera": 1972,
+      "opt_camera": 1248,
+      "validation_camera": 102,
+      "diagnostic_camera": 594,
+      "setup_or_target_camera": 28,
+      "stage_wall_s": 63.9198433,
+      "opt_wall_s": 27.236352099999998,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+"
+      },
+      "trials": 3
+    },
+    "e26-a-pool-classroom": {
+      "all_camera": 2436,
+      "opt_camera": 2334,
+      "validation_camera": 74,
+      "diagnostic_camera": 0,
+      "setup_or_target_camera": 28,
+      "stage_wall_s": 72.4059551,
+      "opt_wall_s": 49.4377206,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+"
+      },
+      "trials": 2
+    },
+    "e26-b-backtrack-complex": {
+      "all_camera": 9387,
+      "opt_camera": 9285,
+      "validation_camera": 74,
+      "diagnostic_camera": 0,
+      "setup_or_target_camera": 28,
+      "stage_wall_s": 218.4342025,
+      "opt_wall_s": 197.2214945,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 2
+    },
+    "e26-b-fd-classroom": {
+      "all_camera": 569,
+      "opt_camera": 0,
+      "validation_camera": 0,
+      "diagnostic_camera": 555,
+      "setup_or_target_camera": 14,
+      "stage_wall_s": 18.3037542,
+      "opt_wall_s": 0,
+      "source_manifest_sha256": "1f355a46d9e9778aef8d5d405ee73811c69dc0b731b5c9262c5478f73025274c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+"
+      },
+      "trials": 0
+    },
+    "e26-b-fd-complex": {
+      "all_camera": 595,
+      "opt_camera": 0,
+      "validation_camera": 0,
+      "diagnostic_camera": 567,
+      "setup_or_target_camera": 28,
+      "stage_wall_s": 16.849070299999998,
+      "opt_wall_s": 0,
+      "source_manifest_sha256": "1f355a46d9e9778aef8d5d405ee73811c69dc0b731b5c9262c5478f73025274c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 0
+    },
+    "e26-s-classroom": {
+      "all_camera": 9052,
+      "opt_camera": 8922,
+      "validation_camera": 116,
+      "diagnostic_camera": 0,
+      "setup_or_target_camera": 14,
+      "stage_wall_s": 258.7822574,
+      "opt_wall_s": 230.0893963,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+"
+      },
+      "trials": 4
+    },
+    "e26-s-complex": {
+      "all_camera": 18656,
+      "opt_camera": 18480,
+      "validation_camera": 148,
+      "diagnostic_camera": 0,
+      "setup_or_target_camera": 28,
+      "stage_wall_s": 421.62745989999996,
+      "opt_wall_s": 385.98659219999996,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 4
+    },
+    "e26-s-l6-classroom": {
+      "all_camera": 788,
+      "opt_camera": 612,
+      "validation_camera": 148,
+      "diagnostic_camera": 0,
+      "setup_or_target_camera": 28,
+      "stage_wall_s": 48.898730799999996,
+      "opt_wall_s": 11.6993419,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+"
+      },
+      "trials": 4
+    },
+    "e26-c-columns-classroom": {
+      "all_camera": 430,
+      "opt_camera": 0,
+      "validation_camera": 56,
+      "diagnostic_camera": 360,
+      "setup_or_target_camera": 14,
+      "stage_wall_s": 21.4313246,
+      "opt_wall_s": 9.1014314,
+      "source_manifest_sha256": "93bf93667ed1622800a535bc57e59ec08784fffc6dfa234d9d694fd52895c036",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+"
+      },
+      "trials": 2
+    },
+    "e26-c-columns-complex": {
+      "all_camera": 1262,
+      "opt_camera": 0,
+      "validation_camera": 168,
+      "diagnostic_camera": 1080,
+      "setup_or_target_camera": 14,
+      "stage_wall_s": 53.4838483,
+      "opt_wall_s": 24.443861499999997,
+      "source_manifest_sha256": "93bf93667ed1622800a535bc57e59ec08784fffc6dfa234d9d694fd52895c036",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 6
+    },
+    "e26-c-gpu-complex": {
+      "all_camera": 26187,
+      "opt_camera": 25947,
+      "validation_camera": 226,
+      "diagnostic_camera": 0,
+      "setup_or_target_camera": 14,
+      "stage_wall_s": 477.7845384,
+      "opt_wall_s": 433.82761289999996,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 8
+    },
+    "e26-c-numeric-complex": {
+      "all_camera": 179,
+      "opt_camera": 0,
+      "validation_camera": 0,
+      "diagnostic_camera": 165,
+      "setup_or_target_camera": 14,
+      "stage_wall_s": 22.5022587,
+      "opt_wall_s": 0,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 0
+    },
+    "e26-c-replay-classroom-1301": {
+      "all_camera": 5656,
+      "opt_camera": 5586,
+      "validation_camera": 56,
+      "diagnostic_camera": 0,
+      "setup_or_target_camera": 14,
+      "stage_wall_s": 155.39903859999998,
+      "opt_wall_s": 141.8605614,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+"
+      },
+      "trials": 2
+    },
+    "e26-c-replay-complex-1201": {
+      "all_camera": 5795,
+      "opt_camera": 5724,
+      "validation_camera": 57,
+      "diagnostic_camera": 0,
+      "setup_or_target_camera": 14,
+      "stage_wall_s": 140.0095301,
+      "opt_wall_s": 128.6084244,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 2
+    },
+    "e26-c-replay-complex-509": {
+      "all_camera": 8717,
+      "opt_camera": 8646,
+      "validation_camera": 57,
+      "diagnostic_camera": 0,
+      "setup_or_target_camera": 14,
+      "stage_wall_s": 218.57442859999998,
+      "opt_wall_s": 204.97784689999997,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 2
+    },
+    "e26-c-replay-complex-911": {
+      "all_camera": 7229,
+      "opt_camera": 7158,
+      "validation_camera": 57,
+      "diagnostic_camera": 0,
+      "setup_or_target_camera": 14,
+      "stage_wall_s": 170.8802404,
+      "opt_wall_s": 158.86820039999998,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 2
+    },
+    "e26-d-joint-complex-1201": {
+      "all_camera": 4974,
+      "opt_camera": 4920,
+      "validation_camera": 32,
+      "diagnostic_camera": 0,
+      "setup_or_target_camera": 22,
+      "stage_wall_s": 106.8727464,
+      "opt_wall_s": 95.06803769999999,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 2
+    },
+    "e26-d-joint-complex-2003": {
+      "all_camera": 4233,
+      "opt_camera": 4179,
+      "validation_camera": 32,
+      "diagnostic_camera": 0,
+      "setup_or_target_camera": 22,
+      "stage_wall_s": 92.0747196,
+      "opt_wall_s": 80.7217163,
+      "source_manifest_sha256": "93bf93667ed1622800a535bc57e59ec08784fffc6dfa234d9d694fd52895c036",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 2
+    },
+    "e26-d-joint-complex-2909": {
+      "all_camera": 6471,
+      "opt_camera": 6417,
+      "validation_camera": 32,
+      "diagnostic_camera": 0,
+      "setup_or_target_camera": 22,
+      "stage_wall_s": 134.2459849,
+      "opt_wall_s": 123.3317424,
+      "source_manifest_sha256": "93bf93667ed1622800a535bc57e59ec08784fffc6dfa234d9d694fd52895c036",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 2
+    },
+    "e26-d-joint-complex-509": {
+      "all_camera": 4419,
+      "opt_camera": 4365,
+      "validation_camera": 32,
+      "diagnostic_camera": 0,
+      "setup_or_target_camera": 22,
+      "stage_wall_s": 94.42934559999999,
+      "opt_wall_s": 83.43087969999999,
+      "source_manifest_sha256": "93bf93667ed1622800a535bc57e59ec08784fffc6dfa234d9d694fd52895c036",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 2
+    },
+    "e26-d-joint-complex-911": {
+      "all_camera": 5181,
+      "opt_camera": 5127,
+      "validation_camera": 32,
+      "diagnostic_camera": 0,
+      "setup_or_target_camera": 22,
+      "stage_wall_s": 113.11166879999999,
+      "opt_wall_s": 102.0590143,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 2
+    },
+    "e26-d-pair-complex": {
+      "all_camera": 5235,
+      "opt_camera": 5001,
+      "validation_camera": 128,
+      "diagnostic_camera": 84,
+      "setup_or_target_camera": 22,
+      "stage_wall_s": 130.2045169,
+      "opt_wall_s": 87.58249049999999,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 8
+    },
+    "e26-d-single-complex": {
+      "all_camera": 10537,
+      "opt_camera": 10035,
+      "validation_camera": 480,
+      "diagnostic_camera": 0,
+      "setup_or_target_camera": 22,
+      "stage_wall_s": 354.784334,
+      "opt_wall_s": 201.3273731,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 30
+    },
+    "e26-d-small-complex": {
+      "all_camera": 1153,
+      "opt_camera": 522,
+      "validation_camera": 192,
+      "diagnostic_camera": 417,
+      "setup_or_target_camera": 22,
+      "stage_wall_s": 76.9519274,
+      "opt_wall_s": 11.7151844,
+      "source_manifest_sha256": "1619e0c336cba9a13473a53cecfdfe2bf5eba866db3bfb23cb0819aedb9b394c",
+      "input_sha256": "5e7edd73218aefb2d3412968c19e9c9a75f73ba5c01963a986b83c5bdad61574",
+      "hardware": {
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)"
+      },
+      "trials": 12
+    }
+  },
+  "gates": {
+    "A2-dual-view-pool": {
+      "launched": false,
+      "reason": "requires no single-pool benefit and a dual-view decrease at the frozen V3 failure",
+      "single_pool_improved": false,
+      "frozen_pair_has_real_decrease": false
+    },
+    "A2-expansion": {
+      "launched": false,
+      "reason": "L6 passes or halves both errors vs A0",
+      "pool": "single"
+    },
+    "B1-expansion": {
+      "launched": false,
+      "reason": "Complex Far recovery meets position/intensity/legality gate",
+      "B0": false,
+      "B1": false
+    },
+    "C3-GPU-native": {
+      "launched": true,
+      "reason": "native/synthetic C3 column/Gram/gradient/step tolerances",
+      "checks": 93
+    },
+    "D3": {
+      "launched": true,
+      "reason": "D1/D2 both restore six predeclared signed temperature samples and native Hard response is measurable"
+    },
+    "D4": {
+      "launched": true,
+      "reason": "Hard 5D >=5/6, at most one fewer than 4D, each held aggregate within 2 NRMSE points of paired 4D",
+      "hard5": 6,
+      "hard4": 6,
+      "degraded": []
+    },
+    "D5": {
+      "launched": true,
+      "reason": "Hard 10D >=3/4 and both RGB coupling groups pass",
+      "passed": 4,
+      "trials": 4
+    },
+    "D5-outcome": {
+      "completed": 5,
+      "planned": 5,
+      "passed": 4,
+      "meets_research_target": true
+    }
+  },
+  "frozen_input_sha256": {
+    "a_classroom.json": "e54f45fdf36f8e6e9186ab5262e651e2bb01f3ae1540c6fae331b345f0439f46",
+    "a_complex.json": "d9a5bc637c529e3af167fba764cadc70c545e70bde1363edb9d238ae1c345e85",
+    "bc_classroom.json": "25ad617029261ba953941ac7084c11899ea24cf2e46c235e0a0283d7c1405a9a",
+    "bc_complex.json": "d772827c5193ef8503208b36f712dc3ff75806e6c70b34a747034077e534727b",
+    "classroom_low_response.json": "924b3f09cb5adea2163cf1d19c853ca7870ce0fa02a50c697c233069d40ecffe",
+    "e25-a-views-classroom.json": "e5f5f4fe01140607a9739cef2eed58dbdb02c8d8a576335ed98ea94eea47a511",
+    "e25-b-complex.json": "5ebb2e30a497116c58544f0b7428417e34ad1760aee2d44f49761327996a950d",
+    "e25-c-classroom-1301.json": "ce44aea9f46c738515c2920205e73371a3803b1e1a997ff4f12df285b16536d9",
+    "e25-c-classroom-1601.json": "4c80f4407d503424e0a555ae9817b003a60b7faaeba611bf039cca9ae6d15211",
+    "e25-c-complex-1201.json": "3f8f8d05d39b254a1e02d9d8eaaa46eafbf363abce987f3991fade6a8a62bee1",
+    "e25-c-complex-509.json": "d86b6fadec1afdc0cbd714576c4af6dfa5e458d07ae3e763c4a6d2d32ef64f6d",
+    "e25-c-complex-911.json": "3e666c78d9b861941afe7a3b1a3bbfca5e2efa02752bf24c78c80a5ddc66088b",
+    "e25-d-gpu-recovery-131-complex.json": "d4374c66d2eb3ddeb6461f62536bf8beacebdaf364fc3879716a40020fb4926a",
+    "e_classroom.json": "e0803a2f731af3f8116c2962b4cfa79e7928c2ca2c168d5d2224f701d020a5a3",
+    "e_complex.json": "ad6200b117223397e611e4aba21b046a4fc604e81d6f46464eb5a731d5aa44fb",
+    "p_full.json": "14dedd274e98adf6914ffdc97d3f15e7c4b52674ff208f978b9ff674d9033426"
+  },
+  "scene_camera_state": {
+    "e26-a-diagnostic-classroom": {
+      "scene_sha": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+      "camera_sha": "f1f10bee930e615376a29c7818b14f1a64aa823401a63d29b12e94e909436053",
+      "truth_sha": "b5850ccdbd005727010174367181f64519fa4f3129e337a09c4206b53b80e30f",
+      "start_sha": {
+        "L6_seed509_V01_A-log": "5c16fc5f1979c61436760232672d28e86dc2acebdd0a4a63d871b9e9cbcda64b",
+        "L6_seed509_V02_A-log": "5c16fc5f1979c61436760232672d28e86dc2acebdd0a4a63d871b9e9cbcda64b",
+        "L6_seed509_V12_A-log": "5c16fc5f1979c61436760232672d28e86dc2acebdd0a4a63d871b9e9cbcda64b"
+      }
+    },
+    "e26-a-pool-classroom": {
+      "scene_sha": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+      "camera_sha": "f1f10bee930e615376a29c7818b14f1a64aa823401a63d29b12e94e909436053",
+      "truth_sha": "b5850ccdbd005727010174367181f64519fa4f3129e337a09c4206b53b80e30f",
+      "start_sha": {
+        "L6_seed509_A0_A-log": "5c16fc5f1979c61436760232672d28e86dc2acebdd0a4a63d871b9e9cbcda64b",
+        "L6_seed509_A1_A-log": "5c16fc5f1979c61436760232672d28e86dc2acebdd0a4a63d871b9e9cbcda64b"
+      }
+    },
+    "e26-b-backtrack-complex": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {
+        "Far_seed509_B0_A-log": "f87d46e1921f5fc695f959f559772c76d9c34a914f9fd8e205b02de0407adb6c",
+        "Far_seed509_B1_A-log": "f87d46e1921f5fc695f959f559772c76d9c34a914f9fd8e205b02de0407adb6c"
+      }
+    },
+    "e26-b-fd-classroom": {
+      "scene_sha": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+      "camera_sha": "f1f10bee930e615376a29c7818b14f1a64aa823401a63d29b12e94e909436053",
+      "truth_sha": "b5850ccdbd005727010174367181f64519fa4f3129e337a09c4206b53b80e30f",
+      "start_sha": {}
+    },
+    "e26-b-fd-complex": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {}
+    },
+    "e26-s-classroom": {
+      "scene_sha": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+      "camera_sha": "f1f10bee930e615376a29c7818b14f1a64aa823401a63d29b12e94e909436053",
+      "truth_sha": "b5850ccdbd005727010174367181f64519fa4f3129e337a09c4206b53b80e30f",
+      "start_sha": {
+        "dir1301_10cm_S0_C3": "ec6f13a74f767b419daf569024fea3085e19a0e429d1028f1238b5360a3f9513",
+        "dir1301_10cm_S0fixed_C3": "ec6f13a74f767b419daf569024fea3085e19a0e429d1028f1238b5360a3f9513",
+        "dir1301_10cm_S1_C3": "ec6f13a74f767b419daf569024fea3085e19a0e429d1028f1238b5360a3f9513",
+        "dir1301_10cm_S2_C3": "ec6f13a74f767b419daf569024fea3085e19a0e429d1028f1238b5360a3f9513"
+      }
+    },
+    "e26-s-complex": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {
+        "seed509_complex_far_S0_A-log": "f87d46e1921f5fc695f959f559772c76d9c34a914f9fd8e205b02de0407adb6c",
+        "seed509_complex_far_S0fixed_A-log": "f87d46e1921f5fc695f959f559772c76d9c34a914f9fd8e205b02de0407adb6c",
+        "seed509_complex_far_S1_A-log": "f87d46e1921f5fc695f959f559772c76d9c34a914f9fd8e205b02de0407adb6c",
+        "seed509_complex_far_S2_A-log": "f87d46e1921f5fc695f959f559772c76d9c34a914f9fd8e205b02de0407adb6c"
+      }
+    },
+    "e26-s-l6-classroom": {
+      "scene_sha": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+      "camera_sha": "f1f10bee930e615376a29c7818b14f1a64aa823401a63d29b12e94e909436053",
+      "truth_sha": "b5850ccdbd005727010174367181f64519fa4f3129e337a09c4206b53b80e30f",
+      "start_sha": {
+        "seed509_classroom_near_oracle_L6_V3_S0_A-log": "01ce1219788bf81390536614a9f396cccb4cb59f8720a2c43e6c576e7e9a4fd8",
+        "seed509_classroom_near_oracle_L6_V3_S0fixed_A-log": "01ce1219788bf81390536614a9f396cccb4cb59f8720a2c43e6c576e7e9a4fd8",
+        "seed509_classroom_near_oracle_L6_V3_S1_A-log": "01ce1219788bf81390536614a9f396cccb4cb59f8720a2c43e6c576e7e9a4fd8",
+        "seed509_classroom_near_oracle_L6_V3_S2_A-log": "01ce1219788bf81390536614a9f396cccb4cb59f8720a2c43e6c576e7e9a4fd8"
+      }
+    },
+    "e26-c-columns-classroom": {
+      "scene_sha": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+      "camera_sha": "f1f10bee930e615376a29c7818b14f1a64aa823401a63d29b12e94e909436053",
+      "truth_sha": "b5850ccdbd005727010174367181f64519fa4f3129e337a09c4206b53b80e30f",
+      "start_sha": {
+        "dir1301_10cm_columns_implicit_C3": "ec6f13a74f767b419daf569024fea3085e19a0e429d1028f1238b5360a3f9513",
+        "dir1301_10cm_columns_explicit_C3": "ec6f13a74f767b419daf569024fea3085e19a0e429d1028f1238b5360a3f9513"
+      }
+    },
+    "e26-c-columns-complex": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {
+        "dir911_20cm_columns_implicit_C3": "52129fb3fd64201a29ed9d6f8e057c48a94e3b4a552ee9c3b817640b0ab561d4",
+        "dir911_20cm_columns_explicit_C3": "52129fb3fd64201a29ed9d6f8e057c48a94e3b4a552ee9c3b817640b0ab561d4",
+        "dir1201_30cm_columns_implicit_C3": "db969374d1a1a0f198b681397cd2c906c7804dd41adfa00abe35f4d88e32bf72",
+        "dir1201_30cm_columns_explicit_C3": "db969374d1a1a0f198b681397cd2c906c7804dd41adfa00abe35f4d88e32bf72",
+        "seed509_complex_far_columns_implicit_C3": "f87d46e1921f5fc695f959f559772c76d9c34a914f9fd8e205b02de0407adb6c",
+        "seed509_complex_far_columns_explicit_C3": "f87d46e1921f5fc695f959f559772c76d9c34a914f9fd8e205b02de0407adb6c"
+      }
+    },
+    "e26-c-gpu-complex": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {
+        "seed131_warmup_C3-cache": "df5e671f9c09576f899b65cb77cde0cae684be77af01dc47327a817eff44339e",
+        "seed131_warmup_C3-gpu": "df5e671f9c09576f899b65cb77cde0cae684be77af01dc47327a817eff44339e",
+        "seed131_rep1_C3-cache": "df5e671f9c09576f899b65cb77cde0cae684be77af01dc47327a817eff44339e",
+        "seed131_rep1_C3-gpu": "df5e671f9c09576f899b65cb77cde0cae684be77af01dc47327a817eff44339e",
+        "seed131_rep2_C3-gpu": "df5e671f9c09576f899b65cb77cde0cae684be77af01dc47327a817eff44339e",
+        "seed131_rep2_C3-cache": "df5e671f9c09576f899b65cb77cde0cae684be77af01dc47327a817eff44339e",
+        "seed131_rep3_C3-cache": "df5e671f9c09576f899b65cb77cde0cae684be77af01dc47327a817eff44339e",
+        "seed131_rep3_C3-gpu": "df5e671f9c09576f899b65cb77cde0cae684be77af01dc47327a817eff44339e"
+      }
+    },
+    "e26-c-numeric-complex": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {}
+    },
+    "e26-c-replay-classroom-1301": {
+      "scene_sha": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+      "camera_sha": "f1f10bee930e615376a29c7818b14f1a64aa823401a63d29b12e94e909436053",
+      "truth_sha": "b5850ccdbd005727010174367181f64519fa4f3129e337a09c4206b53b80e30f",
+      "start_sha": {
+        "dir1301_10cm_legacy-layout_C3": "ec6f13a74f767b419daf569024fea3085e19a0e429d1028f1238b5360a3f9513",
+        "dir1301_10cm_explicit-layout_C3": "ec6f13a74f767b419daf569024fea3085e19a0e429d1028f1238b5360a3f9513"
+      }
+    },
+    "e26-c-replay-complex-1201": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {
+        "dir1201_30cm_legacy-layout_C3": "db969374d1a1a0f198b681397cd2c906c7804dd41adfa00abe35f4d88e32bf72",
+        "dir1201_30cm_explicit-layout_C3": "db969374d1a1a0f198b681397cd2c906c7804dd41adfa00abe35f4d88e32bf72"
+      }
+    },
+    "e26-c-replay-complex-509": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {
+        "seed509_complex_far_legacy-layout_C3": "f87d46e1921f5fc695f959f559772c76d9c34a914f9fd8e205b02de0407adb6c",
+        "seed509_complex_far_explicit-layout_C3": "f87d46e1921f5fc695f959f559772c76d9c34a914f9fd8e205b02de0407adb6c"
+      }
+    },
+    "e26-c-replay-complex-911": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {
+        "dir911_20cm_legacy-layout_C3": "52129fb3fd64201a29ed9d6f8e057c48a94e3b4a552ee9c3b817640b0ab561d4",
+        "dir911_20cm_explicit-layout_C3": "52129fb3fd64201a29ed9d6f8e057c48a94e3b4a552ee9c3b817640b0ab561d4"
+      }
+    },
+    "e26-d-joint-complex-1201": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {},
+      "color_truth_sha": "0152aaa3f766378badf8bf557dd4495e5a9c097eb1d07c29f9a864ac277f9190",
+      "color_start_sha": {
+        "D5_seed1201_C3_35D": "cbc2517cfc9cf6df0dd583facc34eca1afda360898aff8ca200bcecda3b753b6",
+        "D5_seed1201_C3_28D": "9e4c8e6bdfdd23638ac480219eba030e195a203d39117f4d5c6a3c05ef464c46"
+      }
+    },
+    "e26-d-joint-complex-2003": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {},
+      "color_truth_sha": "0152aaa3f766378badf8bf557dd4495e5a9c097eb1d07c29f9a864ac277f9190",
+      "color_start_sha": {
+        "D5_seed2003_C3_35D": "94a943f630b123364b7dba8aca6a6129c7b60a75232d9a410d8b4128a7509922",
+        "D5_seed2003_C3_28D": "4c5f8a139ac290c367e7c5506de710b2e81f2b3eff53e0a3122c5536a0b4084d"
+      }
+    },
+    "e26-d-joint-complex-2909": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {},
+      "color_truth_sha": "0152aaa3f766378badf8bf557dd4495e5a9c097eb1d07c29f9a864ac277f9190",
+      "color_start_sha": {
+        "D5_seed2909_C3_35D": "5c943851194612d6a5b7e240ea3ea32047c41aa824c667ac0ce4159da0ce3b01",
+        "D5_seed2909_C3_28D": "9ac674f2d95165d37d97e98c904d2f2d4cad8849c89541bdf3b2928ebf1b35b6"
+      }
+    },
+    "e26-d-joint-complex-509": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {},
+      "color_truth_sha": "0152aaa3f766378badf8bf557dd4495e5a9c097eb1d07c29f9a864ac277f9190",
+      "color_start_sha": {
+        "D5_seed509_C3_35D": "bff28f9c259ece7de9557d8cb27fd909b35e5209091cc5909168a1674652c1e9",
+        "D5_seed509_C3_28D": "af2c764dc20a7de7aa3181ee2abf1634d9ba1574b0a1d5cf490d8cee293dd8ba"
+      }
+    },
+    "e26-d-joint-complex-911": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {},
+      "color_truth_sha": "0152aaa3f766378badf8bf557dd4495e5a9c097eb1d07c29f9a864ac277f9190",
+      "color_start_sha": {
+        "D5_seed911_C3_35D": "d9ce85e38d23afce0a1b2da14c1c2b02db7be9e2c18b7b5c5979f0e5afd5e57a",
+        "D5_seed911_C3_28D": "949fcee0d7dc69fa1bea899351f1eaa173c4942fa02eec8176772729a4bf7185"
+      }
+    },
+    "e26-d-pair-complex": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {},
+      "color_truth_sha": "0152aaa3f766378badf8bf557dd4495e5a9c097eb1d07c29f9a864ac277f9190",
+      "color_start_sha": {
+        "D4_low_seed911_C3_10D": "3afcef335dbbc04191f53e3495992ec5725ecf9a670429306a6d1e58df5ae65f",
+        "D4_low_seed911_C3_8D": "4aec5f997cfd09507b43cbd6534bbc8d2c9cd3c49a1b2ac02f1568405017b548",
+        "D4_low_seed1201_C3_10D": "b4d8e665c3a89529d8d49cad6974bb4e4f7dc186d939b97daeb78e60a34f4f0f",
+        "D4_low_seed1201_C3_8D": "0013b10fe36e77c21160f1136dc32d884501e8e2ae8561e77aaadd046da0dc56",
+        "D4_high_seed911_C3_10D": "4d26ec58f83c2c624526ab3454c5afce476f6d13c90ac999f6fe85b56d7de867",
+        "D4_high_seed911_C3_8D": "4eeb7db6fd9ac04b618c1d8f7af03295bf446b10f4cfd0cce00387cd1d5fc936",
+        "D4_high_seed1201_C3_10D": "3ffee3611f2e1d5a3090ce959f440a711f031b3cb4b72f9ad96f46a85dd69f2f",
+        "D4_high_seed1201_C3_8D": "157eaf595db730c3c66361ef81dbf7df60cc77d0c8fa909cd358f4f6c6e9c0df"
+      }
+    },
+    "e26-d-single-complex": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {},
+      "color_truth_sha": "0152aaa3f766378badf8bf557dd4495e5a9c097eb1d07c29f9a864ac277f9190",
+      "color_start_sha": {
+        "D3_L1_seed911_C3_5D": "a9fa51edc5289be9192db7a95576b5a3d2d7c9a7f47691468b78e551af3a0476",
+        "D3_L1_seed911_C3_4D": "b5fe83f0d676d8b843b5e43f3f95a3e1b5bd0c6190e07ddcde39e1983cc39007",
+        "D3_L1_seed911_H1_5D": "a9fa51edc5289be9192db7a95576b5a3d2d7c9a7f47691468b78e551af3a0476",
+        "D3_L1_seed911_A-log_5D": "a9fa51edc5289be9192db7a95576b5a3d2d7c9a7f47691468b78e551af3a0476",
+        "D3_L1_seed911_A-log_4D": "b5fe83f0d676d8b843b5e43f3f95a3e1b5bd0c6190e07ddcde39e1983cc39007",
+        "D3_L1_seed1201_C3_5D": "9293128d193a85ba39cacde01fc8ba1c0f5042d4bd6bc536415330e4405c0b77",
+        "D3_L1_seed1201_C3_4D": "b5b3ecb16d9188cec8b64bd7049e04e8ad18697060e7abde0e1165a5bb6af42d",
+        "D3_L1_seed1201_H1_5D": "9293128d193a85ba39cacde01fc8ba1c0f5042d4bd6bc536415330e4405c0b77",
+        "D3_L1_seed1201_A-log_5D": "9293128d193a85ba39cacde01fc8ba1c0f5042d4bd6bc536415330e4405c0b77",
+        "D3_L1_seed1201_A-log_4D": "b5b3ecb16d9188cec8b64bd7049e04e8ad18697060e7abde0e1165a5bb6af42d",
+        "D3_L3_seed911_C3_5D": "58567cd595a582302b9e82f03ed5e9c4015e37403d6d023027edea7895b2b748",
+        "D3_L3_seed911_C3_4D": "6aa96961e27361ef37d36804c84b344904eab30271392c489259215a6c3f814b",
+        "D3_L3_seed911_H1_5D": "58567cd595a582302b9e82f03ed5e9c4015e37403d6d023027edea7895b2b748",
+        "D3_L3_seed911_A-log_5D": "58567cd595a582302b9e82f03ed5e9c4015e37403d6d023027edea7895b2b748",
+        "D3_L3_seed911_A-log_4D": "6aa96961e27361ef37d36804c84b344904eab30271392c489259215a6c3f814b",
+        "D3_L3_seed1201_C3_5D": "f08d3f2bdac69ad7e6eaffe7c0278430297fc73692f2471a05c300e760533a75",
+        "D3_L3_seed1201_C3_4D": "f80d3df20d61e04bd6947b238d4a6161f28e3c3e672f2c5fd0cbd3aaad8a030f",
+        "D3_L3_seed1201_H1_5D": "f08d3f2bdac69ad7e6eaffe7c0278430297fc73692f2471a05c300e760533a75",
+        "D3_L3_seed1201_A-log_5D": "f08d3f2bdac69ad7e6eaffe7c0278430297fc73692f2471a05c300e760533a75",
+        "D3_L3_seed1201_A-log_4D": "f80d3df20d61e04bd6947b238d4a6161f28e3c3e672f2c5fd0cbd3aaad8a030f",
+        "D3_L6_seed911_C3_5D": "e40689be8626ccfa8ac0c0b3050a21dddc6b6bce8175d3d068f046b216c57724",
+        "D3_L6_seed911_C3_4D": "5222b32f1d5d1f64b1938d20a19389331b0039b484cff9a1a718ac075c07108f",
+        "D3_L6_seed911_H1_5D": "e40689be8626ccfa8ac0c0b3050a21dddc6b6bce8175d3d068f046b216c57724",
+        "D3_L6_seed911_A-log_5D": "e40689be8626ccfa8ac0c0b3050a21dddc6b6bce8175d3d068f046b216c57724",
+        "D3_L6_seed911_A-log_4D": "5222b32f1d5d1f64b1938d20a19389331b0039b484cff9a1a718ac075c07108f",
+        "D3_L6_seed1201_C3_5D": "7a8b2c6c9b060723257017fdf2f2104f0805702d7c0d6d4148039165b7e07047",
+        "D3_L6_seed1201_C3_4D": "cea771423725720066a082885dcbf459f4825d3b4ea3276ace2570460381c584",
+        "D3_L6_seed1201_H1_5D": "7a8b2c6c9b060723257017fdf2f2104f0805702d7c0d6d4148039165b7e07047",
+        "D3_L6_seed1201_A-log_5D": "7a8b2c6c9b060723257017fdf2f2104f0805702d7c0d6d4148039165b7e07047",
+        "D3_L6_seed1201_A-log_4D": "cea771423725720066a082885dcbf459f4825d3b4ea3276ace2570460381c584"
+      }
+    },
+    "e26-d-small-complex": {
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "camera_sha": "790b418cfae2e7da1fa3dc91fce762f9497575065326b72efda0998034cad167",
+      "truth_sha": "2acce892b1ff6d57637b1549bf804e0e4d13732f7f9d9b8fb9887db35322e468",
+      "start_sha": {},
+      "color_truth_sha": "0152aaa3f766378badf8bf557dd4495e5a9c097eb1d07c29f9a864ac277f9190",
+      "color_start_sha": {
+        "D1_L1_minus20_H1_1D": "fee3ca69e5a32c0663b02a287a6dceeab98360e41ef33ceba942e22198cd82a4",
+        "D2_L1_minus20_H1_2D": "bf57195f63fb9bfb53cf4f80f969d9ecc041e5ba58d24ef85d9a88fd6d4c3690",
+        "D1_L1_plus40_H1_1D": "2e7bfffedeb063c45d4cde1c1ed8ff6888dca789f6fb74930125b4de93985724",
+        "D2_L1_plus40_H1_2D": "59c0bb49f6a7ccb90634b53060f14227d491bcdfea7940b75b79a239eb4deedd",
+        "D1_L2_minus40_H1_1D": "5fd885d61347a71682ab8df3bcda3e312220fbe4436d0060dd68ba61ee8d43df",
+        "D2_L2_minus40_H1_2D": "a3cfe3c0641c6a17756a06d7b9831c04bd08050f1538ebcdb2ee9903bd81263c",
+        "D1_L2_plus20_H1_1D": "f9da7c4964739673505b3da232b51acb88da7d3566bb156bd08558b9d6716b6f",
+        "D2_L2_plus20_H1_2D": "a598627f9043ecb2e61d08f26b40d8d5ea8227e251627b47fd8cf1289fe75975",
+        "D1_L3_minus20_H1_1D": "72a8c493b44617d0c7e797b9c1f9b8deb8d88ebe09bae7e60fce1f9f9d008b3a",
+        "D2_L3_minus20_H1_2D": "d155c5fccb4e063f588041e17a5cd23d8029acb6cc403ce983fb55c3e8a88113",
+        "D1_L3_plus40_H1_1D": "b6742d26e7bb876c94d56fb6bb1ef1353c993d7853cffb0fb3da17f8dec78fd5",
+        "D2_L3_plus40_H1_2D": "384c07116a32662950f8d5003c2ce97eb12f635cb5d513fbd6333a84cc51e81b"
+      }
+    }
+  },
+  "cpu_layout_parity": [
+    {
+      "baseline": "81fbfef466efa021d997cdd5482cc557c13a31e3",
+      "experiment": "e26-c-replay-classroom-1301",
+      "scene": "classroom",
+      "seed": "1301",
+      "comparison": "implicit_E26",
+      "reference_images": 2793,
+      "new_images": 2793,
+      "reference_models": 15,
+      "new_models": 15,
+      "ref_pass": 0,
+      "new_pass": 0,
+      "column_norm_max_abs": 0.0,
+      "gram_max_abs": 0.0,
+      "gradient_max_abs": 0.0,
+      "physical_step_max_abs": 0.0,
+      "normalized_final_max_abs": 0.0,
+      "column_norm_step_abs_tolerance": 1e-06,
+      "normalized_final_abs_tolerance": 1e-07,
+      "trajectory_same": 1,
+      "budget_same": 1,
+      "parity_pass": 1
+    },
+    {
+      "baseline": "81fbfef466efa021d997cdd5482cc557c13a31e3",
+      "experiment": "e26-c-replay-classroom-1301",
+      "scene": "classroom",
+      "seed": "1301",
+      "comparison": "archived_E25",
+      "reference_images": 3159,
+      "new_images": 2793,
+      "reference_models": 17,
+      "new_models": 15,
+      "ref_pass": 0,
+      "new_pass": 0,
+      "column_norm_max_abs": 16.366156949704063,
+      "gram_max_abs": 1278.6655553296973,
+      "gradient_max_abs": 0.013300833048530962,
+      "physical_step_max_abs": 0.0299999992703335,
+      "normalized_final_max_abs": 3.398500682194605e-05,
+      "column_norm_step_abs_tolerance": 1e-06,
+      "normalized_final_abs_tolerance": 1e-07,
+      "trajectory_same": 0,
+      "budget_same": 0,
+      "parity_pass": 0
+    },
+    {
+      "baseline": "81fbfef466efa021d997cdd5482cc557c13a31e3",
+      "experiment": "e26-c-replay-complex-1201",
+      "scene": "complex",
+      "seed": "1201",
+      "comparison": "implicit_E26",
+      "reference_images": 2862,
+      "new_images": 2862,
+      "reference_models": 16,
+      "new_models": 16,
+      "ref_pass": 1,
+      "new_pass": 1,
+      "column_norm_max_abs": 0.0,
+      "gram_max_abs": 0.0,
+      "gradient_max_abs": 0.0,
+      "physical_step_max_abs": 0.0,
+      "normalized_final_max_abs": 0.0,
+      "column_norm_step_abs_tolerance": 1e-06,
+      "normalized_final_abs_tolerance": 1e-07,
+      "trajectory_same": 1,
+      "budget_same": 1,
+      "parity_pass": 1
+    },
+    {
+      "baseline": "81fbfef466efa021d997cdd5482cc557c13a31e3",
+      "experiment": "e26-c-replay-complex-1201",
+      "scene": "complex",
+      "seed": "1201",
+      "comparison": "archived_E25",
+      "reference_images": 3039,
+      "new_images": 2862,
+      "reference_models": 17,
+      "new_models": 16,
+      "ref_pass": 1,
+      "new_pass": 1,
+      "column_norm_max_abs": 6.173519280894268e-05,
+      "gram_max_abs": 0.0006448961159293276,
+      "gradient_max_abs": 1.347185379141358e-06,
+      "physical_step_max_abs": 2.0320269013279367e-06,
+      "normalized_final_max_abs": 1.0456923305035559e-07,
+      "column_norm_step_abs_tolerance": 1e-06,
+      "normalized_final_abs_tolerance": 1e-07,
+      "trajectory_same": 0,
+      "budget_same": 0,
+      "parity_pass": 0
+    },
+    {
+      "baseline": "81fbfef466efa021d997cdd5482cc557c13a31e3",
+      "experiment": "e26-c-replay-complex-509",
+      "scene": "complex",
+      "seed": "509",
+      "comparison": "implicit_E26",
+      "reference_images": 4323,
+      "new_images": 4323,
+      "reference_models": 24,
+      "new_models": 24,
+      "ref_pass": 1,
+      "new_pass": 1,
+      "column_norm_max_abs": 0.0,
+      "gram_max_abs": 0.0,
+      "gradient_max_abs": 0.0,
+      "physical_step_max_abs": 0.0,
+      "normalized_final_max_abs": 0.0,
+      "column_norm_step_abs_tolerance": 1e-06,
+      "normalized_final_abs_tolerance": 1e-07,
+      "trajectory_same": 1,
+      "budget_same": 1,
+      "parity_pass": 1
+    },
+    {
+      "baseline": "81fbfef466efa021d997cdd5482cc557c13a31e3",
+      "experiment": "e26-c-replay-complex-509",
+      "scene": "complex",
+      "seed": "509",
+      "comparison": "archived_E25",
+      "reference_images": 4632,
+      "new_images": 4323,
+      "reference_models": 26,
+      "new_models": 24,
+      "ref_pass": 1,
+      "new_pass": 1,
+      "column_norm_max_abs": 0.30755440789243327,
+      "gram_max_abs": 6.484200867573307,
+      "gradient_max_abs": 0.04857335165923582,
+      "physical_step_max_abs": 0.007760992021462604,
+      "normalized_final_max_abs": 6.114473665297382e-05,
+      "column_norm_step_abs_tolerance": 1e-06,
+      "normalized_final_abs_tolerance": 1e-07,
+      "trajectory_same": 0,
+      "budget_same": 0,
+      "parity_pass": 0
+    },
+    {
+      "baseline": "81fbfef466efa021d997cdd5482cc557c13a31e3",
+      "experiment": "e26-c-replay-complex-911",
+      "scene": "complex",
+      "seed": "911",
+      "comparison": "implicit_E26",
+      "reference_images": 3579,
+      "new_images": 3579,
+      "reference_models": 20,
+      "new_models": 20,
+      "ref_pass": 1,
+      "new_pass": 1,
+      "column_norm_max_abs": 0.0,
+      "gram_max_abs": 0.0,
+      "gradient_max_abs": 0.0,
+      "physical_step_max_abs": 0.0,
+      "normalized_final_max_abs": 0.0,
+      "column_norm_step_abs_tolerance": 1e-06,
+      "normalized_final_abs_tolerance": 1e-07,
+      "trajectory_same": 1,
+      "budget_same": 1,
+      "parity_pass": 1
+    },
+    {
+      "baseline": "81fbfef466efa021d997cdd5482cc557c13a31e3",
+      "experiment": "e26-c-replay-complex-911",
+      "scene": "complex",
+      "seed": "911",
+      "comparison": "archived_E25",
+      "reference_images": 3756,
+      "new_images": 3579,
+      "reference_models": 21,
+      "new_models": 20,
+      "ref_pass": 1,
+      "new_pass": 1,
+      "column_norm_max_abs": 0.00016692193921663545,
+      "gram_max_abs": 0.0015254425460931031,
+      "gradient_max_abs": 3.0431188047495388e-06,
+      "physical_step_max_abs": 1.7073350441889148e-06,
+      "normalized_final_max_abs": 5.9338307489831266e-08,
+      "column_norm_step_abs_tolerance": 1e-06,
+      "normalized_final_abs_tolerance": 1e-07,
+      "trajectory_same": 0,
+      "budget_same": 0,
+      "parity_pass": 0
+    }
+  ]
+}

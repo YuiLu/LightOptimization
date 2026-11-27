@@ -1,0 +1,13 @@
+experiment,baseline,scene,scene_sha,camera_cap,view_ids,shadows,lamp,bound_kelvin,temperature_step_mired,stencil,legal,derivative_l2_per_mired
+e26-d-small-complex,81fbfef466efa021d997cdd5482cc557c13a31e3,Complex,ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52,diagnostic,0;1;2,Hard,1,2500,-5,2,1,0.00052968288799370284
+e26-d-small-complex,81fbfef466efa021d997cdd5482cc557c13a31e3,Complex,ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52,diagnostic,0;1;2,Hard,1,9000,5,2,1,0.0013139894746310012
+e26-d-small-complex,81fbfef466efa021d997cdd5482cc557c13a31e3,Complex,ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52,diagnostic,0;1;2,None,1,2500,-5,2,1,0.00052122284839845284
+e26-d-small-complex,81fbfef466efa021d997cdd5482cc557c13a31e3,Complex,ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52,diagnostic,0;1;2,None,1,9000,5,2,1,0.0013430317912166288
+e26-d-small-complex,81fbfef466efa021d997cdd5482cc557c13a31e3,Complex,ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52,diagnostic,0;1;2,Hard,2,2500,-5,2,1,0.00040124164942811821
+e26-d-small-complex,81fbfef466efa021d997cdd5482cc557c13a31e3,Complex,ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52,diagnostic,0;1;2,Hard,2,9000,5,2,1,0.00099379957073054644
+e26-d-small-complex,81fbfef466efa021d997cdd5482cc557c13a31e3,Complex,ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52,diagnostic,0;1;2,None,2,2500,-5,2,1,0.00039390596537492952
+e26-d-small-complex,81fbfef466efa021d997cdd5482cc557c13a31e3,Complex,ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52,diagnostic,0;1;2,None,2,9000,5,2,1,0.001009070120504276
+e26-d-small-complex,81fbfef466efa021d997cdd5482cc557c13a31e3,Complex,ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52,diagnostic,0;1;2,Hard,3,2500,-5,2,1,0.00038292652132568495
+e26-d-small-complex,81fbfef466efa021d997cdd5482cc557c13a31e3,Complex,ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52,diagnostic,0;1;2,Hard,3,9000,5,2,1,0.0013023006035663201
+e26-d-small-complex,81fbfef466efa021d997cdd5482cc557c13a31e3,Complex,ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52,diagnostic,0;1;2,None,3,2500,-5,2,1,0.000369088188746842
+e26-d-small-complex,81fbfef466efa021d997cdd5482cc557c13a31e3,Complex,ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52,diagnostic,0;1;2,None,3,9000,5,2,1,0.0012547079112706608

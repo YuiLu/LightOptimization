@@ -6,7 +6,7 @@ StructuredBuffer<float> _Plus;
 StructuredBuffer<float> _Minus;
 StructuredBuffer<float> _Mask;
 RWStructuredBuffer<float> _Column;
-float4 _Weights;
+StructuredBuffer<float> _Weights;
 float _Scale, _A, _B;
 int _Length, _ViewChannels, _Stencil, _Masked;
 

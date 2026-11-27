@@ -26,7 +26,7 @@ namespace LightingMvp.Editor
                 bool hardAnchor = model != "C1";
                 if (cachedMapping && !anchored) throw new ArgumentException("Cached mapping requires C3 or C4.");
                 var hardMapped = cachedMapping ? new float[E23Channels] : null;
-                var probeRig = cachedMapping ? new double[settings.Units.Length] : null;
+                var probeRig = cachedMapping ? new double[settings.Layout?.Count ?? settings.Units.Length] : null;
                 var hard = new float[E23Channels]; var off = new float[E23Channels];
                 var plus = new float[E23Channels]; var minus = new float[E23Channels];
                 var hardA = hardPosition || masked ? new float[E23Channels] : null;
@@ -58,11 +58,12 @@ namespace LightingMvp.Editor
                     var (a, b) = E24Weights(d, stencil);
                     if (offPosition) Probe(ref q, x, j, d, stencil, LightShadows.None, "xyz", plus, minus);
                     if (hardPosition) Probe(ref q, x, j, d, stencil, LightShadows.Hard, "xyz", hardA, hardB);
-                    var v = masked ? mask[j / 4] : null;
+                    int owner = settings.Layout?.Owner(j) ?? j / 4;
+                    var v = masked ? mask[owner] : null;
                     long begin = E25Counter.Now(metrics);
                     if (gpu != null)
                     {
-                        gpu.Position(plus, minus, v, j / 4, d, stencil, column);
+                        gpu.Position(plus, minus, v, owner, d, stencil, column);
                         if (metrics != null) metrics.mapTicks += E25Counter.Now(metrics) - begin;
                         return;
                     }
@@ -112,7 +113,7 @@ namespace LightingMvp.Editor
                     }
                     if (metrics != null) metrics.mapTicks += E25Counter.Now(metrics) - begin;
                     begin = E25Counter.Now(metrics);
-                    E24Mask(hardA, plus, mask[j / 4], norms, E24RelativeThreshold, audit, state, "model", query, active[j / 4], d * settings.Units[j], stencil,
+                    E24Mask(hardA, plus, mask[settings.Layout?.Owner(j) ?? j / 4], norms, E24RelativeThreshold, audit, state, "model", query, active[settings.Layout?.Owner(j) ?? j / 4], d * (settings.Layout?.Axis(j).Unit ?? settings.Units[j]), stencil,
                         fallback: model == "C4-soft" ? .5f : 1f);
                     if (metrics != null) metrics.maskTicks += E25Counter.Now(metrics) - begin;
                 }
@@ -121,13 +122,13 @@ namespace LightingMvp.Editor
                 {
                     var shifted = probeRig ?? (double[])x.Clone();
                     if (probeRig != null) Array.Copy(x, shifted, x.Length);
-                    int coordinate = active[j / 4] * 4 + j % 4;
+                    int coordinate = active[settings.Layout?.Owner(j) ?? j / 4] * 4 + (settings.Layout == null ? j % 4 : (int)settings.Layout.Axis(j).Coordinate);
                     shifted[j] += d;
-                    capture(q++, expand(shifted), shadows, phase, coordinate, d * settings.Units[j], p);
+                    capture(q++, expand(shifted), shadows, phase, coordinate, d * (settings.Layout?.Axis(j).Unit ?? settings.Units[j]), p);
                     if (stencil == 1) return;
                     double next = stencil == 3 ? -d : 2 * d;
                     shifted[j] = x[j] + next;
-                    capture(q++, expand(shifted), shadows, phase, coordinate, next * settings.Units[j], m);
+                    capture(q++, expand(shifted), shadows, phase, coordinate, next * (settings.Layout?.Axis(j).Unit ?? settings.Units[j]), m);
                 }
             }
 

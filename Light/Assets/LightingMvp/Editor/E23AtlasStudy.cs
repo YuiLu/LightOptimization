@@ -20,6 +20,7 @@ namespace LightingMvp.Editor
             {
                 internal int width, height;
                 internal int[] visible;
+                internal Color[] finalColors;
                 internal (int lamp, int face, int size, int x, int y, int requested, float depth, float normal, float guard)[] faces;
                 internal string Signature => width + "x" + height + "|" + string.Join(";", visible) + "|" + string.Join(";", faces.Select(f =>
                     $"{f.lamp}:{f.face}:{f.size}:{f.x}:{f.y}:{F(f.depth)}:{F(f.normal)}:{F(f.guard)}"));
@@ -32,12 +33,13 @@ namespace LightingMvp.Editor
                 private static readonly FieldInfo shadowPass = typeof(UniversalRenderer).GetField("m_AdditionalLightsShadowCasterPass", Fields);
                 private readonly E23AtlasFeature feature;
                 private readonly Light[] lamps;
+                private readonly bool observeColors;
                 private List<ScriptableRendererFeature> attached;
                 private E23Layout result;
 
-                internal E23AtlasObserver(Light[] lights)
+                internal E23AtlasObserver(Light[] lights, bool observeColors = false)
                 {
-                    lamps = lights;
+                    lamps = lights; this.observeColors = observeColors;
                     feature = ScriptableObject.CreateInstance<E23AtlasFeature>();
                     feature.hideFlags = HideFlags.HideAndDontSave;
                     feature.observe = Read;
@@ -87,6 +89,15 @@ namespace LightingMvp.Editor
                     var shadow = data.shadowData;
                     int[] present = Enumerable.Range(0, visible.Length).Select(i => Array.IndexOf(lamps, visible[i].light) + 1).Where(l => l > 0).OrderBy(l => l).ToArray();
                     var layout = new E23Layout { visible = present };
+                    if (observeColors)
+                    {
+                        layout.finalColors = Enumerable.Repeat(new Color(float.NaN, float.NaN, float.NaN), lamps.Length).ToArray();
+                        for (int i = 0; i < visible.Length; ++i)
+                        {
+                            int lampIndex = Array.IndexOf(lamps, visible[i].light);
+                            if (lampIndex >= 0) layout.finalColors[lampIndex] = visible[i].finalColor;
+                        }
+                    }
                     var slices = type.GetField("m_AdditionalLightsShadowSlices", Fields)?.GetValue(pass) as ShadowSliceData[];
                     var plane = type.GetField("m_GlobalShadowSliceIndexToPerLightShadowSliceIndex", Fields)?.GetValue(pass) as List<int>;
                     var map = type.GetField("m_ShadowSliceToAdditionalLightIndex", Fields)?.GetValue(pass) as List<int>;

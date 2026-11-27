@@ -18,24 +18,25 @@ namespace LightingMvp.Editor
                 internal int[] stencils;
             }
 
-            private (double d, int stencil) E25Stencil(double[] at, int axis, double physical)
+            private (double d, int stencil) E25Stencil(double[] at, int axis, double physical, Func<double[], bool> legal = null)
             {
+                legal ??= room.Contains;
                 var moved = (double[])at.Clone();
                 double h = physical / units[axis % 4];
                 for (int n = 0; n < 8; ++n, h *= .5)
                 {
-                    moved[axis] = at[axis] + h; bool plus = room.Contains(moved);
-                    moved[axis] = at[axis] - h; bool minus = room.Contains(moved);
+                    moved[axis] = at[axis] + h; bool plus = legal(moved);
+                    moved[axis] = at[axis] - h; bool minus = legal(moved);
                     if (!plus && !minus) continue;
                     if (plus && minus) return (h, 3);
                     double d = plus ? h : -h;
                     moved[axis] = at[axis] + 2 * d;
-                    return (d, room.Contains(moved) ? 2 : 1);
+                    return (d, legal(moved) ? 2 : 1);
                 }
                 return (0, 0);
             }
 
-            private E25LocalModel E25Local(double[] rig, int[] active, double step, E23FrameObjective objective, Action<double[], float[]> capture)
+            private E25LocalModel E25Local(double[] rig, int[] active, double step, E23FrameObjective objective, Action<double[], float[]> capture, Func<double[], bool> legal = null)
             {
                 int n = 4 * active.Length, length = objective.Size;
                 var m = new E25LocalModel { anchor = new float[length], residual = new float[length],
@@ -46,7 +47,7 @@ namespace LightingMvp.Editor
                 for (int j = 0; j < n; ++j)
                 {
                     int axis = 4 * active[j / 4] + j % 4;
-                    var (d, stencil) = E25Stencil(rig, axis, j % 4 == 3 ? .04 : step);
+                    var (d, stencil) = E25Stencil(rig, axis, j % 4 == 3 ? .04 : step, legal);
                     m.steps[j] = d * units[j % 4]; m.stencils[j] = stencil;
                     if (stencil == 0) continue;
                     var moved = (double[])rig.Clone();

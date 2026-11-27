@@ -276,7 +276,7 @@ namespace LightingMvp.Editor
                         trialLog.WriteLine(string.Join(",", arm.id, segment, t.Iteration, queryOffset + t.Query, Flag(t.Legal),
                             Flag(t.Accepted), t.Status, t.Shrinks, F(t.Predicted), F(t.Actual), F(t.Ratio), F(t.NativeActual),
                             Series(t.PositionRadius), Series(t.IntensityRadius), Series(t.Damping), Series(t.Step.Select((x, i) => x * units[indices[i] % 4])),
-                            Series(t.PredictedByLamp), Series(t.ActualByLamp)));
+                            Series(t.PredictedByLamp ?? Array.Empty<double>()), Series(t.ActualByLamp ?? Array.Empty<double>())));
                     }
                 };
                 configure?.Invoke(settings, Expand);

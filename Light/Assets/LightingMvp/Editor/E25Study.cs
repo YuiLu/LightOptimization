@@ -91,11 +91,12 @@ namespace LightingMvp.Editor
                 Action<double[], float[]> customCapture = null, E21Signal surface = null, int iterations = int.MaxValue,
                 Action<E21Trial, Frame[]> extra = null, bool saveImages = true,
                 Action<ImageJacobianLm.TrustJacobian> modelObserver = null,
-                Action<ImageJacobianLm.TrustTrial, double[]> acceptedObserver = null)
+                Action<ImageJacobianLm.TrustTrial, double[]> acceptedObserver = null,
+                Action<ImageJacobianLm.TrustSettings, Func<double[], double[]>> configureRun = null)
             {
                 views ??= E25DefaultViews;
                 fitBackend ??= low;
-                bool useProxy = method is "C3" or "C4" or "C3-cache" or "C4-cache" or "C4-gpu";
+                bool useProxy = method is "C3" or "C4" or "C3-cache" or "C4-cache" or "C4-gpu" or "C3-gpu";
                 var mapping = method is "H0" or "A-raw" ? Mapping.Raw : Mapping.SignedLog;
                 double scale = native.shadows ? e24HardScale : E22Scale(native);
                 fit ??= new E23FrameObjective(native.fit, mapping, scale);
@@ -111,7 +112,7 @@ namespace LightingMvp.Editor
                 var frame = new float[fit.Size];
                 int otherStart = low.RenderCount + high.RenderCount + (fitBackend == low ? 0 : fitBackend.RenderCount);
                 using var observer = native.shadows ? new E23AtlasObserver(lights) : null;
-                using var gpu = method == "C4-gpu" ? new E25GpuColumns(fit) : null;
+                using var gpu = method is "C4-gpu" or "C3-gpu" ? new E25GpuColumns(fit) : null;
                 LightShadows mode = native.shadows ? LightShadows.Hard : LightShadows.None;
                 var signal = surface ?? new E21Signal(fit.mapping.ToString(), fit.Size, (rig, residual) =>
                 {
@@ -147,7 +148,7 @@ namespace LightingMvp.Editor
                             settings.Trial = t =>
                             {
                                 existingTrial(t);
-                                if (settings.TraceProposalClipping)
+                                if (e25Clip != null && settings.TraceProposalClipping && t.UnclippedStep != null)
                                     for (int j = 0; j < active.Length; ++j)
                                     {
                                         int offset = 4 * j;
@@ -169,7 +170,7 @@ namespace LightingMvp.Editor
                             settings.Query = (q, phase, x, loss, axis, offset) =>
                             {
                                 existingQuery(q, phase, x, loss, axis, offset);
-                                if (phase == "trial") latestLoss = loss;
+                                if (phase == "trial" || phase.StartsWith("views_", StringComparison.Ordinal) || phase is "cauchy" or "nonmonotone_recheck") latestLoss = loss;
                                 e25Queries.WriteLine(string.Join(",", id, q, cameras, phase, surface == null ? mode.ToString() : "surface",
                                     axis < 0 ? -1 : 4 * active[axis / 4] + axis % 4, F(offset), queryCost, Series(expand(x))));
                             };
@@ -178,6 +179,7 @@ namespace LightingMvp.Editor
                                 var existingJac = settings.Jacobian;
                                 settings.Jacobian = j => { existingJac(j); modelObserver(j); };
                             }
+                            configureRun?.Invoke(settings, expand);
                         });
                     metered = false;
                     wall = sw.Elapsed.TotalSeconds; cpu = (process.TotalProcessorTime - cpuBefore).TotalSeconds;
