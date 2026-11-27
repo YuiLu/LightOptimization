@@ -1,0 +1,45 @@
+#pragma kernel AnchoredFd
+
+StructuredBuffer<float> _Hard;
+StructuredBuffer<float> _Off;
+StructuredBuffer<float> _Plus;
+StructuredBuffer<float> _Minus;
+StructuredBuffer<float> _Mask;
+RWStructuredBuffer<float> _Column;
+float4 _Weights;
+float _Scale, _A, _B;
+int _Length, _ViewChannels, _Stencil, _Masked;
+
+float SignedLog(float x)
+{
+    float q = abs(x) / _Scale;
+    // Near zero the float addition in log(1+x) rounds off meaningful HDR signal.
+    float mapped = q < 0.001 ? q * (1.0 - q * (0.5 - q / 3.0)) : log(1.0 + q);
+    return x < 0.0 ? -mapped : mapped;
+}
+
+[numthreads(256, 1, 1)]
+void AnchoredFd(uint3 tid : SV_DispatchThreadID)
+{
+    uint i = tid.x;
+    if (i >= uint(_Length)) return;
+    float v = _Masked != 0 ? _Mask[i / 3] : 1.0;
+    precise float p = _Hard[i] + v * (_Plus[i] - _Off[i]);
+    float value;
+    if (_Stencil == 3)
+    {
+        precise float m = _Hard[i] + v * (_Minus[i] - _Off[i]);
+        value = _A * (SignedLog(p) - SignedLog(m));
+    }
+    else
+    {
+        float h = SignedLog(_Hard[i]);
+        value = _A * (SignedLog(p) - h);
+        if (_Stencil == 2)
+        {
+            precise float m = _Hard[i] + v * (_Minus[i] - _Off[i]);
+            value += _B * (SignedLog(m) - h);
+        }
+    }
+    _Column[i] = _Weights[i / uint(_ViewChannels)] * value;
+}

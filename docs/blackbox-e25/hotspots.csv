@@ -1,0 +1,28 @@
+stage,state,view,source,x,y,peak_rgb,top1pct_energy,renderer_id,material_id,renderer_name,material_name,opaque_mesh_geometry_boundary,repeat_nrmse
+a-classroom,initial,0,native448,293,169,79.434024877347397,0.99965145543350742,-2712,-1674,ceillingLamp_light fixture L6,ceillingLamp_light,1,0
+a-classroom,initial,0,native896,586,338,79.692229579759001,0.99964213230648891,-2712,-1674,ceillingLamp_light fixture L6,ceillingLamp_light,1,0
+a-classroom,initial,0,box896,293,169,75.764259407659495,0.9996252041582333,-2712,-1674,ceillingLamp_light fixture L6,ceillingLamp_light,1,NaN
+a-classroom,initial,1,native448,14,199,77.818407020107273,0.99946232265638213,-2712,-1674,ceillingLamp_light fixture L6,ceillingLamp_light,1,0
+a-classroom,initial,1,native896,28,398,80.491316939066053,0.99946347545700853,-2712,-1674,ceillingLamp_light fixture L6,ceillingLamp_light,0,0
+a-classroom,initial,1,box896,14,199,76.712505423967528,0.9994536519238022,-2712,-1674,ceillingLamp_light fixture L6,ceillingLamp_light,1,NaN
+a-classroom,initial,2,native448,335,192,0.01348351580077542,0.94956335542787862,-1516,-1506,beigePaint,beigePaint,1,0
+a-classroom,initial,2,native896,616,350,0.020560635700849851,0.95038322441861489,-2314,-2304,varnishedWoodDoor,varnishedWoodDoor,1,0
+a-classroom,initial,2,box896,335,192,0.013452593023727843,0.94099565758207326,-1516,-1506,beigePaint,beigePaint,1,NaN
+a-classroom,e24_failed,0,native448,299,175,6.5880556917329915,0.9590458728768495,-2652,-1660,ceilingLamp_metal fixture L6,ceilingLamp_metal,1,0
+a-classroom,e24_failed,0,native896,596,341,3.3717442430532354,0.95501377746402127,-2712,-1674,ceillingLamp_light fixture L6,ceillingLamp_light,1,0
+a-classroom,e24_failed,0,box896,298,170,3.2884509848719365,0.95382318674553024,-2712,-1674,ceillingLamp_light fixture L6,ceillingLamp_light,1,NaN
+a-classroom,e24_failed,1,native448,16,197,2.6842235948332367,0.98073777786418781,-2712,-1674,ceillingLamp_light fixture L6,ceillingLamp_light,1,0
+a-classroom,e24_failed,1,native896,3,421,22.702263432080493,0.98562432547602163,-2652,-1660,ceilingLamp_metal fixture L6,ceilingLamp_metal,1,0
+a-classroom,e24_failed,1,box896,1,210,5.6755658580201231,0.98162383684250021,-2712,-1674,ceillingLamp_light fixture L6,ceillingLamp_light,1,NaN
+a-classroom,e24_failed,2,native448,298,179,0.020779565609501841,0.99295985053524216,-2314,-2304,varnishedWoodDoor,varnishedWoodDoor,1,0
+a-classroom,e24_failed,2,native896,616,350,0.022399319049586336,0.99301050906270605,-2314,-2304,varnishedWoodDoor,varnishedWoodDoor,1,0
+a-classroom,e24_failed,2,box896,335,192,0.013813172004633108,0.99093792199789965,-1516,-1506,beigePaint,beigePaint,1,NaN
+a-classroom,gt,0,native448,0,0,0,0,,,,,0,0
+a-classroom,gt,0,native896,0,0,0,0,,,,,0,0
+a-classroom,gt,0,box896,0,0,0,0,,,,,0,NaN
+a-classroom,gt,1,native448,0,0,0,0,,,,,0,0
+a-classroom,gt,1,native896,0,0,0,0,,,,,0,0
+a-classroom,gt,1,box896,0,0,0,0,,,,,0,NaN
+a-classroom,gt,2,native448,0,0,0,0,,,,,0,0
+a-classroom,gt,2,native896,0,0,0,0,,,,,0,0
+a-classroom,gt,2,box896,0,0,0,0,,,,,0,NaN

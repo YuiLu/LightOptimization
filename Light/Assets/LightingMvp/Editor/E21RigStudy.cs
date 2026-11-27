@@ -177,7 +177,7 @@ namespace LightingMvp.Editor
 
             private E21Trial RunArm(string scenario, string method, int[] lamps, double[] initial, MbdRgbTarget gt, E21Signal signal,
                 int cap, double step, string policy = "strict", bool nativeGate = false, bool independent = false,
-                Func<E21Trial, double[]> partition = null, Action<E21Trial, Frame[], MbdRgbTarget, string> validation = null)
+                Func<E21Trial, double[]> partition = null, Action<E21Trial, Frame[], MbdRgbTarget, string> validation = null, bool saveImages = true)
             {
                 int budget = smoke ? Math.Min(80, cap) : cap;
                 var arm = new E21Trial { id = $"{scenario}_{method}", scenario = scenario, method = method, lamps = lamps.Select(i => i + 1).ToArray(),
@@ -202,10 +202,10 @@ namespace LightingMvp.Editor
                 arm.intensityRelative = lamps.Select(i => Math.Abs(room.PowerOf(arm.final, i) / room.PowerOf(room.Truth, i) - 1)).ToArray();
                 arm.pass = arm.legal && arm.positionCm.All(x => x <= 5) && arm.intensityRelative.All(x => x <= .05);
                 string path = CapturePath(arm.id);
-                SaveFrames(frames, path, "best", stage[4] == 'd' && !stage.StartsWith("e22-", StringComparison.Ordinal));
+                if (saveImages) SaveFrames(frames, path, "best", stage[4] == 'd' && !stage.StartsWith("e22-", StringComparison.Ordinal));
                 validation?.Invoke(arm, frames, gt, path);
                 Apply(initial, gt.shadows);
-                NativeRenderBackend.Save(high.Capture(0), E19HighW, E19HighH, Path.Combine(path, "initial_v0"));
+                if (saveImages) NativeRenderBackend.Save(high.Capture(0), E19HighW, E19HighH, Path.Combine(path, "initial_v0"));
                 arm.seconds = timer.Elapsed.TotalSeconds;
                 arm.nativeCameraRenders = low.RenderCount + high.RenderCount - renders;
                 arm.shadowFaces = shadowFaces - faces;

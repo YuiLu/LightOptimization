@@ -14,21 +14,24 @@ namespace LightingMvp.Editor
             private const string E24VisibilityHeader = "state,purpose,query,lamp,view,physical_step,stencil,relative_threshold,p95_off,absolute_threshold,epsilon,hard_l2,off_l2,low_pct,unreliable_pct,negative_channel_pct,raw_negative_pct,raw_above_one_pct,raw_mean,raw_min,raw_max,fit_relative,mean_cosine,mask_mean,mask_lt_05_pct";
             private const int E24PixelsPerView = E23ChannelsPerView / 3;
             private const float E24RelativeThreshold = .001f;
-            private static bool E24Proxy(string model) => model is "H2" or "H4" or "H5" or "H3" or "C1" or "C3" or "C4";
+            private static bool E24Proxy(string model) => model is "H2" or "H4" or "H5" or "H3" or "C1" or "C3" or "C4" or "C4-soft";
 
             private void E24Configure(ImageJacobianLm.TrustSettings settings, Func<double[], double[]> expand, int[] active,
-                string model, E23FrameObjective objective, E24Capture capture, string state, StreamWriter audit = null)
+                string model, E23FrameObjective objective, E24Capture capture, string state, StreamWriter audit = null, bool cachedMapping = false, E25Counter metrics = null, E25GpuColumns gpu = null)
             {
                 settings.NormalMode = ImageJacobianLm.TrustNormalMode.LampScaledDense;
                 if (!E24Proxy(model)) return;
-                bool masked = model is "H4" or "H5" or "C4", anchored = model is "C3" or "C4";
+                bool masked = model is "H4" or "H5" or "C4" or "C4-soft", anchored = model is "C3" or "C4" or "C4-soft";
                 bool hardPosition = model is "H3" or "H5", offPosition = model != "H3";
                 bool hardAnchor = model != "C1";
+                if (cachedMapping && !anchored) throw new ArgumentException("Cached mapping requires C3 or C4.");
+                var hardMapped = cachedMapping ? new float[E23Channels] : null;
+                var probeRig = cachedMapping ? new double[settings.Units.Length] : null;
                 var hard = new float[E23Channels]; var off = new float[E23Channels];
                 var plus = new float[E23Channels]; var minus = new float[E23Channels];
                 var hardA = hardPosition || masked ? new float[E23Channels] : null;
                 var hardB = hardA == null ? null : new float[E23Channels];
-                var weights = new double[E23Channels];
+                var weights = cachedMapping ? null : new double[E23Channels];
                 var mask = masked ? active.Select(_ => new float[E23Channels / 3]).ToArray() : null;
                 var norms = masked ? new float[E24PixelsPerView] : null;
                 settings.PositionModel = new ImageJacobianLm.TrustPositionModel(Flag(hardAnchor) + Flag(offPosition),
@@ -39,9 +42,15 @@ namespace LightingMvp.Editor
                 {
                     if (hardAnchor) capture(q++, expand(x), LightShadows.Hard, "anchor", -1, 0, hard);
                     if (offPosition) capture(q, expand(x), LightShadows.None, "anchor", -1, 0, off);
+                    long begin = E25Counter.Now(metrics);
+                    gpu?.Anchor(hard, off);
+                    if (hardMapped != null)
+                        for (int i = 0; i < hardMapped.Length; ++i) hardMapped[i] = objective.Transform(hard[i]);
+                    if (weights != null)
                     for (int i = 0; i < weights.Length; ++i)
                         weights[i] = objective.weights[i / E23ChannelsPerView] * (objective.mapping == Mapping.Raw || anchored ? 1 : E23Derivative(hard[i], objective.mapping, objective.scale));
-                    if (masked) foreach (var v in mask) Array.Fill(v, 1);
+                    if (masked) foreach (var v in mask) Array.Fill(v, model == "C4-soft" ? .5f : 1f);
+                    if (metrics != null) metrics.mapTicks += E25Counter.Now(metrics) - begin;
                 }
 
                 void Position(int q, double[] x, int j, double d, int stencil, float[] column)
@@ -50,6 +59,19 @@ namespace LightingMvp.Editor
                     if (offPosition) Probe(ref q, x, j, d, stencil, LightShadows.None, "xyz", plus, minus);
                     if (hardPosition) Probe(ref q, x, j, d, stencil, LightShadows.Hard, "xyz", hardA, hardB);
                     var v = masked ? mask[j / 4] : null;
+                    long begin = E25Counter.Now(metrics);
+                    if (gpu != null)
+                    {
+                        gpu.Position(plus, minus, v, j / 4, d, stencil, column);
+                        if (metrics != null) metrics.mapTicks += E25Counter.Now(metrics) - begin;
+                        return;
+                    }
+                    if (cachedMapping)
+                    {
+                        E25CachedColumn(objective, hard, hardMapped, off, plus, minus, v, d, stencil, column);
+                        if (metrics != null) metrics.mapTicks += E25Counter.Now(metrics) - begin;
+                        return;
+                    }
                     for (int i = 0; i < column.Length; ++i)
                     {
                         float k = v == null ? 1 : v[i / 3];
@@ -69,6 +91,7 @@ namespace LightingMvp.Editor
                         }
                         column[i] = (float)(weights[i] * result);
                     }
+                    if (metrics != null) metrics.mapTicks += E25Counter.Now(metrics) - begin;
                 }
 
                 void Intensity(int q, double[] x, int j, double d, int stencil, float[] column)
@@ -77,21 +100,27 @@ namespace LightingMvp.Editor
                     var (a, b) = E24Weights(d, stencil);
                     Probe(ref q, x, j, d, stencil, LightShadows.Hard, "intensity", hardA, hardB);
                     Probe(ref q, x, j, d, stencil, LightShadows.None, "intensity", plus, minus);
+                    long begin = E25Counter.Now(metrics);
                     for (int i = 0; i < column.Length; ++i)
                     {
-                        float h = objective.Transform(hard[i]);
-                        double p = objective.Transform(hardA[i]) - h;
-                        double m = stencil == 1 ? 0 : objective.Transform(hardB[i]) - h;
-                        column[i] = (float)(objective.weights[i / E23ChannelsPerView] * (a * p + b * m));
+                        float h = hardMapped == null ? objective.Transform(hard[i]) : hardMapped[i];
+                        float p0 = objective.Transform(hardA[i]), m0 = stencil == 1 ? 0 : objective.Transform(hardB[i]);
+                        double value = cachedMapping && stencil == 3 ? a * ((double)p0 - m0) : a * (p0 - h) + b * (stencil == 1 ? 0 : m0 - h);
+                        column[i] = (float)(objective.weights[i / E23ChannelsPerView] * value);
                         hardA[i] = (float)(a * (hardA[i] - hard[i]) + b * (hardB[i] - hard[i]));
                         plus[i] = (float)(a * (plus[i] - off[i]) + b * (minus[i] - off[i]));
                     }
-                    E24Mask(hardA, plus, mask[j / 4], norms, E24RelativeThreshold, audit, state, "model", query, active[j / 4], d * settings.Units[j], stencil);
+                    if (metrics != null) metrics.mapTicks += E25Counter.Now(metrics) - begin;
+                    begin = E25Counter.Now(metrics);
+                    E24Mask(hardA, plus, mask[j / 4], norms, E24RelativeThreshold, audit, state, "model", query, active[j / 4], d * settings.Units[j], stencil,
+                        fallback: model == "C4-soft" ? .5f : 1f);
+                    if (metrics != null) metrics.maskTicks += E25Counter.Now(metrics) - begin;
                 }
 
                 void Probe(ref int q, double[] x, int j, double d, int stencil, LightShadows shadows, string phase, float[] p, float[] m)
                 {
-                    var shifted = (double[])x.Clone();
+                    var shifted = probeRig ?? (double[])x.Clone();
+                    if (probeRig != null) Array.Copy(x, shifted, x.Length);
                     int coordinate = active[j / 4] * 4 + j % 4;
                     shifted[j] += d;
                     capture(q++, expand(shifted), shadows, phase, coordinate, d * settings.Units[j], p);
@@ -125,7 +154,7 @@ namespace LightingMvp.Editor
             }
 
             private static void E24Mask(float[] h, float[] o, float[] mask, float[] norm, float relative,
-                StreamWriter audit, string state, string purpose, int seq, int lamp, double step, int stencil)
+                StreamWriter audit, string state, string purpose, int seq, int lamp, double step, int stencil, float fallback = 1f)
             {
                 for (int view = 0; view < E19FitViews; ++view)
                 {
@@ -140,7 +169,7 @@ namespace LightingMvp.Editor
                     {
                         double a = h[k], b = h[k + 1], c = h[k + 2], x = o[k], y = o[k + 1], z = o[k + 2];
                         double hh = a * a + b * b + c * c, oo = x * x + y * y + z * z, dot = a * x + b * y + c * z;
-                        double raw = dot / (oo + epsilon), clamp = Math.Max(0, Math.Min(1, raw)), v = 1;
+                        double raw = dot / (oo + epsilon), clamp = Math.Max(0, Math.Min(1, raw)), v = fallback;
                         ch2 += hh; co2 += oo;
                         if (a < -floor || b < -floor || c < -floor || x < -floor || y < -floor || z < -floor) ++neg;
                         // Compare the unclamped ratio and color alignment before deciding if this is a usable scalar model.

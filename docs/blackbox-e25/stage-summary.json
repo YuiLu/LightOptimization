@@ -1,0 +1,1440 @@
+{
+  "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+  "core_c_complete": true,
+  "stages": {
+    "c-classroom-1301": {
+      "scene": "classroom",
+      "scene_sha": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-c-classroom-1301",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "eb32f323d77251520883b7cb2a65063bbac2695c2a2f1b836570080b3cb1aad6"
+      },
+      "native_cameras": 13610,
+      "surface_renders": 0,
+      "wall_s": 322.36401109999997,
+      "arms": [
+        {
+          "id": "dir1301_10cm_H0",
+          "method": "H0",
+          "scenario": "dir1301_10cm",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 10.858359932899475,
+          "max_intensity_relative": 0.347618903520557,
+          "stop": "no_decreasing_step"
+        },
+        {
+          "id": "dir1301_10cm_C3",
+          "method": "C3",
+          "scenario": "dir1301_10cm",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 8.049076795578003,
+          "max_intensity_relative": 0.14441917865595832,
+          "stop": "no_decreasing_step"
+        },
+        {
+          "id": "dir1301_10cm_C4",
+          "method": "C4",
+          "scenario": "dir1301_10cm",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 10.030309855937958,
+          "max_intensity_relative": 0.05686059289182477,
+          "stop": "no_decreasing_step"
+        },
+        {
+          "id": "dir1301_10cm_A-log",
+          "method": "A-log",
+          "scenario": "dir1301_10cm",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 7.99680208274367e-05,
+          "max_intensity_relative": 4.7244960066361585e-07,
+          "stop": "near_zero_residual"
+        }
+      ]
+    },
+    "c-classroom-1601": {
+      "scene": "classroom",
+      "scene_sha": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-c-classroom-1601",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "eb32f323d77251520883b7cb2a65063bbac2695c2a2f1b836570080b3cb1aad6"
+      },
+      "native_cameras": 10667,
+      "surface_renders": 0,
+      "wall_s": 245.020804,
+      "arms": [
+        {
+          "id": "dir1601_10cm_H0",
+          "method": "H0",
+          "scenario": "dir1601_10cm",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 10.429827868938446,
+          "max_intensity_relative": 0.06824548488595772,
+          "stop": "budget"
+        },
+        {
+          "id": "dir1601_10cm_C3",
+          "method": "C3",
+          "scenario": "dir1601_10cm",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 10.191553831100464,
+          "max_intensity_relative": 0.052437543788222074,
+          "stop": "no_decreasing_step"
+        },
+        {
+          "id": "dir1601_10cm_C4",
+          "method": "C4",
+          "scenario": "dir1601_10cm",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 10.228140652179718,
+          "max_intensity_relative": 0.04945093257173361,
+          "stop": "no_decreasing_step"
+        },
+        {
+          "id": "dir1601_10cm_A-log",
+          "method": "A-log",
+          "scenario": "dir1601_10cm",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 9.136951714754105,
+          "max_intensity_relative": 0.05070992967301824,
+          "stop": "no_decreasing_step"
+        }
+      ]
+    },
+    "c-complex-1201": {
+      "scene": "native_complex_room",
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-c-complex-1201",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "eb32f323d77251520883b7cb2a65063bbac2695c2a2f1b836570080b3cb1aad6"
+      },
+      "native_cameras": 12551,
+      "surface_renders": 0,
+      "wall_s": 271.2940938,
+      "arms": [
+        {
+          "id": "dir1201_30cm_H0",
+          "method": "H0",
+          "scenario": "dir1201_30cm",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 29.79513108730316,
+          "max_intensity_relative": 0.49976066313654666,
+          "stop": "budget"
+        },
+        {
+          "id": "dir1201_30cm_C3",
+          "method": "C3",
+          "scenario": "dir1201_30cm",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.0,
+          "max_intensity_relative": 1.4079381727150064e-07,
+          "stop": "near_zero_residual"
+        },
+        {
+          "id": "dir1201_30cm_C4",
+          "method": "C4",
+          "scenario": "dir1201_30cm",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.012811443593818694,
+          "max_intensity_relative": 0.0005502388434193151,
+          "stop": "budget"
+        }
+      ]
+    },
+    "c-complex-509": {
+      "scene": "native_complex_room",
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-c-complex-509",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "eb32f323d77251520883b7cb2a65063bbac2695c2a2f1b836570080b3cb1aad6"
+      },
+      "native_cameras": 14015,
+      "surface_renders": 0,
+      "wall_s": 279.1146064,
+      "arms": [
+        {
+          "id": "seed509_complex_far_H0",
+          "method": "H0",
+          "scenario": "seed509_complex_far",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 55.120569467544556,
+          "max_intensity_relative": 0.7313287972064211,
+          "stop": "budget"
+        },
+        {
+          "id": "seed509_complex_far_C3",
+          "method": "C3",
+          "scenario": "seed509_complex_far",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.00012672121556533966,
+          "max_intensity_relative": 4.0781793255728616e-06,
+          "stop": "budget"
+        },
+        {
+          "id": "seed509_complex_far_C4",
+          "method": "C4",
+          "scenario": "seed509_complex_far",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 2.6656007889869215e-05,
+          "max_intensity_relative": 7.3598237548822e-07,
+          "stop": "budget"
+        }
+      ]
+    },
+    "c-complex-911": {
+      "scene": "native_complex_room",
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-c-complex-911",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "eb32f323d77251520883b7cb2a65063bbac2695c2a2f1b836570080b3cb1aad6"
+      },
+      "native_cameras": 13184,
+      "surface_renders": 0,
+      "wall_s": 299.6926438,
+      "arms": [
+        {
+          "id": "dir911_20cm_H0",
+          "method": "H0",
+          "scenario": "dir911_20cm",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 20.09187936782837,
+          "max_intensity_relative": 0.05486630164774309,
+          "stop": "budget"
+        },
+        {
+          "id": "dir911_20cm_C3",
+          "method": "C3",
+          "scenario": "dir911_20cm",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.0,
+          "max_intensity_relative": 6.170916599934628e-08,
+          "stop": "near_zero_residual"
+        },
+        {
+          "id": "dir911_20cm_C4",
+          "method": "C4",
+          "scenario": "dir911_20cm",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.015556519792880863,
+          "max_intensity_relative": 0.00023733935919090232,
+          "stop": "budget"
+        }
+      ]
+    },
+    "a-classroom": {
+      "scene": "classroom",
+      "scene_sha": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-a-classroom",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "a59e8a2d2b5c4f992f66d3c5bc86bf95506be24400dcbbfa079242305c3ff55a"
+      },
+      "native_cameras": 2109,
+      "surface_renders": 1,
+      "wall_s": 75.4323876,
+      "arms": [
+        {
+          "id": "seed509_classroom_near_oracle_L6_A1-olat",
+          "method": "A1-olat",
+          "scenario": "seed509_classroom_near_oracle_L6",
+          "lamps": [
+            6
+          ],
+          "pass_": false,
+          "max_cm": 12.70485520362854,
+          "max_intensity_relative": 0.010623358688173656,
+          "stop": "no_decreasing_step"
+        },
+        {
+          "id": "seed509_classroom_near_oracle_L6_A2-D0",
+          "method": "A2-D0",
+          "scenario": "seed509_classroom_near_oracle_L6",
+          "lamps": [
+            6
+          ],
+          "pass_": false,
+          "max_cm": 3.168628364801407,
+          "max_intensity_relative": 0.05560854537518933,
+          "stop": "budget"
+        }
+      ]
+    },
+    "a-views-classroom": {
+      "scene": "classroom",
+      "scene_sha": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-a-views-classroom",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "a59e8a2d2b5c4f992f66d3c5bc86bf95506be24400dcbbfa079242305c3ff55a"
+      },
+      "native_cameras": 183,
+      "surface_renders": 0,
+      "wall_s": 153.7250791,
+      "arms": [
+        {
+          "id": "seed509_classroom_near_oracle_L6_single_v0_A-log",
+          "method": "A-log",
+          "scenario": "seed509_classroom_near_oracle_L6_single_v0",
+          "lamps": [
+            6
+          ],
+          "pass_": true,
+          "max_cm": 0.00011920928955078125,
+          "max_intensity_relative": 3.1110448528437473e-07,
+          "stop": "no_decreasing_step"
+        },
+        {
+          "id": "seed509_classroom_near_oracle_L6_single_v1_A-log",
+          "method": "A-log",
+          "scenario": "seed509_classroom_near_oracle_L6_single_v1",
+          "lamps": [
+            6
+          ],
+          "pass_": true,
+          "max_cm": 0.0,
+          "max_intensity_relative": 1.585426590011707e-08,
+          "stop": "near_zero_residual"
+        },
+        {
+          "id": "seed509_classroom_near_oracle_L6_single_v2_A-log",
+          "method": "A-log",
+          "scenario": "seed509_classroom_near_oracle_L6_single_v2",
+          "lamps": [
+            6
+          ],
+          "pass_": true,
+          "max_cm": 0.029626270406879485,
+          "max_intensity_relative": 3.621437749057321e-05,
+          "stop": "near_zero_residual"
+        },
+        {
+          "id": "seed509_classroom_near_oracle_L6_V3_A-log",
+          "method": "A-log",
+          "scenario": "seed509_classroom_near_oracle_L6_V3",
+          "lamps": [
+            6
+          ],
+          "pass_": false,
+          "max_cm": 63.10083270072937,
+          "max_intensity_relative": 0.37995782225547603,
+          "stop": "no_decreasing_step"
+        },
+        {
+          "id": "seed509_classroom_near_oracle_L6_V5_A-log",
+          "method": "A-log",
+          "scenario": "seed509_classroom_near_oracle_L6_V5",
+          "lamps": [
+            6
+          ],
+          "pass_": false,
+          "max_cm": 40.230923891067505,
+          "max_intensity_relative": 0.42226845925323875,
+          "stop": "no_decreasing_step"
+        }
+      ]
+    },
+    "b-complex": {
+      "scene": "native_complex_room",
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-b-complex",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "a59e8a2d2b5c4f992f66d3c5bc86bf95506be24400dcbbfa079242305c3ff55a"
+      },
+      "native_cameras": 2264,
+      "surface_renders": 0,
+      "wall_s": 101.71861349999999,
+      "arms": [
+        {
+          "id": "seed509_complex_far_oracle_L1_A-log",
+          "method": "A-log",
+          "scenario": "seed509_complex_far_oracle_L1",
+          "lamps": [
+            1
+          ],
+          "pass_": true,
+          "max_cm": 8.127678370328795e-05,
+          "max_intensity_relative": 6.049011491704448e-08,
+          "stop": "near_zero_residual"
+        },
+        {
+          "id": "seed509_complex_far_oracle_L3_A-log",
+          "method": "A-log",
+          "scenario": "seed509_complex_far_oracle_L3",
+          "lamps": [
+            3
+          ],
+          "pass_": true,
+          "max_cm": 1.1920928955078125e-05,
+          "max_intensity_relative": 1.1762182383634467e-07,
+          "stop": "near_zero_residual"
+        },
+        {
+          "id": "seed509_complex_far_oracle_L4_A-log",
+          "method": "A-log",
+          "scenario": "seed509_complex_far_oracle_L4",
+          "lamps": [
+            4
+          ],
+          "pass_": true,
+          "max_cm": 3.3717478231665154e-05,
+          "max_intensity_relative": 4.1003037853926116e-08,
+          "stop": "near_zero_residual"
+        },
+        {
+          "id": "seed509_complex_far_oracle_L5_A-log",
+          "method": "A-log",
+          "scenario": "seed509_complex_far_oracle_L5",
+          "lamps": [
+            5
+          ],
+          "pass_": true,
+          "max_cm": 0.00016731820551285637,
+          "max_intensity_relative": 4.905366930429977e-07,
+          "stop": "near_zero_residual"
+        },
+        {
+          "id": "seed509_complex_far_oracle_L7_A-log",
+          "method": "A-log",
+          "scenario": "seed509_complex_far_oracle_L7",
+          "lamps": [
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.0,
+          "max_intensity_relative": 1.1420456802468948e-08,
+          "stop": "near_zero_residual"
+        },
+        {
+          "id": "seed509_complex_far_lowest_L6+L7_A-log",
+          "method": "A-log",
+          "scenario": "seed509_complex_far_lowest_L6+L7",
+          "lamps": [
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 2.384185791015625e-05,
+          "max_intensity_relative": 1.0424430230138171e-07,
+          "stop": "near_zero_residual"
+        },
+        {
+          "id": "seed509_complex_far_highest_L5+L7_A-log",
+          "method": "A-log",
+          "scenario": "seed509_complex_far_highest_L5+L7",
+          "lamps": [
+            5,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 4.76837158203125e-05,
+          "max_intensity_relative": 7.484452457795499e-08,
+          "stop": "near_zero_residual"
+        }
+      ]
+    },
+    "c-audit-classroom": {
+      "scene": "classroom",
+      "scene_sha": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-c-audit-classroom",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "a59e8a2d2b5c4f992f66d3c5bc86bf95506be24400dcbbfa079242305c3ff55a"
+      },
+      "native_cameras": 4820,
+      "surface_renders": 0,
+      "wall_s": 148.6337651,
+      "arms": []
+    },
+    "c-audit-complex": {
+      "scene": "native_complex_room",
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-c-audit-complex",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "a59e8a2d2b5c4f992f66d3c5bc86bf95506be24400dcbbfa079242305c3ff55a"
+      },
+      "native_cameras": 4205,
+      "surface_renders": 0,
+      "wall_s": 123.08754309999999,
+      "arms": []
+    },
+    "d-fixed-complex": {
+      "scene": "native_complex_room",
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-d-fixed-complex",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "a59e8a2d2b5c4f992f66d3c5bc86bf95506be24400dcbbfa079242305c3ff55a"
+      },
+      "native_cameras": 182,
+      "surface_renders": 0,
+      "wall_s": 37.4396397,
+      "arms": []
+    },
+    "d-replay-1301-classroom": {
+      "scene": "classroom",
+      "scene_sha": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-d-replay-1301-classroom",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "a59e8a2d2b5c4f992f66d3c5bc86bf95506be24400dcbbfa079242305c3ff55a"
+      },
+      "native_cameras": 7220,
+      "surface_renders": 0,
+      "wall_s": 182.0924617,
+      "arms": [
+        {
+          "id": "dir1301_10cm_warmup_C4",
+          "method": "C4",
+          "scenario": "dir1301_10cm_warmup",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 10.160958766937256,
+          "max_intensity_relative": 0.04516083620550271,
+          "stop": "iteration_cap"
+        },
+        {
+          "id": "dir1301_10cm_warmup_C4-cache",
+          "method": "C4-cache",
+          "scenario": "dir1301_10cm_warmup",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 10.160958766937256,
+          "max_intensity_relative": 0.04516083620550271,
+          "stop": "iteration_cap"
+        },
+        {
+          "id": "dir1301_10cm_rep1_C4",
+          "method": "C4",
+          "scenario": "dir1301_10cm_rep1",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 10.030334442853928,
+          "max_intensity_relative": 0.056859070576784854,
+          "stop": "no_decreasing_step"
+        },
+        {
+          "id": "dir1301_10cm_rep1_C4-cache",
+          "method": "C4-cache",
+          "scenario": "dir1301_10cm_rep1",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 10.030334442853928,
+          "max_intensity_relative": 0.056859070576784854,
+          "stop": "no_decreasing_step"
+        }
+      ]
+    },
+    "d-replay-131-complex": {
+      "scene": "native_complex_room",
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-d-replay-131-complex",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "a59e8a2d2b5c4f992f66d3c5bc86bf95506be24400dcbbfa079242305c3ff55a"
+      },
+      "native_cameras": 28872,
+      "surface_renders": 0,
+      "wall_s": 630.233848,
+      "arms": [
+        {
+          "id": "seed131_near_on_warmup_C4",
+          "method": "C4",
+          "scenario": "seed131_near_on_warmup",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 35.56559681892395,
+          "max_intensity_relative": 0.2100687011988669,
+          "stop": "iteration_cap"
+        },
+        {
+          "id": "seed131_near_on_warmup_C4-cache",
+          "method": "C4-cache",
+          "scenario": "seed131_near_on_warmup",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 35.56559681892395,
+          "max_intensity_relative": 0.2100687011988669,
+          "stop": "iteration_cap"
+        },
+        {
+          "id": "seed131_near_on_rep1_C4",
+          "method": "C4",
+          "scenario": "seed131_near_on_rep1",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.009079115989152342,
+          "max_intensity_relative": 9.413557830750818e-05,
+          "stop": "budget"
+        },
+        {
+          "id": "seed131_near_on_rep1_C4-cache",
+          "method": "C4-cache",
+          "scenario": "seed131_near_on_rep1",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.009079115989152342,
+          "max_intensity_relative": 9.413557830750818e-05,
+          "stop": "budget"
+        },
+        {
+          "id": "seed131_near_on_rep2_C4-cache",
+          "method": "C4-cache",
+          "scenario": "seed131_near_on_rep2",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.009079115989152342,
+          "max_intensity_relative": 9.413557830750818e-05,
+          "stop": "budget"
+        },
+        {
+          "id": "seed131_near_on_rep2_C4",
+          "method": "C4",
+          "scenario": "seed131_near_on_rep2",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.009079115989152342,
+          "max_intensity_relative": 9.413557830750818e-05,
+          "stop": "budget"
+        },
+        {
+          "id": "seed131_near_on_rep3_C4",
+          "method": "C4",
+          "scenario": "seed131_near_on_rep3",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.009079115989152342,
+          "max_intensity_relative": 9.413557830750818e-05,
+          "stop": "budget"
+        },
+        {
+          "id": "seed131_near_on_rep3_C4-cache",
+          "method": "C4-cache",
+          "scenario": "seed131_near_on_rep3",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.009079115989152342,
+          "max_intensity_relative": 9.413557830750818e-05,
+          "stop": "budget"
+        }
+      ]
+    },
+    "d-replay-157-complex": {
+      "scene": "native_complex_room",
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-d-replay-157-complex",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "a59e8a2d2b5c4f992f66d3c5bc86bf95506be24400dcbbfa079242305c3ff55a"
+      },
+      "native_cameras": 7148,
+      "surface_renders": 0,
+      "wall_s": 178.3270216,
+      "arms": [
+        {
+          "id": "seed157_near_on_warmup_C4",
+          "method": "C4",
+          "scenario": "seed157_near_on_warmup",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 31.323912739753723,
+          "max_intensity_relative": 0.14451908936243918,
+          "stop": "iteration_cap"
+        },
+        {
+          "id": "seed157_near_on_warmup_C4-cache",
+          "method": "C4-cache",
+          "scenario": "seed157_near_on_warmup",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 31.323912739753723,
+          "max_intensity_relative": 0.14451908936243918,
+          "stop": "iteration_cap"
+        },
+        {
+          "id": "seed157_near_on_rep1_C4",
+          "method": "C4",
+          "scenario": "seed157_near_on_rep1",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.0,
+          "max_intensity_relative": 2.9068609341820206e-07,
+          "stop": "near_zero_residual"
+        },
+        {
+          "id": "seed157_near_on_rep1_C4-cache",
+          "method": "C4-cache",
+          "scenario": "seed157_near_on_rep1",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.0,
+          "max_intensity_relative": 2.9068609341820206e-07,
+          "stop": "near_zero_residual"
+        }
+      ]
+    },
+    "h1-classroom-1301": {
+      "scene": "classroom",
+      "scene_sha": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-h1-classroom-1301",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "a59e8a2d2b5c4f992f66d3c5bc86bf95506be24400dcbbfa079242305c3ff55a"
+      },
+      "native_cameras": 4744,
+      "surface_renders": 0,
+      "wall_s": 146.1640564,
+      "arms": [
+        {
+          "id": "dir1301_10cm_H1",
+          "method": "H1",
+          "scenario": "dir1301_10cm",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 8.861270546913147,
+          "max_intensity_relative": 0.17817568733771116,
+          "stop": "budget"
+        }
+      ]
+    },
+    "b-diag-complex": {
+      "scene": "native_complex_room",
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-b-diag-complex",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "586e7a93941a1e766bcc51ac42ccb4ab5e209df17f13f38f40f0f17279257b15"
+      },
+      "native_cameras": 4682,
+      "surface_renders": 0,
+      "wall_s": 110.89161109999999,
+      "arms": [
+        {
+          "id": "seed509_complex_far_A-log-diag",
+          "method": "A-log-diag",
+          "scenario": "seed509_complex_far",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 111.45026683807373,
+          "max_intensity_relative": 1.9644623093547335,
+          "stop": "budget"
+        }
+      ]
+    },
+    "d-gpu-transfer-complex": {
+      "scene": "native_complex_room",
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-d-gpu-transfer-complex",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "586e7a93941a1e766bcc51ac42ccb4ab5e209df17f13f38f40f0f17279257b15"
+      },
+      "native_cameras": 179,
+      "surface_renders": 0,
+      "wall_s": 19.3011511,
+      "arms": []
+    },
+    "d-gpu-recovery-1301-classroom": {
+      "scene": "classroom",
+      "scene_sha": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-d-gpu-recovery-1301-classroom",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "2494efab3d2ce1ca8c79645f1baf1f13cccbfa5dd0c43297567e0c809af7fc43"
+      },
+      "native_cameras": 3830,
+      "surface_renders": 0,
+      "wall_s": 63.035213,
+      "arms": [
+        {
+          "id": "dir1301_10cm_warmup_C4-gpu",
+          "method": "C4-gpu",
+          "scenario": "dir1301_10cm_warmup",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 10.160958766937256,
+          "max_intensity_relative": 0.045160819668523366,
+          "stop": "iteration_cap"
+        },
+        {
+          "id": "dir1301_10cm_rep1_C4-gpu",
+          "method": "C4-gpu",
+          "scenario": "dir1301_10cm_rep1",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 10.030309855937958,
+          "max_intensity_relative": 0.056860610822277446,
+          "stop": "no_decreasing_step"
+        }
+      ]
+    },
+    "d-gpu-recovery-131-complex": {
+      "scene": "native_complex_room",
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-d-gpu-recovery-131-complex",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "2494efab3d2ce1ca8c79645f1baf1f13cccbfa5dd0c43297567e0c809af7fc43"
+      },
+      "native_cameras": 14488,
+      "surface_renders": 0,
+      "wall_s": 175.8691031,
+      "arms": [
+        {
+          "id": "seed131_near_on_warmup_C4-gpu",
+          "method": "C4-gpu",
+          "scenario": "seed131_near_on_warmup",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 35.56559681892395,
+          "max_intensity_relative": 0.21006878392058148,
+          "stop": "iteration_cap"
+        },
+        {
+          "id": "seed131_near_on_rep1_C4-gpu",
+          "method": "C4-gpu",
+          "scenario": "seed131_near_on_rep1",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.009766209404915571,
+          "max_intensity_relative": 7.653722098721616e-05,
+          "stop": "budget"
+        },
+        {
+          "id": "seed131_near_on_rep2_C4-gpu",
+          "method": "C4-gpu",
+          "scenario": "seed131_near_on_rep2",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.009766209404915571,
+          "max_intensity_relative": 7.653722098721616e-05,
+          "stop": "budget"
+        },
+        {
+          "id": "seed131_near_on_rep3_C4-gpu",
+          "method": "C4-gpu",
+          "scenario": "seed131_near_on_rep3",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 0.009766209404915571,
+          "max_intensity_relative": 7.653722098721616e-05,
+          "stop": "budget"
+        }
+      ]
+    },
+    "d-gpu-recovery-157-complex": {
+      "scene": "native_complex_room",
+      "scene_sha": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "source": {
+        "stage": "e25-d-gpu-recovery-157-complex",
+        "baseline": "fa060f204469a4ed733a8f622aeb34aaf1761795",
+        "source_manifest_sha256": "2494efab3d2ce1ca8c79645f1baf1f13cccbfa5dd0c43297567e0c809af7fc43"
+      },
+      "native_cameras": 4502,
+      "surface_renders": 0,
+      "wall_s": 62.4413176,
+      "arms": [
+        {
+          "id": "seed157_near_on_warmup_C4-gpu",
+          "method": "C4-gpu",
+          "scenario": "seed157_near_on_warmup",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": false,
+          "max_cm": 31.323912739753723,
+          "max_intensity_relative": 0.14451906244167512,
+          "stop": "iteration_cap"
+        },
+        {
+          "id": "seed157_near_on_rep1_C4-gpu",
+          "method": "C4-gpu",
+          "scenario": "seed157_near_on_rep1",
+          "lamps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "pass_": true,
+          "max_cm": 2.384185791015625e-05,
+          "max_intensity_relative": 8.551933883271801e-07,
+          "stop": "near_zero_residual"
+        }
+      ]
+    }
+  },
+  "gates": {
+    "A2-visible": {
+      "triggered": false,
+      "reason": "requires_A2_pass_and_A1_fail",
+      "a1_pass": "0",
+      "a2_pass": "0",
+      "launched_visible": "0",
+      "total_surface_samples": "4096",
+      "visible_samples": "",
+      "gt_surface_captures": "1",
+      "visibility_rays": "0"
+    },
+    "V5-seven": {
+      "triggered": false,
+      "reason": "V5 passes or halves both max errors while V3 fails",
+      "v3_pass": "0",
+      "v5_pass": "0",
+      "v3_max_cm": "63.10083270072937",
+      "v5_max_cm": "40.230923891067505",
+      "v3_max_intensity": "0.37995782225547603",
+      "v5_max_intensity": "0.42226845925323875",
+      "expand_seven_lamps": "0",
+      "rule": "V5 passes or halves both max errors while V3 fails",
+      "independent_verification_cameras": "44"
+    },
+    "B-pairs": {
+      "triggered": true,
+      "reason": "minimum_four_of_seven_single_lamp_passes",
+      "passed": "7",
+      "launched_pairs": "1",
+      "lowest": "L6+L7",
+      "highest": "L5+L7",
+      "diagonal_damping": "require_observed_scale_mechanism"
+    },
+    "H1-recovery": {
+      "triggered": true,
+      "reason": "matching_Classroom_Off_pass_and_both_Hard_Log_proxies_fail",
+      "case": "c-classroom-1301"
+    },
+    "independent-default-selection": {
+      "triggered": false,
+      "reason": "preserve_both_E25_baselines_no_default_election"
+    },
+    "E-c-classroom-1301": {
+      "triggered": false,
+      "reason": "matching_Off_pass_both_proxies_fail_repeated_Hard_drop_and_step_instability",
+      "eligible": false,
+      "off_pass": true,
+      "both_hard_proxies_fail": true,
+      "hard_repeated_decrease": true,
+      "hard_direction_cos_below_point8": false
+    },
+    "E-c-classroom-1601": {
+      "triggered": false,
+      "reason": "matching_Off_pass_both_proxies_fail_repeated_Hard_drop_and_step_instability",
+      "eligible": false,
+      "off_pass": false,
+      "both_hard_proxies_fail": true,
+      "hard_repeated_decrease": true,
+      "hard_direction_cos_below_point8": true
+    },
+    "D1-end-to-end": {
+      "triggered": true,
+      "reason": "fixed_input_columns_Gram_gradient_and_finite_gate",
+      "checks": 39
+    },
+    "B-diagonal-damping": {
+      "eligible": true,
+      "shrink_fraction": 0.8043478260869565,
+      "failed_lamp_norm_ratios": {
+        "L2": 3.9286305169373237,
+        "L6": 3.5064056497418092
+      }
+    },
+    "D2-transfer-benchmark": {
+      "eligible": true,
+      "wall_fractions": {
+        "map_fd_s": 0.6292647787002993,
+        "mask_p95_s": 0.02777131355027425,
+        "gram_gradient_s": 0.06573330217892538,
+        "render_s": 0.08886468080535558,
+        "readback_s": 0.10092339693208485
+      }
+    },
+    "E-MSM-MBD": {
+      "eligible": false,
+      "executed": false,
+      "matched_starts": [
+        {
+          "case": "c-classroom-1301",
+          "off_pass": true,
+          "both_hard_proxies_fail": true,
+          "hard_repeated_decrease": true,
+          "hard_direction_cos_below_point8": false
+        },
+        {
+          "case": "c-classroom-1601",
+          "off_pass": false,
+          "both_hard_proxies_fail": true,
+          "hard_repeated_decrease": true,
+          "hard_direction_cos_below_point8": true
+        },
+        {
+          "case": "c-complex-509",
+          "off_pass": false,
+          "both_hard_proxies_fail": false,
+          "hard_repeated_decrease": true,
+          "hard_direction_cos_below_point8": false
+        }
+      ],
+      "candidates": [],
+      "moment_stages": [],
+      "reason": "all_same_start_preconditions_required"
+    },
+    "D1-wall": {
+      "target_fraction": 0.2,
+      "wall_reduction": 0.1801986299377869,
+      "passes_performance": false,
+      "warm_repeats": 3,
+      "reference_s": 106.01340479999999,
+      "cached_s": 86.90993449999999
+    },
+    "D2-GPU": {
+      "eligible": true,
+      "executed": true,
+      "measured_cached_wall_fraction": {
+        "map_fd_s": 0.6292647787002993,
+        "mask_p95_s": 0.02777131355027425,
+        "gram_gradient_s": 0.06573330217892538,
+        "render_s": 0.08886468080535558,
+        "readback_s": 0.10092339693208485
+      },
+      "reason": "isolated_CPU_buffer_roundtrip_benchmark"
+    },
+    "D3-GPU": {
+      "eligible": false,
+      "executed": false,
+      "measured_cached_wall_fraction": {
+        "map_fd_s": 0.6292647787002993,
+        "mask_p95_s": 0.02777131355027425,
+        "gram_gradient_s": 0.06573330217892538,
+        "render_s": 0.08886468080535558,
+        "readback_s": 0.10092339693208485
+      },
+      "reason": "component_not_dominant_30pct_wall"
+    },
+    "D2-native-replay": {
+      "replayed_pairs": 5,
+      "quality_gate_pass": true,
+      "median_wall_reduction_131": 0.5368986526503863,
+      "performance_gate_pass": true,
+      "default_method_changed": false
+    }
+  }
+}

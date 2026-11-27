@@ -1,0 +1,6 @@
+stage,arm,reference_pass,cached_pass,same_query_count,same_stop,max_theta_difference,hard_held_raw_nrmse_reference,hard_held_raw_nrmse_cached
+d-replay-1301-classroom,dir1301_10cm_rep1_C4,False,False,True,True,0.0,0.6719308147121925,0.6719308147121925
+d-replay-131-complex,seed131_near_on_rep1_C4,True,True,True,True,0.0,0.00027327600065982493,0.00027327600065982493
+d-replay-131-complex,seed131_near_on_rep2_C4,True,True,True,True,0.0,0.00027327600065982493,0.00027327600065982493
+d-replay-131-complex,seed131_near_on_rep3_C4,True,True,True,True,0.0,0.00027327600065982493,0.00027327600065982493
+d-replay-157-complex,seed157_near_on_rep1_C4,True,True,True,True,0.0,1.081461401206137e-07,1.081461401206137e-07

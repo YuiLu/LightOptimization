@@ -148,21 +148,35 @@ namespace LightingMvp.Editor
                 return samples;
             }
 
-            internal void OpenRayReference()
+            internal void OpenRayReference(bool includeNonCasters = false)
             {
                 if (rayTriangles != null) return;
                 var triangles = new List<RayTriangle>();
-                foreach (var item in draws)
+                for (int draw = 0; draw < draws.Count; ++draw)
                 {
-                    if (item.renderer.shadowCastingMode == ShadowCastingMode.Off) continue;
+                    var item = draws[draw];
+                    if (!includeNonCasters && item.renderer.shadowCastingMode == ShadowCastingMode.Off) continue;
                     var indices = item.mesh.GetTriangles(item.slot);
                     var toWorld = item.renderer.localToWorldMatrix;
                     var vertices = item.mesh.vertices.Select(toWorld.MultiplyPoint3x4).ToArray();
                     for (int i = 0; i < indices.Length; i += 3)
-                        triangles.Add(new RayTriangle(vertices[indices[i]], vertices[indices[i + 1]], vertices[indices[i + 2]]));
+                        triangles.Add(new RayTriangle(vertices[indices[i]], vertices[indices[i + 1]], vertices[indices[i + 2]], draw));
                 }
                 rayTriangles = triangles.ToArray();
                 if (rayTriangles.Length != 0) rayTree = new RayNode(rayTriangles, 0, rayTriangles.Length);
+            }
+
+            internal bool TryFirstOpaqueHit(Ray ray, float maxDistance, out (Renderer renderer, Material material, Vector3 normal, float distance) hit)
+            {
+                hit = default;
+                int index = -1;
+                if (rayTree == null) return false;
+                rayTree.Closest(rayTriangles, ray, ref maxDistance, ref index);
+                if (index < 0) return false;
+                var tri = rayTriangles[index];
+                var item = draws[tri.draw];
+                hit = (item.renderer, item.source, Vector3.Cross(tri.ab, tri.ac).normalized, maxDistance);
+                return true;
             }
 
             internal float RayVisibility(Vector3 receiver, Vector3 light)
@@ -227,15 +241,19 @@ namespace LightingMvp.Editor
             {
                 internal readonly Vector3 a, ab, ac;
                 internal readonly Bounds bounds;
-                internal RayTriangle(Vector3 a, Vector3 b, Vector3 c)
+                internal readonly int draw;
+                internal RayTriangle(Vector3 a, Vector3 b, Vector3 c, int draw)
                 {
-                    this.a = a; ab = b - a; ac = c - a;
+                    this.a = a; this.draw = draw; ab = b - a; ac = c - a;
                     bounds = new Bounds(a, Vector3.zero);
                     bounds.Encapsulate(b); bounds.Encapsulate(c);
                 }
 
-                internal bool Intersects(Ray ray, float length)
+                internal bool Intersects(Ray ray, float length) => Intersects(ray, length, out _);
+
+                internal bool Intersects(Ray ray, float length, out float hit)
                 {
+                    hit = 0;
                     // Double-sided geometric intersection, independent of optimisation colliders.
                     Vector3 p = Vector3.Cross(ray.direction, ac);
                     float determinant = Vector3.Dot(ab, p);
@@ -247,7 +265,7 @@ namespace LightingMvp.Editor
                     Vector3 q = Vector3.Cross(t, ab);
                     float v = Vector3.Dot(ray.direction, q) * inverse;
                     if (v < 0 || u + v > 1) return false;
-                    float hit = Vector3.Dot(ac, q) * inverse;
+                    hit = Vector3.Dot(ac, q) * inverse;
                     return hit > .00001f && hit < length;
                 }
             }
@@ -270,6 +288,19 @@ namespace LightingMvp.Editor
                     int middle = count / 2;
                     left = new RayNode(triangles, first, middle);
                     right = new RayNode(triangles, first + middle, count - middle);
+                }
+
+                internal void Closest(RayTriangle[] triangles, Ray ray, ref float length, ref int index)
+                {
+                    if (!bounds.IntersectRay(ray, out float distance) || distance >= length) return;
+                    if (left != null)
+                    {
+                        left.Closest(triangles, ray, ref length, ref index);
+                        right.Closest(triangles, ray, ref length, ref index);
+                        return;
+                    }
+                    for (int i = first; i < first + count; ++i)
+                        if (triangles[i].Intersects(ray, length, out var t)) { length = t; index = i; }
                 }
 
                 internal bool Intersects(RayTriangle[] triangles, Ray ray, float length)

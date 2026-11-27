@@ -6,7 +6,7 @@ namespace LightingMvp
 {
     public static partial class ImageJacobianLm
     {
-        public enum TrustNormalMode { Shared, LampDiagonal, LampScaledDense }
+        public enum TrustNormalMode { Shared, LampDiagonal, LampScaledDense, ParameterScaledDense }
 
         public sealed class TrustSettings
         {
@@ -24,6 +24,15 @@ namespace LightingMvp
             public Action<int, string, double[], double, int, double> Query;
             public Action<TrustJacobian> Jacobian;
             public Action<TrustTrial> Trial;
+            public TrustTiming Timing;
+            public bool TraceProposalClipping;
+        }
+
+        public sealed class TrustTiming
+        {
+            internal long normalTicks, solveTicks;
+            public double GramGradientSeconds => (double)normalTicks / System.Diagnostics.Stopwatch.Frequency;
+            public double DampedSolveSeconds => (double)solveTicks / System.Diagnostics.Stopwatch.Frequency;
         }
 
         /// <summary>Supplies XYZ columns on the solver's legal stencil. Costs are in objective evaluation equivalents.</summary>
@@ -61,7 +70,7 @@ namespace LightingMvp
             public int Iteration, Query, Shrinks;
             public double Predicted, Actual, NativeActual, Ratio;
             public double[] Damping, PositionRadius, IntensityRadius, Step, PredictedByLamp, ActualByLamp;
-            public double[] DampingScale, Theta;
+            public double[] DampingScale, Theta, UnclippedStep, RadiusLimitedStep;
             public bool Accepted, Legal;
             public string Status;
         }
@@ -196,11 +205,13 @@ namespace LightingMvp
                     if (stencils[j] == 0) Array.Clear(col, 0, col.Length);
                     probe[j] = x[j];
                 }
+                long normalStart = settings.Timing == null ? 0 : System.Diagnostics.Stopwatch.GetTimestamp();
                 var gradient = new double[n];
                 var gram = new double[n, n];
                 if (residualSize >= 300000 && n >= 8)
                     Parallel.For(0, n, new ParallelOptions { MaxDegreeOfParallelism = Math.Min(Environment.ProcessorCount, 8) }, NormalRow);
                 else for (int j = 0; j < n; ++j) NormalRow(j);
+                if (settings.Timing != null) settings.Timing.normalTicks += System.Diagnostics.Stopwatch.GetTimestamp() - normalStart;
                 int zeros = 0;
                 for (int j = 0; j < n; ++j) if (!(gram[j, j] > 1e-18)) ++zeros;
                 result.ZeroColumns += zeros;
@@ -218,6 +229,12 @@ namespace LightingMvp
                 }
                 else if (settings.NormalMode == TrustNormalMode.LampScaledDense)
                     dampingScale = LampDampingScale(gram, n);
+                else if (settings.NormalMode == TrustNormalMode.ParameterScaledDense)
+                {
+                    var diag = Enumerable.Range(0, n).Select(i => gram[i, i]).ToArray();
+                    double floor = Math.Max(1e-10, 1e-6 * diag.Max());
+                    dampingScale = diag.Select(x => Math.Max(floor, x)).ToArray();
+                }
                 for (int group = 0; group < groups; ++group)
                 {
                     double maxDiagonal = 0;
@@ -228,7 +245,8 @@ namespace LightingMvp
                 bool acceptedIteration = false;
                 for (int attempt = 0; attempt < 7 && result.Evaluations + 1 + checkCost <= settings.Budget; ++attempt)
                 {
-                    var delta = groups == 1 ? SolveDamped(model, gradient, x, damping[0], 0, dampingScale) : new double[n];
+                    var delta = groups == 1 ? TimedSolve(model, gradient, x, damping[0], dampingScale) : new double[n];
+                    var unclipped = settings.TraceProposalClipping ? new double[n] : null;
                     for (int lamp = 0; lamp < lamps; ++lamp)
                     {
                         int group = groups == 1 ? 0 : lamp;
@@ -238,11 +256,13 @@ namespace LightingMvp
                             var block = new double[4, 4];
                             for (int i = 0; i < 4; ++i)
                             for (int j = 0; j < 4; ++j) block[i, j] = gram[k + i, k + j];
-                            Array.Copy(SolveDamped(block, gradient.Skip(k).Take(4).ToArray(), x.Skip(k).Take(4).ToArray(),
-                                damping[group], 0), 0, delta, k, 4);
+                            Array.Copy(TimedSolve(block, gradient.Skip(k).Take(4).ToArray(), x.Skip(k).Take(4).ToArray(),
+                                damping[group], null), 0, delta, k, 4);
                         }
+                        if (unclipped != null) Array.Copy(delta, k, unclipped, k, 4);
                         LimitLampStep(delta, k, settings.Units, positionRadius[group], intensityRadius[group]);
                     }
+                    var radiusLimited = settings.TraceProposalClipping ? (double[])delta.Clone() : null;
                     int shrinks = FormCandidate(x, delta, probe, settings.CandidateAllowed);
                     bool legal = Allowed(probe, settings.FinalAllowed);
                     bool trialAllowed = Allowed(probe, settings.CandidateAllowed);
@@ -279,7 +299,8 @@ namespace LightingMvp
                     settings.Trial?.Invoke(new TrustTrial { Iteration = result.Jacobians, Query = result.Evaluations, Shrinks = shrinks, Status = status,
                         Accepted = accepted, Legal = legal, Predicted = predicted, Actual = actual, Ratio = ratio, NativeActual = nativeActual,
                         PositionRadius = positionRadius, IntensityRadius = intensityRadius, Damping = damping, Step = delta,
-                        DampingScale = dampingScale, Theta = probe, PredictedByLamp = predictedByLamp, ActualByLamp = actualByLamp });
+                        DampingScale = dampingScale, Theta = probe, UnclippedStep = unclipped, RadiusLimitedStep = radiusLimited,
+                        PredictedByLamp = predictedByLamp, ActualByLamp = actualByLamp });
                     for (int group = 0; group < groups; ++group)
                     {
                         double localRatio = groups == 1 ? ratio : predictedByLamp[group] > 0 ? actualByLamp[group] / predictedByLamp[group] : double.NaN;
@@ -353,6 +374,15 @@ namespace LightingMvp
                 ++result.Blocked;
                 return false;
             }
+            double[] TimedSolve(double[,] normal, double[] g, double[] current, double lambda, double[] scale)
+            {
+                if (settings.Timing == null) return SolveDamped(normal, g, current, lambda, 0, scale);
+                long begin = System.Diagnostics.Stopwatch.GetTimestamp();
+                var step = SolveDamped(normal, g, current, lambda, 0, scale);
+                settings.Timing.solveTicks += System.Diagnostics.Stopwatch.GetTimestamp() - begin;
+                return step;
+            }
+
             double Evaluate(double[] theta, string phase, float[] values, int axis = -1, double h = 0)
             {
                 ++result.ObjectiveQueries;

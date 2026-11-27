@@ -187,24 +187,44 @@ namespace LightingMvp.Editor
             {
                 internal readonly Mapping mapping;
                 internal readonly double scale;
-                private readonly float[] target = new float[E23Channels];
-                internal readonly double[] weights = new double[E19FitViews];
+                private readonly float[] target;
+                internal readonly double[] weights;
+                internal int Size => target.Length;
                 internal E23FrameObjective(Frame[] frames, Mapping mapping, double scale)
+                    : this(Pack(frames), mapping, scale) { }
+
+                private static float[] Pack(Frame[] frames)
                 {
+                    var values = new float[frames.Length * E23ChannelsPerView];
+                    int k = 0;
+                    foreach (var frame in frames)
+                    {
+                        if (frame.PixelCount * 3 != E23ChannelsPerView) throw new ArgumentException("Unexpected RGB dimensions.");
+                        for (int i = 0; i < frame.PixelCount; ++i)
+                        {
+                            var p = frame.Pixel(i);
+                            values[k++] = p.r; values[k++] = p.g; values[k++] = p.b;
+                        }
+                    }
+                    return values;
+                }
+
+                internal E23FrameObjective(float[] rgb, Mapping mapping, double scale)
+                {
+                    if (rgb.Length == 0 || rgb.Length % E23ChannelsPerView != 0)
+                        throw new ArgumentException("Expected complete low-resolution RGB views.");
                     this.mapping = mapping; this.scale = scale;
-                    for (int v = 0; v < E19FitViews; ++v)
+                    target = new float[rgb.Length];
+                    weights = new double[rgb.Length / E23ChannelsPerView];
+                    for (int v = 0, k = 0; v < weights.Length; ++v)
                     {
                         double power = 0;
-                        for (int i = 0, k = v * E23ChannelsPerView; i < frames[v].PixelCount; ++i)
+                        for (int i = 0; i < E23ChannelsPerView; ++i, ++k)
                         {
-                            Color p = frames[v].Pixel(i);
-                            for (int ch = 0; ch < 3; ++ch)
-                            {
-                                float t = Transform(p[ch]); target[k++] = t;
-                                power += (double)t * t;
-                            }
+                            float t = Transform(rgb[k]); target[k] = t;
+                            power += (double)t * t;
                         }
-                        weights[v] = 1 / Math.Sqrt(E19FitViews * (power + 1e-12));
+                        weights[v] = 1 / Math.Sqrt(weights.Length * (power + 1e-12));
                     }
                 }
 
