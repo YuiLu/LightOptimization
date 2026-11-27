@@ -23,7 +23,7 @@ namespace LightingMvp.Editor
         private static readonly PropertyInfo RendererMode = typeof(UniversalRenderer).GetProperty(
             "renderingModeActual", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        public NativeIrradianceCapture(Camera source, int width, int height)
+        public NativeIrradianceCapture(Camera source, int width, int height, bool depthOnly = false)
         {
             if (!source) throw new ArgumentNullException(nameof(source));
             if (QualitySettings.activeColorSpace != ColorSpace.Linear || !(GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset))
@@ -65,12 +65,22 @@ namespace LightingMvp.Editor
                 readback = new Texture2D(width, height, TextureFormat.RGBAFloat, false, true) { hideFlags = HideFlags.HideAndDontSave };
                 feature = ScriptableObject.CreateInstance<CaptureFeature>();
                 feature.hideFlags = HideFlags.HideAndDontSave;
-                feature.Initialize(camera, buffer, shader);
+                feature.Initialize(camera, buffer, shader, depthOnly);
             }
             catch { Dispose(); throw; }
         }
 
         public Frame Read() => new Frame(buffer.width, buffer.height, ReadPixels());
+
+        internal Color[] ReadViewDepth(Vector3 position, Quaternion rotation)
+        {
+            if (!feature.Pass.DepthOnly) throw new InvalidOperationException("Expected a native depth capture.");
+            camera.aspect = (float)buffer.width / buffer.height;
+            camera.transform.SetPositionAndRotation(position, rotation);
+            camera.ResetProjectionMatrix();
+            camera.ResetWorldToCameraMatrix();
+            return ReadPixels();
+        }
 
         internal void SetSurfaceSamples(Vector3[] positions, Vector3[] normals, Bounds bounds)
         {
@@ -218,10 +228,10 @@ namespace LightingMvp.Editor
             public CapturePass Pass { get; private set; }
             public override void Create() { }
             protected override void Dispose(bool disposing) => Pass?.Release();
-            public void Initialize(Camera source, RenderTexture target, Shader shader)
+            public void Initialize(Camera source, RenderTexture target, Shader shader, bool depthOnly)
             {
                 camera = source;
-                Pass = new CapturePass(target, shader);
+                Pass = new CapturePass(target, shader, depthOnly);
             }
             public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData data)
             {
@@ -243,16 +253,24 @@ namespace LightingMvp.Editor
             private readonly int width, height;
             private ComputeBuffer positions, normals;
             private Material surfaceMaterial;
+            internal bool DepthOnly { get; }
             private int count;
             internal Light[] SurfaceLights;
             public bool Executed;
 
-            public CapturePass(RenderTexture buffer, Shader overrideShader)
+            public CapturePass(RenderTexture buffer, Shader overrideShader, bool depthOnly)
             {
                 target = RTHandles.Alloc(new RenderTargetIdentifier(buffer), "Native irradiance");
                 width = buffer.width; height = buffer.height;
                 shader = overrideShader;
-                renderPassEvent = RenderPassEvent.BeforeRenderingOpaques;
+                DepthOnly = depthOnly;
+                if (DepthOnly)
+                {
+                    surfaceMaterial = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
+                    ConfigureInput(ScriptableRenderPassInput.Depth);
+                    renderPassEvent = RenderPassEvent.AfterRenderingOpaques + 2;
+                }
+                else renderPassEvent = RenderPassEvent.BeforeRenderingOpaques;
             }
             public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData data)
             {
@@ -261,6 +279,15 @@ namespace LightingMvp.Editor
             }
             public override void Execute(ScriptableRenderContext context, ref RenderingData data)
             {
+                if (DepthOnly)
+                {
+                    using var command = new CommandBuffer { name = "Read native camera depth" };
+                    command.SetViewport(new Rect(0, 0, width, height));
+                    command.DrawProcedural(Matrix4x4.identity, surfaceMaterial, 2, MeshTopology.Triangles, 3, 1);
+                    context.ExecuteCommandBuffer(command);
+                    Executed = true;
+                    return;
+                }
                 if (SurfaceLights != null)
                 {
                     DrawSamples(context, ref data);

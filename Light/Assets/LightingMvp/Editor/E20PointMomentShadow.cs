@@ -18,6 +18,7 @@ namespace LightingMvp.Editor
             public string label;
             public int size, requestedMsaa, actualMsaa, blurRadius;
             public float near, far, momentBias, depthBiasMetres, leakBias;
+            public float casterDepthBias;
             public bool variance, mbd;
             public float overestimationWeight;
         }
@@ -142,6 +143,7 @@ namespace LightingMvp.Editor
                 using (var draw = new CommandBuffer { name = "E20 six point-light moment faces" })
                 {
                     draw.SetGlobalVector(ProxyGeometry.LightId, new Vector4(casterDepthOrigin.x, casterDepthOrigin.y, casterDepthOrigin.z, 1 / settings.far));
+                    draw.SetGlobalFloat("_E22CasterDepthBias", settings.casterDepthBias);
                     for (int i = 0; i < Directions.Length; i++)
                     {
                         var rotation = Quaternion.LookRotation(Directions[i], Up[i]);

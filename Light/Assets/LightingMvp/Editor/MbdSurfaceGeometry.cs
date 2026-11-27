@@ -32,7 +32,7 @@ namespace LightingMvp.Editor
             internal int Renderers => draws.Select(x => x.renderer).Distinct().Count();
             internal int AlphaClipSlots => draws.Count(r => r.source.IsKeywordEnabled("_ALPHATEST_ON"));
 
-            internal MbdSurfaceGeometry(Camera camera)
+            internal MbdSurfaceGeometry(Camera camera, bool signedMoments = true)
             {
                 var shader = AssetDatabase.LoadAssetAtPath<Shader>("Assets/LightingMvp/Shaders/MbdMomentCaster.shader");
                 if (!shader || ShaderUtil.ShaderHasError(shader)) throw new InvalidOperationException("MBD caster shader unavailable.");
@@ -55,6 +55,7 @@ namespace LightingMvp.Editor
                             {
                                 material = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
                                 materials.Add(key, material);
+                                material.SetFloat("_SignedMoments", signedMoments ? 1 : 0);
                                 material.SetInt("_Cull", r.shadowCastingMode == ShadowCastingMode.TwoSided ? 0 :
                                     source.HasProperty("_Cull") ? source.GetInt("_Cull") : 2);
                                 if (source.IsKeywordEnabled("_ALPHATEST_ON") && source.HasProperty("_BaseMap"))

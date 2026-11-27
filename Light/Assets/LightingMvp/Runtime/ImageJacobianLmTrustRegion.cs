@@ -6,15 +6,19 @@ namespace LightingMvp
 {
     public static partial class ImageJacobianLm
     {
+        public enum TrustNormalMode { Shared, LampDiagonal, LampScaledDense }
+
         public sealed class TrustSettings
         {
             public int Budget, Iterations = int.MaxValue;
             public double[] Units, PhysicalSteps;
             public int[] ResidualBlocks;
             public bool IndependentLampDamping;
+            public TrustNormalMode NormalMode;
             public double PositionRadius = .24, IntensityRadius = .28;
             public Func<double[], bool> ProbeAllowed, CandidateAllowed, FinalAllowed;
             public Func<double[], double> NativeAcceptance;
+            public Action<double[], int, float[]> LogIntensityJacobian;
             public Action<int, string, double[], double, int, double> Query;
             public Action<TrustJacobian> Jacobian;
             public Action<TrustTrial> Trial;
@@ -33,6 +37,7 @@ namespace LightingMvp
             public int Iteration, Query, Shrinks;
             public double Predicted, Actual, NativeActual, Ratio;
             public double[] Damping, PositionRadius, IntensityRadius, Step, PredictedByLamp, ActualByLamp;
+            public double[] DampingScale, Theta;
             public bool Accepted, Legal;
             public string Status;
         }
@@ -59,6 +64,8 @@ namespace LightingMvp
             if (!Allowed(initial, settings.FinalAllowed)) throw new ArgumentException("Initial rig must be legal.");
             if (settings.IndependentLampDamping && settings.ResidualBlocks == null)
                 throw new ArgumentException("Independent damping requires one independent residual block per lamp.");
+            if (settings.IndependentLampDamping && settings.NormalMode != TrustNormalMode.Shared)
+                throw new ArgumentException("Mixed RGB damping uses a global reduction test.");
 
             var result = new TrustResult { Best = (double[])initial.Clone() };
             var x = (double[])initial.Clone();
@@ -78,8 +85,9 @@ namespace LightingMvp
             double native = settings.NativeAcceptance == null ? f : CheckNative(x, "initial_native");
             double probeScale = 1;
             int checkCost = settings.NativeAcceptance == null ? 0 : 1;
+            int maxProbes = 2 * (n - (settings.LogIntensityJacobian == null ? 0 : lamps));
 
-            while (result.Evaluations + 2 * n + 1 + checkCost <= settings.Budget && result.Jacobians < settings.Iterations)
+            while (result.Evaluations + maxProbes + 1 + checkCost <= settings.Budget && result.Jacobians < settings.Iterations)
             {
                 if (f < 1e-12) { result.Stop = "near_zero_residual"; break; }
                 ++result.Jacobians;
@@ -90,6 +98,12 @@ namespace LightingMvp
                 for (int j = 0; j < n; ++j)
                 {
                     var col = columns[j];
+                    if (settings.LogIntensityJacobian != null && j % 4 == 3)
+                    {
+                        settings.LogIntensityJacobian(x, j / 4, col);
+                        stencils[j] = 4;
+                        continue;
+                    }
                     double h = settings.PhysicalSteps[j] * probeScale / settings.Units[j];
                     for (int shrink = 0; shrink < 8; ++shrink, h *= .5)
                     {
@@ -138,17 +152,33 @@ namespace LightingMvp
                 settings.Jacobian?.Invoke(new TrustJacobian { Iteration = result.Jacobians, Query = result.Evaluations, Theta = x,
                     PhysicalSteps = steps, Stencils = stencils, Gram = gram, Gradient = gradient, Blocked = result.Blocked - blockedBefore });
                 if (zeros == n) { result.Stop = "zero_jacobian"; break; }
+                var model = gram;
+                double[] dampingScale = null;
+                if (settings.NormalMode == TrustNormalMode.LampDiagonal)
+                {
+                    model = new double[n, n];
+                    for (int i = 0; i < n; ++i)
+                    for (int j = 4 * (i / 4); j < 4 * (i / 4 + 1); ++j)
+                        model[i, j] = gram[i, j];
+                }
+                else if (settings.NormalMode == TrustNormalMode.LampScaledDense)
+                {
+                    var scale = new double[lamps];
+                    for (int i = 0; i < n; ++i) scale[i / 4] = Math.Max(scale[i / 4], gram[i, i]);
+                    double floor = Math.Max(1e-10, 1e-6 * scale.Max());
+                    dampingScale = Enumerable.Range(0, n).Select(i => Math.Max(floor, scale[i / 4])).ToArray();
+                }
                 for (int group = 0; group < groups; ++group)
                 {
                     double maxDiagonal = 0;
                     for (int j = groups == 1 ? 0 : 4 * group; j < (groups == 1 ? n : 4 * (group + 1)); ++j)
                         maxDiagonal = Math.Max(maxDiagonal, gram[j, j]);
-                    if (damping[group] == 0) damping[group] = Math.Max(1e-10, .002 * maxDiagonal);
+                    if (damping[group] == 0) damping[group] = dampingScale == null ? Math.Max(1e-10, .002 * maxDiagonal) : .002;
                 }
                 bool acceptedIteration = false;
                 for (int attempt = 0; attempt < 7 && result.Evaluations + 1 + checkCost <= settings.Budget; ++attempt)
                 {
-                    var delta = groups == 1 ? SolveDamped(gram, gradient, x, damping[0], 0) : new double[n];
+                    var delta = groups == 1 ? SolveDamped(model, gradient, x, damping[0], 0, dampingScale) : new double[n];
                     for (int lamp = 0; lamp < lamps; ++lamp)
                     {
                         int group = groups == 1 ? 0 : lamp;
@@ -213,7 +243,7 @@ namespace LightingMvp
                     settings.Trial?.Invoke(new TrustTrial { Iteration = result.Jacobians, Query = result.Evaluations, Shrinks = shrinks, Status = status,
                         Accepted = accepted, Legal = legal, Predicted = predicted, Actual = actual, Ratio = ratio, NativeActual = nativeActual,
                         PositionRadius = positionRadius, IntensityRadius = intensityRadius, Damping = damping, Step = delta,
-                        PredictedByLamp = predictedByLamp, ActualByLamp = actualByLamp });
+                        DampingScale = dampingScale, Theta = probe, PredictedByLamp = predictedByLamp, ActualByLamp = actualByLamp });
                     for (int group = 0; group < groups; ++group)
                     {
                         double localRatio = groups == 1 ? ratio : predictedByLamp[group] > 0 ? actualByLamp[group] / predictedByLamp[group] : double.NaN;
@@ -246,7 +276,7 @@ namespace LightingMvp
                 }
                 if (!acceptedIteration)
                 {
-                    if (result.Evaluations + 2 * n + 1 + checkCost > settings.Budget) break;
+                    if (result.Evaluations + maxProbes + 1 + checkCost > settings.Budget) break;
                     if (probeScale <= .125) { result.Stop = "no_decreasing_step"; break; }
                     probeScale *= .5;
                     for (int group = 0; group < groups; ++group)

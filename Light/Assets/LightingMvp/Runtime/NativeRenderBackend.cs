@@ -160,7 +160,7 @@ namespace LightingMvp
             return energy / denominator;
         }
 
-        public enum HdrMapping { Raw, SignedLog, SignedSqrt }
+        public enum HdrMapping { Raw, SignedLog, SignedSqrt, ToneExp, ToneReinhard }
 
         public sealed class MappedTarget
         {
@@ -189,6 +189,9 @@ namespace LightingMvp
         public static float Map(float value, HdrMapping mapping, double logScale)
         {
             if (mapping == HdrMapping.Raw || value == 0) return value;
+            if (mapping == HdrMapping.ToneExp) return Display(value);
+            if (mapping == HdrMapping.ToneReinhard)
+                return value <= 0 ? 0 : Mathf.LinearToGammaSpace((float)(value / (logScale + value)));
             double x = Math.Abs((double)value), y;
             if (mapping == HdrMapping.SignedLog)
             {
@@ -203,7 +206,7 @@ namespace LightingMvp
         public double MappedResidual(int view, MappedTarget target, float[] residual, int offset, int viewCount, out double rawLoss)
         {
             int count = checked(Width * Height * 3);
-            if (target?.Rgb.Length != count || offset < 0 || residual == null || offset > residual.Length - count || viewCount < 1)
+            if (target?.Rgb.Length != count || offset < 0 || residual != null && offset > residual.Length - count || viewCount < 1)
                 throw new ArgumentException("Invalid mapped HDR residual dimensions.");
             var pixels = Read(view);
             double denominator = (target.Energy + 1e-12) * viewCount;
@@ -213,9 +216,16 @@ namespace LightingMvp
                 Color a = pixels[i], b = target.Raw.Pixels[i];
                 double r = a.r - b.r, g = a.g - b.g, blue = a.b - b.b;
                 raw += r * r + g * g + blue * blue;
-                r = Map(a.r, target.Mapping, target.LogScale) - target.Rgb[k]; residual[offset + k++] = (float)(r * scale);
-                g = Map(a.g, target.Mapping, target.LogScale) - target.Rgb[k]; residual[offset + k++] = (float)(g * scale);
-                blue = Map(a.b, target.Mapping, target.LogScale) - target.Rgb[k]; residual[offset + k++] = (float)(blue * scale);
+                r = Map(a.r, target.Mapping, target.LogScale) - target.Rgb[k];
+                g = Map(a.g, target.Mapping, target.LogScale) - target.Rgb[k + 1];
+                blue = Map(a.b, target.Mapping, target.LogScale) - target.Rgb[k + 2];
+                if (residual != null)
+                {
+                    residual[offset + k] = (float)(r * scale);
+                    residual[offset + k + 1] = (float)(g * scale);
+                    residual[offset + k + 2] = (float)(blue * scale);
+                }
+                k += 3;
                 mapped += r * r + g * g + blue * blue;
             }
             rawLoss = raw / ((target.Raw.Energy + 1e-12) * viewCount);

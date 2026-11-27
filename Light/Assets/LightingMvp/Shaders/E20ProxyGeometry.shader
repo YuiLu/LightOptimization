@@ -24,6 +24,7 @@ Shader "Hidden/LightingMvp/E20ProxyGeometry"
 
         float4x4 _E20ViewProjection;
         float4 _E20LightPositionInvRange;
+        float4 _E22GeometryIds;
 
         struct Attributes
         {
@@ -83,6 +84,33 @@ Shader "Hidden/LightingMvp/E20ProxyGeometry"
                 float depth = saturate(length(input.position - _E20LightPositionInvRange.xyz) * _E20LightPositionInvRange.w);
                 float square = depth * depth;
                 return float4(depth, square, square * depth, square * square);
+            }
+            ENDHLSL
+        }
+
+        Pass
+        {
+            Name "DenseReceiverAttributes"
+            HLSLPROGRAM
+            #pragma vertex Vert
+            #pragma fragment GeometryFragment
+
+            struct Geometry
+            {
+                float4 position : SV_Target0;
+                float4 normal : SV_Target1;
+            };
+
+            Geometry GeometryFragment(Varyings input)
+            {
+                Geometry output;
+                float3 shading = normalize(input.normal);
+                float3 face = cross(ddx(input.position), ddy(input.position));
+                face = dot(face, face) > 1e-20 ? normalize(face) : shading;
+                if (dot(face, shading) < 0) face = -face;
+                output.position = float4(input.position, _E22GeometryIds.x);
+                output.normal = float4(face, _E22GeometryIds.y);
+                return output;
             }
             ENDHLSL
         }

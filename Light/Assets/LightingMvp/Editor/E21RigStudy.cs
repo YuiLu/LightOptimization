@@ -197,7 +197,7 @@ namespace LightingMvp.Editor
                 arm.intensityRelative = lamps.Select(i => Math.Abs(room.PowerOf(arm.final, i) / room.PowerOf(room.Truth, i) - 1)).ToArray();
                 arm.pass = arm.legal && arm.positionCm.All(x => x <= 5) && arm.intensityRelative.All(x => x <= .05);
                 string path = CapturePath(arm.id);
-                SaveFrames(frames, path, "best", stage[4] == 'd');
+                SaveFrames(frames, path, "best", stage[4] == 'd' && !stage.StartsWith("e22-", StringComparison.Ordinal));
                 validation?.Invoke(arm, frames, gt, path);
                 Apply(initial, gt.shadows);
                 NativeRenderBackend.Save(high.Capture(0), E19HighW, E19HighH, Path.Combine(path, "initial_v0"));
@@ -210,14 +210,15 @@ namespace LightingMvp.Editor
                 arms.Add(arm);
                 WriteJson(path, "trial.json", arm);
                 queryLog.Flush(); jacobianLog.Flush(); trialLog.Flush(); gramLog.Flush();
-                Debug.Log($"[E21-{char.ToUpperInvariant(stage[4])}] {arm.id}: {Math.Sqrt(arm.nativeInitial):P2} -> {Math.Sqrt(arm.nativeFinal):P2} RGB, " +
+                Debug.Log($"[{stage.ToUpperInvariant()}] {arm.id}: {Math.Sqrt(arm.nativeInitial):P2} -> {Math.Sqrt(arm.nativeFinal):P2} RGB, " +
                     $"{arm.positionCm.Max():F2} cm / {arm.intensityRelative.Max():P2}, {arm.evaluations} evaluations, {arm.stop}");
                 return arm;
             }
 
             private double[] Solve(E21Trial arm, string segment, int[] lamps, double[] start, E21Signal signal,
                 int budget, MbdRgbTarget nativeGuard, bool independent = false, int iterations = int.MaxValue,
-                Action<ImageJacobianLm.TrustResult> record = null)
+                Action<ImageJacobianLm.TrustResult> record = null,
+                Action<ImageJacobianLm.TrustSettings, Func<double[], double[]>> configure = null)
             {
                 int[] indices = lamps.SelectMany(i => Enumerable.Range(4 * i, 4)).ToArray();
                 var full = (double[])start.Clone();
@@ -273,6 +274,7 @@ namespace LightingMvp.Editor
                             Series(t.PredictedByLamp), Series(t.ActualByLamp)));
                     }
                 };
+                configure?.Invoke(settings, Expand);
                 var result = ImageJacobianLm.RunTrust(startLocal, signal.size, (x, phase, r) => signal.objective(Expand(x), r), settings);
                 arm.evaluations += result.Evaluations; arm.objectiveQueries += result.ObjectiveQueries; arm.nativeChecks += result.NativeChecks;
                 arm.jacobians += result.Jacobians; arm.accepted += result.Accepted; arm.rejected += result.Rejected; arm.illegalAccepted += result.IllegalAccepted;

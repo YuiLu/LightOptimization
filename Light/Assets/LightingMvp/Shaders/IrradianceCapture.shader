@@ -152,5 +152,32 @@ Shader "Hidden/LightingMvp/IrradianceCapture"
             }
             ENDHLSL
         }
+        Pass
+        {
+            Name "NativeCameraDepth"
+            Cull Off ZWrite Off ZTest Always Blend Off
+            HLSLPROGRAM
+            #pragma target 4.5
+            #pragma vertex DepthVertex
+            #pragma fragment DepthFragment
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
+
+            float4 DepthVertex(uint id : SV_VertexID) : SV_POSITION
+            {
+                return GetFullScreenTriangleVertexPosition(id);
+            }
+
+            float4 DepthFragment(float4 position : SV_POSITION) : SV_Target
+            {
+                float z = LoadSceneDepth(uint2(position.xy));
+                #if UNITY_REVERSED_Z
+                    if (z <= 0.000001) return 0;
+                #else
+                    if (z >= 0.999999) return 0;
+                #endif
+                return float4(LinearEyeDepth(z, _ZBufferParams), 0, 0, 1);
+            }
+            ENDHLSL
+        }
     }
 }

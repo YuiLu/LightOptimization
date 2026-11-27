@@ -274,7 +274,7 @@ namespace LightingMvp
             return sum + s1 + s2 + s3;
         }
 
-        private static double[] SolveDamped(double[,] h, double[] g, double[] x, double mu, double diagonalFloor)
+        private static double[] SolveDamped(double[,] h, double[] g, double[] x, double mu, double diagonalFloor, double[] dampingScale = null)
         {
             int n = g.Length;
             var l = new double[n, n];
@@ -284,7 +284,8 @@ namespace LightingMvp
             for (int i = 0; i < n; ++i)
                 for (int j = 0; j <= i; ++j)
                 {
-                    double v = i == j ? h[i, i] + mu * (diagonalFloor > 0 ? Math.Max(diagonalFloor, h[i, i]) : 1) : fixedAxis[i] || fixedAxis[j] ? 0 : h[i, j];
+                    double scale = dampingScale == null ? (diagonalFloor > 0 ? Math.Max(diagonalFloor, h[i, i]) : 1) : dampingScale[i];
+                    double v = i == j ? h[i, i] + mu * scale : fixedAxis[i] || fixedAxis[j] ? 0 : h[i, j];
                     for (int k = 0; k < j; ++k) v -= l[i, k] * l[j, k];
                     l[i, j] = i == j ? Math.Sqrt(v) : v / l[j, j];
                 }
