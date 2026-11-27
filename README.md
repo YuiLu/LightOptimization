@@ -8,6 +8,7 @@ Unity 插件用**场景自身渲染的最终 RGB**优化可编辑的 3D 灯具�
 - E20 的对照、原始查询和复现命令见 [单灯信号与点光源 MSM](docs/blackbox-e20/README.md) 和 [MBD、直接辐照度与可见性拓扑](docs/blackbox-e20-mbd/README.md)。
 - E21 的梯度校准、108 组恢复试次和复跑命令见 [完整灯位差分、联合恢复与阴影代理](docs/blackbox-e21/README.md)。
 - E22 的七灯联合求解、HDR 损失对照和 OLAT 验证见 [混合 RGB 联合恢复、HDR 压缩与几何分组](docs/blackbox-e22/README.md)。
+- E23–E24 的原生有限差分、有效可见性与扰动尺度对照见 [E23](docs/blackbox-e23/README.md) 和 [E24](docs/blackbox-e24/README.md)。
 
 | 路径 | 内容 |
 |---|---|

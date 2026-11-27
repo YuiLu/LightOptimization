@@ -45,13 +45,20 @@ namespace LightingMvp.Editor
 
                 internal (Frame rgb, E23Layout state) Capture(Func<Frame> render)
                 {
+                    Frame frame = null;
+                    var state = Observe(() => { frame = render(); });
+                    return (frame, state);
+                }
+
+                internal E23Layout Observe(Action render)
+                {
                     if (attached != null) throw new InvalidOperationException("An E23 atlas observation is already in progress.");
                     result = null;
                     RenderPipelineManager.beginCameraRendering += Attach;
                     try
                     {
-                        var frame = render();
-                        return (frame, result ?? throw new InvalidOperationException("The URP atlas observer did not execute."));
+                        render();
+                        return result ?? throw new InvalidOperationException("The URP atlas observer did not execute.");
                     }
                     finally
                     {

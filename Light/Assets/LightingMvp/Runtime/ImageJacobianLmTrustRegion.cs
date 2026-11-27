@@ -11,6 +11,7 @@ namespace LightingMvp
         public sealed class TrustSettings
         {
             public int Budget, Iterations = int.MaxValue;
+            public int MaxConsecutiveCandidateRejects; // 0 preserves the default trust-region schedule.
             public double[] Units, PhysicalSteps;
             public int[] ResidualBlocks;
             public bool IndependentLampDamping;
@@ -28,16 +29,20 @@ namespace LightingMvp
         /// <summary>Supplies XYZ columns on the solver's legal stencil. Costs are in objective evaluation equivalents.</summary>
         public sealed class TrustPositionModel
         {
-            public readonly int AnchorCost, ProbeCost;
+            public readonly int AnchorCost, ProbeCost, IntensityProbeCost;
             internal readonly Action<int, double[]> Anchor;
             internal readonly Action<int, double[], int, double, int, float[]> Column;
 
+            internal readonly Action<int, double[], int, double, int, float[]> IntensityColumn;
+
             public TrustPositionModel(int anchorCost, int probeCost, Action<int, double[]> anchor,
-                Action<int, double[], int, double, int, float[]> column)
+                Action<int, double[], int, double, int, float[]> column, int intensityProbeCost = 1,
+                Action<int, double[], int, double, int, float[]> intensityColumn = null)
             {
-                if (anchorCost < 0 || probeCost < 1) throw new ArgumentException("Invalid position model costs.");
+                if (anchorCost < 0 || probeCost < 1 || intensityProbeCost < 1 || (intensityColumn == null && intensityProbeCost != 1)) throw new ArgumentException("Invalid position model costs.");
                 AnchorCost = anchorCost;
                 ProbeCost = probeCost;
+                IntensityProbeCost = intensityProbeCost; IntensityColumn = intensityColumn;
                 Anchor = anchor ?? throw new ArgumentNullException(nameof(anchor));
                 Column = column ?? throw new ArgumentNullException(nameof(column));
             }
@@ -103,11 +108,19 @@ namespace LightingMvp
             double f = result.InitialLoss = result.BestLoss = Evaluate(x, "initial", center);
             double native = settings.NativeAcceptance == null ? f : CheckNative(x, "initial_native");
             double probeScale = 1;
+            int consecutiveCandidateRejects = 0;
             int checkCost = settings.NativeAcceptance == null ? 0 : 1;
             int maxProbes = 2 * (n - (settings.LogIntensityJacobian == null ? 0 : lamps));
             var positionModel = settings.PositionModel;
+            bool modelIntensity = positionModel?.IntensityColumn != null;
+            if (modelIntensity && settings.LogIntensityJacobian != null)
+                throw new ArgumentException("Only one intensity Jacobian provider may be used.");
             if (positionModel != null)
-                maxProbes += positionModel.AnchorCost + 6 * lamps * (positionModel.ProbeCost - 1);
+                maxProbes += positionModel.AnchorCost + 6 * lamps * (positionModel.ProbeCost - 1) +
+                    2 * lamps * (positionModel.IntensityProbeCost - 1);
+            // Paired intensity captures are shared with the position model before building XYZ columns.
+            var columnOrder = Enumerable.Range(0, n).ToArray();
+            if (modelIntensity) columnOrder = columnOrder.OrderBy(j => j % 4 != 3).ToArray();
 
             while (result.Evaluations + maxProbes + 1 + checkCost <= settings.Budget && result.Jacobians < settings.Iterations)
             {
@@ -122,7 +135,7 @@ namespace LightingMvp
                     positionModel.Anchor(result.Evaluations + 1, x);
                     result.Evaluations += positionModel.AnchorCost;
                 }
-                for (int j = 0; j < n; ++j)
+                foreach (int j in columnOrder)
                 {
                     var col = columns[j];
                     if (settings.LogIntensityJacobian != null && j % 4 == 3)
@@ -145,11 +158,13 @@ namespace LightingMvp
                             probe[j] = x[j] + 2 * d;
                             second = CanProbe();
                         }
-                        if (positionModel != null && j % 4 != 3)
+                        bool intensity = j % 4 == 3;
+                        if (positionModel != null && (!intensity || modelIntensity))
                         {
                             int stencil = central ? 3 : second ? 2 : 1;
-                            positionModel.Column(result.Evaluations + 1, x, j, d, stencil, col);
-                            result.Evaluations += (stencil == 1 ? 1 : 2) * positionModel.ProbeCost;
+                            var build = intensity ? positionModel.IntensityColumn : positionModel.Column;
+                            build(result.Evaluations + 1, x, j, d, stencil, col);
+                            result.Evaluations += (stencil == 1 ? 1 : 2) * (intensity ? positionModel.IntensityProbeCost : positionModel.ProbeCost);
                             steps[j] = d * settings.Units[j]; stencils[j] = stencil;
                         }
                         else if (central)
@@ -280,7 +295,19 @@ namespace LightingMvp
                             damping[group] = Math.Max(1e-12, damping[group] * .40);
                         }
                     }
-                    if (!accepted) { ++result.Rejected; continue; }
+                    consecutiveCandidateRejects = status is "objective_rejected" or "native_rejected"
+                        ? consecutiveCandidateRejects + 1 : 0;
+                    if (!accepted)
+                    {
+                        ++result.Rejected;
+                        if (settings.MaxConsecutiveCandidateRejects > 0 &&
+                            consecutiveCandidateRejects >= settings.MaxConsecutiveCandidateRejects)
+                        {
+                            result.Stop = "consecutive_candidate_rejects_shrunk";
+                            break;
+                        }
+                        continue;
+                    }
                     ++result.Accepted;
                     if (!legal) ++result.IllegalAccepted;
                     Array.Copy(probe, x, n);
@@ -295,6 +322,7 @@ namespace LightingMvp
                     acceptedIteration = true;
                     break;
                 }
+                if (result.Stop == "consecutive_candidate_rejects_shrunk") break;
                 if (!acceptedIteration)
                 {
                     if (result.Evaluations + maxProbes + 1 + checkCost > settings.Budget) break;

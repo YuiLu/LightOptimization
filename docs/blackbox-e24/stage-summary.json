@@ -1,0 +1,4215 @@
+{
+  "direction_rule": "two failed states, best of legal repeated drops, exceeds max(0.1% initial loss, 5% baseline drop); positive if baseline has no drop",
+  "recovery_rule": "new pass, or >=20% lower failed-arm scaled parameter error without >0.2 pp holdout display loss, or equal pass with >=20% fewer cameras; no loss/regression of any passing baseline",
+  "directions": {
+    "H4": {
+      "control": "H2",
+      "compared": [
+        "seed131_log_failed",
+        "seed157_log_failed",
+        "seed733_log_failed",
+        "seed509_complex_far_log_failed",
+        "seed509_complex_far_B2_failed",
+        "seed509_classroom_near_log_failed",
+        "seed509_classroom_near_B2_failed"
+      ],
+      "wins": [
+        "seed509_complex_far_log_failed",
+        "seed509_complex_far_B2_failed"
+      ],
+      "passed": true
+    },
+    "C3": {
+      "control": "H2",
+      "compared": [
+        "seed131_log_failed",
+        "seed157_log_failed",
+        "seed733_log_failed",
+        "seed509_complex_far_log_failed",
+        "seed509_complex_far_B2_failed",
+        "seed509_classroom_near_log_failed",
+        "seed509_classroom_near_B2_failed"
+      ],
+      "wins": [
+        "seed131_log_failed",
+        "seed157_log_failed",
+        "seed509_complex_far_log_failed",
+        "seed509_complex_far_B2_failed"
+      ],
+      "passed": true
+    },
+    "H5": {
+      "control": "H2",
+      "compared": [],
+      "wins": [],
+      "passed": false
+    },
+    "C4": {
+      "control": "H2",
+      "compared": [
+        "seed131_log_failed",
+        "seed157_log_failed",
+        "seed733_log_failed",
+        "seed509_complex_far_log_failed",
+        "seed509_complex_far_B2_failed"
+      ],
+      "wins": [
+        "seed509_complex_far_log_failed",
+        "seed509_complex_far_B2_failed"
+      ],
+      "passed": true
+    },
+    "C1": {
+      "control": "H0",
+      "compared": [
+        "seed131_log_failed",
+        "seed157_log_failed",
+        "seed733_log_failed",
+        "seed509_complex_far_log_failed",
+        "seed509_complex_far_B2_failed",
+        "seed509_classroom_near_log_failed",
+        "seed509_classroom_near_B2_failed"
+      ],
+      "wins": [],
+      "passed": false
+    }
+  },
+  "screen_models": [
+    "H4",
+    "C3",
+    "C4"
+  ],
+  "screen_recovery": {
+    "H4": {
+      "control": "H2",
+      "comparisons": [
+        {
+          "scenario": "seed131_log_failed_L2L7",
+          "pass_control": true,
+          "pass_candidate": true,
+          "win": false,
+          "regression": false,
+          "parameter_normalized_control": 5.058991212614217e-06,
+          "parameter_normalized_candidate": 9.936688183387332e-07,
+          "held_display_control": 8.224564347235018e-08,
+          "held_display_candidate": 5.027729660582035e-08
+        },
+        {
+          "scenario": "seed157_log_failed_L5L7",
+          "pass_control": true,
+          "pass_candidate": true,
+          "win": false,
+          "regression": false,
+          "parameter_normalized_control": 8.283715056123242e-06,
+          "parameter_normalized_candidate": 1.2994826459333808e-06,
+          "held_display_control": 7.186136425417748e-08,
+          "held_display_candidate": 3.240979583579493e-08
+        }
+      ],
+      "passed": false
+    },
+    "C3": {
+      "control": "H2",
+      "comparisons": [
+        {
+          "scenario": "seed131_log_failed_L2L7",
+          "pass_control": true,
+          "pass_candidate": true,
+          "win": true,
+          "regression": false,
+          "parameter_normalized_control": 5.058991212614217e-06,
+          "parameter_normalized_candidate": 6.074585279236544e-07,
+          "held_display_control": 8.224564347235018e-08,
+          "held_display_candidate": 0.0
+        },
+        {
+          "scenario": "seed157_log_failed_L5L7",
+          "pass_control": true,
+          "pass_candidate": true,
+          "win": false,
+          "regression": false,
+          "parameter_normalized_control": 8.283715056123242e-06,
+          "parameter_normalized_candidate": 4.76837158203125e-06,
+          "held_display_control": 7.186136425417748e-08,
+          "held_display_candidate": 1.85081652878682e-06
+        }
+      ],
+      "passed": true
+    },
+    "C4": {
+      "control": "H2",
+      "comparisons": [
+        {
+          "scenario": "seed131_log_failed_L2L7",
+          "pass_control": true,
+          "pass_candidate": true,
+          "win": true,
+          "regression": false,
+          "parameter_normalized_control": 5.058991212614217e-06,
+          "parameter_normalized_candidate": 1.3204898310359425e-05,
+          "held_display_control": 8.224564347235018e-08,
+          "held_display_candidate": 1.479675260536905e-07
+        },
+        {
+          "scenario": "seed157_log_failed_L5L7",
+          "pass_control": true,
+          "pass_candidate": true,
+          "win": false,
+          "regression": false,
+          "parameter_normalized_control": 8.283715056123242e-06,
+          "parameter_normalized_candidate": 3.392151790571063e-06,
+          "held_display_control": 7.186136425417748e-08,
+          "held_display_candidate": 5.668111669200833e-08
+        }
+      ],
+      "passed": true
+    }
+  },
+  "full_models": [
+    "C3",
+    "C4"
+  ],
+  "full_recovery": {
+    "C3": {
+      "control": "H2",
+      "comparisons": [
+        {
+          "scenario": "seed131_near_on",
+          "pass_control": false,
+          "pass_candidate": true,
+          "win": true,
+          "regression": false,
+          "parameter_normalized_control": 6.545552573737798,
+          "parameter_normalized_candidate": 2.1725650301007704e-06,
+          "held_display_control": 0.03913607591065046,
+          "held_display_candidate": 5.599006979316242e-08
+        },
+        {
+          "scenario": "seed157_near_on",
+          "pass_control": true,
+          "pass_candidate": true,
+          "win": false,
+          "regression": false,
+          "parameter_normalized_control": 0.03201226005330682,
+          "parameter_normalized_candidate": 0.03719322383403778,
+          "held_display_control": 0.005619761221006518,
+          "held_display_candidate": 0.005118264713324618
+        },
+        {
+          "scenario": "seed733_near_on",
+          "pass_control": true,
+          "pass_candidate": true,
+          "win": false,
+          "regression": true,
+          "parameter_normalized_control": 0.0010468044464317927,
+          "parameter_normalized_candidate": 0.03969542682170868,
+          "held_display_control": 0.00019393269041712512,
+          "held_display_candidate": 0.0053656408396942365
+        }
+      ],
+      "passed": false
+    },
+    "C4": {
+      "control": "H2",
+      "comparisons": [
+        {
+          "scenario": "seed131_near_on",
+          "pass_control": false,
+          "pass_candidate": true,
+          "win": true,
+          "regression": false,
+          "parameter_normalized_control": 6.545552573737798,
+          "parameter_normalized_candidate": 0.0018181507766712457,
+          "held_display_control": 0.03913607591065046,
+          "held_display_candidate": 0.0006805766848126904
+        },
+        {
+          "scenario": "seed157_near_on",
+          "pass_control": true,
+          "pass_candidate": true,
+          "win": false,
+          "regression": false,
+          "parameter_normalized_control": 0.03201226005330682,
+          "parameter_normalized_candidate": 7.396812273796627e-06,
+          "held_display_control": 0.005619761221006518,
+          "held_display_candidate": 4.693167266088699e-07
+        },
+        {
+          "scenario": "seed733_near_on",
+          "pass_control": true,
+          "pass_candidate": true,
+          "win": false,
+          "regression": false,
+          "parameter_normalized_control": 0.0010468044464317927,
+          "parameter_normalized_candidate": 1.8955038560974913e-06,
+          "held_display_control": 0.00019393269041712512,
+          "held_display_candidate": 6.780947585374456e-08
+        }
+      ],
+      "passed": true
+    }
+  },
+  "independent_model": "C4",
+  "refinement_model": "C4",
+  "conditional_arms": {
+    "H5_C4": [
+      {
+        "stage": "bc_complex",
+        "model": "H5",
+        "started": "0",
+        "reason": "on_better_than_frozen_mask_without_H4_gain",
+        "eligible_anchor_count": "0"
+      },
+      {
+        "stage": "bc_complex",
+        "model": "C4",
+        "started": "1",
+        "reason": "both_H4_and_C3_pass",
+        "eligible_anchor_count": 2,
+        "qualifying_common_failed_states": [
+          "seed509_complex_far_B2_failed",
+          "seed509_complex_far_log_failed"
+        ],
+        "recorded_eligible_anchor_count": 0
+      },
+      {
+        "stage": "bc_classroom",
+        "model": "H5",
+        "started": "0",
+        "reason": "on_better_than_frozen_mask_without_H4_gain",
+        "eligible_anchor_count": "0"
+      },
+      {
+        "stage": "bc_classroom",
+        "model": "C4",
+        "started": "0",
+        "reason": "both_H4_and_C3_pass",
+        "eligible_anchor_count": 0,
+        "qualifying_common_failed_states": [],
+        "recorded_eligible_anchor_count": 0
+      }
+    ],
+    "8D": "started",
+    "28D": "started",
+    "D": "started",
+    "Moment": "not_started_no_new_evidence_of_needed_proxy_component",
+    "E50-Classroom": "classroom_30cm_no_pass"
+  },
+  "stages": [
+    {
+      "name": "e24_a_classroom",
+      "arms": 4,
+      "truth": [
+        0.5371542003697897,
+        0.6967850710758917,
+        0.22475035761984327,
+        0.5876696575590338,
+        0.5371542003697897,
+        0.6967850710758917,
+        0.5023504606115343,
+        0.5876696575590338,
+        0.5371542003697897,
+        0.6967850710758917,
+        0.7824506374873134,
+        0.5876696575590338,
+        0.8312336892328275,
+        0.6967850710758917,
+        0.22475035761984327,
+        0.5876696575590338,
+        0.8312336892328275,
+        0.6967850710758917,
+        0.5023504606115343,
+        0.5876696575590338,
+        0.8312336892328275,
+        0.6967850710758917,
+        0.7824506374873134,
+        0.5876696575590338,
+        0.17679392662087695,
+        0.975069893070589,
+        0.887884803331468,
+        0.9204603350781482
+      ],
+      "scene": {
+        "scene": "classroom",
+        "task": "",
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "renderer": "URP stock Forward+",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "startSource": "",
+        "lamps": 7,
+        "trainingViews": 3,
+        "checkViews": 5,
+        "width": 448,
+        "height": 256,
+        "checkWidth": 896,
+        "checkHeight": 512,
+        "budget": 0,
+        "seed": 0,
+        "bakedGi": false,
+        "realtimeGi": false,
+        "noiseRms": 0.0,
+        "noiseHigh": 0.0,
+        "noiseThreshold": 0.0,
+        "ambient": 0.03310476243495941,
+        "boundsMin": {
+          "x": -5.329999923706055,
+          "y": 1.059999942779541,
+          "z": -4.400000095367432
+        },
+        "boundsMax": {
+          "x": 3.4800000190734863,
+          "y": 2.859999895095825,
+          "z": 3.0299999713897705
+        },
+        "viewPositions": [
+          {
+            "x": 2.8499999046325684,
+            "y": 1.3799999952316284,
+            "z": -4.039999961853027
+          },
+          {
+            "x": -1.9500000476837158,
+            "y": 1.6200000047683716,
+            "z": 2.7899999618530273
+          },
+          {
+            "x": -4.730000019073486,
+            "y": 1.4900000095367432,
+            "z": -0.6499999761581421
+          },
+          {
+            "x": 2.9800000190734863,
+            "y": 1.5199999809265137,
+            "z": 2.5399999618530273
+          },
+          {
+            "x": -4.590000152587891,
+            "y": 1.850000023841858,
+            "z": 2.7699999809265137
+          }
+        ],
+        "viewRotations": [
+          {
+            "x": 0.005251741036772728,
+            "y": -0.2332741916179657,
+            "z": 0.001259873271919787,
+            "w": 0.9723960161209106
+          },
+          {
+            "x": 0.011237755417823792,
+            "y": 0.9706711173057556,
+            "z": -0.04629070311784744,
+            "w": 0.23564481735229492
+          },
+          {
+            "x": -0.00142187369056046,
+            "y": 0.16828149557113647,
+            "z": 0.00024273699091281742,
+            "w": 0.9857379198074341
+          },
+          {
+            "x": -0.013856721110641956,
+            "y": 0.8953837156295776,
+            "z": -0.02793114073574543,
+            "w": -0.4442024827003479
+          },
+          {
+            "x": 0.005712978076189756,
+            "y": 0.9930260181427002,
+            "z": -0.05429086834192276,
+            "w": 0.10449520498514175
+          }
+        ],
+        "gt": [
+          {
+            "type": "Point",
+            "position": {
+              "x": -0.5976714491844177,
+              "y": 2.3142130374908447,
+              "z": -2.730104923248291
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -0.5976714491844177,
+              "y": 2.3142130374908447,
+              "z": -0.667536199092865
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -0.5976714491844177,
+              "y": 2.3142130374908447,
+              "z": 1.4136080741882324
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 1.9931687116622925,
+              "y": 2.3142130374908447,
+              "z": -2.730104923248291
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 1.9931687116622925,
+              "y": 2.3142130374908447,
+              "z": -0.667536199092865
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 1.9931687116622925,
+              "y": 2.3142130374908447,
+              "z": 1.4136080741882324
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -3.7724454402923584,
+              "y": 2.8151257038116455,
+              "z": 2.196984052658081
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 6.0,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          }
+        ]
+      },
+      "seconds": 146.7182354,
+      "provenance": {
+        "referenceCommit": "a89669d68ad6ce3927f7bb1e7bbe250e2100de9e",
+        "referenceSceneHash": "7bf132a88258927de8a29290f12d6c22201dac96cf60d5ba47c77562d8d3e4eb",
+        "localSceneHash": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+        "sceneHashMatch": false,
+        "hardScale": 0.2584995627403259,
+        "referenceHardScale": 0.2584995627403259,
+        "referenceHardLogStartLoss": 0.5786560046676266,
+        "localHardLogStartLossAtReferenceScale": 0.5786574202352445
+      }
+    },
+    {
+      "name": "e24_a_complex",
+      "arms": 4,
+      "truth": [
+        0.5,
+        0.7807692484037417,
+        0.5,
+        0.7407125511968184,
+        0.23563218359305246,
+        0.7807692484037417,
+        0.2857142857142857,
+        0.7709521172176023,
+        0.7643678164069475,
+        0.7807692484037417,
+        0.2857142857142857,
+        0.7709521172176023,
+        0.23563218359305246,
+        0.7807692484037417,
+        0.7142857142857143,
+        0.7709521172176023,
+        0.7643678164069475,
+        0.7807692484037417,
+        0.7142857142857143,
+        0.7709521172176023,
+        0.07471262887346616,
+        0.7307692942534701,
+        0.34285713945116314,
+        0.7049467148620797,
+        0.9252873711265338,
+        0.7307692942534701,
+        0.6571428605488369,
+        0.7049467148620797
+      ],
+      "scene": {
+        "scene": "native_complex_room",
+        "task": "",
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "startSource": "",
+        "lamps": 7,
+        "trainingViews": 3,
+        "checkViews": 5,
+        "width": 448,
+        "height": 256,
+        "checkWidth": 896,
+        "checkHeight": 512,
+        "budget": 0,
+        "seed": 0,
+        "bakedGi": false,
+        "realtimeGi": false,
+        "noiseRms": 0.0,
+        "noiseHigh": 0.0,
+        "noiseThreshold": 0.0,
+        "ambient": 0.0023219813592731953,
+        "boundsMin": {
+          "x": -4.349999904632568,
+          "y": 0.25,
+          "z": -3.5
+        },
+        "boundsMax": {
+          "x": 4.349999904632568,
+          "y": 2.8499999046325684,
+          "z": 3.5
+        },
+        "viewPositions": [
+          {
+            "x": 3.4000000953674316,
+            "y": 1.5499999523162842,
+            "z": 2.950000047683716
+          },
+          {
+            "x": -3.450000047683716,
+            "y": 1.5499999523162842,
+            "z": 2.9000000953674316
+          },
+          {
+            "x": 3.450000047683716,
+            "y": 1.5,
+            "z": -2.9000000953674316
+          },
+          {
+            "x": -3.4000000953674316,
+            "y": 1.5,
+            "z": -2.950000047683716
+          },
+          {
+            "x": 0.0,
+            "y": 1.649999976158142,
+            "z": 3.3499999046325684
+          }
+        ],
+        "viewRotations": [
+          {
+            "x": -0.018069546669721603,
+            "y": 0.916641116142273,
+            "z": -0.041708704084157944,
+            "w": -0.3971182703971863
+          },
+          {
+            "x": 0.019319739192724228,
+            "y": 0.9034255743026733,
+            "z": -0.040938202291727066,
+            "w": 0.42634859681129456
+          },
+          {
+            "x": 0.03246911242604256,
+            "y": -0.40265941619873047,
+            "z": 0.014293796382844448,
+            "w": 0.9146621823310852
+          },
+          {
+            "x": 0.032876282930374146,
+            "y": 0.40290892124176025,
+            "z": -0.014484028331935406,
+            "w": 0.9145347476005554
+          },
+          {
+            "x": 0.0,
+            "y": 0.9980303049087524,
+            "z": -0.06273365765810013,
+            "w": 0.0
+          }
+        ],
+        "gt": [
+          {
+            "type": "Point",
+            "position": {
+              "x": 0.0,
+              "y": 2.2799999713897705,
+              "z": 0.0
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.949999988079071,
+              "b": 0.8700000047683716,
+              "a": 1.0
+            },
+            "intensity": 2.4000000953674316,
+            "range": 7.0,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": -1.4999998807907104
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9700000286102295,
+              "b": 0.9200000166893005,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": -1.4999998807907104
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 0.9300000071525574,
+              "g": 0.9599999785423279,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": 1.5000001192092896
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9300000071525574,
+              "b": 0.8299999833106995,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": 1.5000001192092896
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9399999976158142,
+              "b": 0.8600000143051147,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -3.700000047683716,
+              "y": 2.1500000953674316,
+              "z": -1.0999999046325684
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.8999999761581421,
+              "b": 0.800000011920929,
+              "a": 1.0
+            },
+            "intensity": 2.0,
+            "range": 4.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 3.700000047683716,
+              "y": 2.1500000953674316,
+              "z": 1.1000001430511475
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 0.949999988079071,
+              "g": 0.9300000071525574,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 2.0,
+            "range": 4.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          }
+        ]
+      },
+      "seconds": 193.1269097,
+      "provenance": {
+        "referenceCommit": "a89669d68ad6ce3927f7bb1e7bbe250e2100de9e",
+        "referenceSceneHash": "f0857934e241d49d5597cd5bdb1b38b96de2fbfdb13928af764a480f7a7e8501",
+        "localSceneHash": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+        "sceneHashMatch": false,
+        "hardScale": 0.38417816162109375,
+        "referenceHardScale": 0.38417816162109375,
+        "referenceHardLogStartLoss": 0.4517950450627373,
+        "localHardLogStartLossAtReferenceScale": 0.4517950450443957
+      }
+    },
+    {
+      "name": "e24_bc_classroom",
+      "arms": 0,
+      "truth": [
+        0.5371542003697897,
+        0.6967850710758917,
+        0.22475035761984327,
+        0.5876696575590338,
+        0.5371542003697897,
+        0.6967850710758917,
+        0.5023504606115343,
+        0.5876696575590338,
+        0.5371542003697897,
+        0.6967850710758917,
+        0.7824506374873134,
+        0.5876696575590338,
+        0.8312336892328275,
+        0.6967850710758917,
+        0.22475035761984327,
+        0.5876696575590338,
+        0.8312336892328275,
+        0.6967850710758917,
+        0.5023504606115343,
+        0.5876696575590338,
+        0.8312336892328275,
+        0.6967850710758917,
+        0.7824506374873134,
+        0.5876696575590338,
+        0.17679392662087695,
+        0.975069893070589,
+        0.887884803331468,
+        0.9204603350781482
+      ],
+      "scene": {
+        "scene": "classroom",
+        "task": "",
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "renderer": "URP stock Forward+",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "startSource": "",
+        "lamps": 7,
+        "trainingViews": 3,
+        "checkViews": 5,
+        "width": 448,
+        "height": 256,
+        "checkWidth": 896,
+        "checkHeight": 512,
+        "budget": 0,
+        "seed": 0,
+        "bakedGi": false,
+        "realtimeGi": false,
+        "noiseRms": 0.0,
+        "noiseHigh": 0.0,
+        "noiseThreshold": 0.0,
+        "ambient": 0.03310476243495941,
+        "boundsMin": {
+          "x": -5.329999923706055,
+          "y": 1.059999942779541,
+          "z": -4.400000095367432
+        },
+        "boundsMax": {
+          "x": 3.4800000190734863,
+          "y": 2.859999895095825,
+          "z": 3.0299999713897705
+        },
+        "viewPositions": [
+          {
+            "x": 2.8499999046325684,
+            "y": 1.3799999952316284,
+            "z": -4.039999961853027
+          },
+          {
+            "x": -1.9500000476837158,
+            "y": 1.6200000047683716,
+            "z": 2.7899999618530273
+          },
+          {
+            "x": -4.730000019073486,
+            "y": 1.4900000095367432,
+            "z": -0.6499999761581421
+          },
+          {
+            "x": 2.9800000190734863,
+            "y": 1.5199999809265137,
+            "z": 2.5399999618530273
+          },
+          {
+            "x": -4.590000152587891,
+            "y": 1.850000023841858,
+            "z": 2.7699999809265137
+          }
+        ],
+        "viewRotations": [
+          {
+            "x": 0.005251741036772728,
+            "y": -0.2332741916179657,
+            "z": 0.001259873271919787,
+            "w": 0.9723960161209106
+          },
+          {
+            "x": 0.011237755417823792,
+            "y": 0.9706711173057556,
+            "z": -0.04629070311784744,
+            "w": 0.23564481735229492
+          },
+          {
+            "x": -0.00142187369056046,
+            "y": 0.16828149557113647,
+            "z": 0.00024273699091281742,
+            "w": 0.9857379198074341
+          },
+          {
+            "x": -0.013856721110641956,
+            "y": 0.8953837156295776,
+            "z": -0.02793114073574543,
+            "w": -0.4442024827003479
+          },
+          {
+            "x": 0.005712978076189756,
+            "y": 0.9930260181427002,
+            "z": -0.05429086834192276,
+            "w": 0.10449520498514175
+          }
+        ],
+        "gt": [
+          {
+            "type": "Point",
+            "position": {
+              "x": -0.5976714491844177,
+              "y": 2.3142130374908447,
+              "z": -2.730104923248291
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -0.5976714491844177,
+              "y": 2.3142130374908447,
+              "z": -0.667536199092865
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -0.5976714491844177,
+              "y": 2.3142130374908447,
+              "z": 1.4136080741882324
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 1.9931687116622925,
+              "y": 2.3142130374908447,
+              "z": -2.730104923248291
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 1.9931687116622925,
+              "y": 2.3142130374908447,
+              "z": -0.667536199092865
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 1.9931687116622925,
+              "y": 2.3142130374908447,
+              "z": 1.4136080741882324
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -3.7724454402923584,
+              "y": 2.8151257038116455,
+              "z": 2.196984052658081
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 6.0,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          }
+        ]
+      },
+      "seconds": 86.276111,
+      "provenance": {
+        "referenceCommit": "a89669d68ad6ce3927f7bb1e7bbe250e2100de9e",
+        "referenceSceneHash": "7bf132a88258927de8a29290f12d6c22201dac96cf60d5ba47c77562d8d3e4eb",
+        "localSceneHash": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+        "sceneHashMatch": false,
+        "hardScale": 0.2584995627403259,
+        "referenceHardScale": 0.2584995627403259,
+        "referenceHardLogStartLoss": 0.5786560046676266,
+        "localHardLogStartLossAtReferenceScale": 0.5786574199412413
+      }
+    },
+    {
+      "name": "e24_bc_complex",
+      "arms": 0,
+      "truth": [
+        0.5,
+        0.7807692484037417,
+        0.5,
+        0.7407125511968184,
+        0.23563218359305246,
+        0.7807692484037417,
+        0.2857142857142857,
+        0.7709521172176023,
+        0.7643678164069475,
+        0.7807692484037417,
+        0.2857142857142857,
+        0.7709521172176023,
+        0.23563218359305246,
+        0.7807692484037417,
+        0.7142857142857143,
+        0.7709521172176023,
+        0.7643678164069475,
+        0.7807692484037417,
+        0.7142857142857143,
+        0.7709521172176023,
+        0.07471262887346616,
+        0.7307692942534701,
+        0.34285713945116314,
+        0.7049467148620797,
+        0.9252873711265338,
+        0.7307692942534701,
+        0.6571428605488369,
+        0.7049467148620797
+      ],
+      "scene": {
+        "scene": "native_complex_room",
+        "task": "",
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "startSource": "",
+        "lamps": 7,
+        "trainingViews": 3,
+        "checkViews": 5,
+        "width": 448,
+        "height": 256,
+        "checkWidth": 896,
+        "checkHeight": 512,
+        "budget": 0,
+        "seed": 0,
+        "bakedGi": false,
+        "realtimeGi": false,
+        "noiseRms": 0.0,
+        "noiseHigh": 0.0,
+        "noiseThreshold": 0.0,
+        "ambient": 0.0023219813592731953,
+        "boundsMin": {
+          "x": -4.349999904632568,
+          "y": 0.25,
+          "z": -3.5
+        },
+        "boundsMax": {
+          "x": 4.349999904632568,
+          "y": 2.8499999046325684,
+          "z": 3.5
+        },
+        "viewPositions": [
+          {
+            "x": 3.4000000953674316,
+            "y": 1.5499999523162842,
+            "z": 2.950000047683716
+          },
+          {
+            "x": -3.450000047683716,
+            "y": 1.5499999523162842,
+            "z": 2.9000000953674316
+          },
+          {
+            "x": 3.450000047683716,
+            "y": 1.5,
+            "z": -2.9000000953674316
+          },
+          {
+            "x": -3.4000000953674316,
+            "y": 1.5,
+            "z": -2.950000047683716
+          },
+          {
+            "x": 0.0,
+            "y": 1.649999976158142,
+            "z": 3.3499999046325684
+          }
+        ],
+        "viewRotations": [
+          {
+            "x": -0.018069546669721603,
+            "y": 0.916641116142273,
+            "z": -0.041708704084157944,
+            "w": -0.3971182703971863
+          },
+          {
+            "x": 0.019319739192724228,
+            "y": 0.9034255743026733,
+            "z": -0.040938202291727066,
+            "w": 0.42634859681129456
+          },
+          {
+            "x": 0.03246911242604256,
+            "y": -0.40265941619873047,
+            "z": 0.014293796382844448,
+            "w": 0.9146621823310852
+          },
+          {
+            "x": 0.032876282930374146,
+            "y": 0.40290892124176025,
+            "z": -0.014484028331935406,
+            "w": 0.9145347476005554
+          },
+          {
+            "x": 0.0,
+            "y": 0.9980303049087524,
+            "z": -0.06273365765810013,
+            "w": 0.0
+          }
+        ],
+        "gt": [
+          {
+            "type": "Point",
+            "position": {
+              "x": 0.0,
+              "y": 2.2799999713897705,
+              "z": 0.0
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.949999988079071,
+              "b": 0.8700000047683716,
+              "a": 1.0
+            },
+            "intensity": 2.4000000953674316,
+            "range": 7.0,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": -1.4999998807907104
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9700000286102295,
+              "b": 0.9200000166893005,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": -1.4999998807907104
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 0.9300000071525574,
+              "g": 0.9599999785423279,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": 1.5000001192092896
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9300000071525574,
+              "b": 0.8299999833106995,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": 1.5000001192092896
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9399999976158142,
+              "b": 0.8600000143051147,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -3.700000047683716,
+              "y": 2.1500000953674316,
+              "z": -1.0999999046325684
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.8999999761581421,
+              "b": 0.800000011920929,
+              "a": 1.0
+            },
+            "intensity": 2.0,
+            "range": 4.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 3.700000047683716,
+              "y": 2.1500000953674316,
+              "z": 1.1000001430511475
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 0.949999988079071,
+              "g": 0.9300000071525574,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 2.0,
+            "range": 4.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          }
+        ]
+      },
+      "seconds": 288.5289812,
+      "provenance": {
+        "referenceCommit": "a89669d68ad6ce3927f7bb1e7bbe250e2100de9e",
+        "referenceSceneHash": "f0857934e241d49d5597cd5bdb1b38b96de2fbfdb13928af764a480f7a7e8501",
+        "localSceneHash": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+        "sceneHashMatch": false,
+        "hardScale": 0.38417816162109375,
+        "referenceHardScale": 0.38417816162109375,
+        "referenceHardLogStartLoss": 0.4517950450627373,
+        "localHardLogStartLossAtReferenceScale": 0.45179504487867056
+      }
+    },
+    {
+      "name": "e24_d_complex",
+      "arms": 16,
+      "truth": [
+        0.5,
+        0.7807692484037417,
+        0.5,
+        0.7407125511968184,
+        0.23563218359305246,
+        0.7807692484037417,
+        0.2857142857142857,
+        0.7709521172176023,
+        0.7643678164069475,
+        0.7807692484037417,
+        0.2857142857142857,
+        0.7709521172176023,
+        0.23563218359305246,
+        0.7807692484037417,
+        0.7142857142857143,
+        0.7709521172176023,
+        0.7643678164069475,
+        0.7807692484037417,
+        0.7142857142857143,
+        0.7709521172176023,
+        0.07471262887346616,
+        0.7307692942534701,
+        0.34285713945116314,
+        0.7049467148620797,
+        0.9252873711265338,
+        0.7307692942534701,
+        0.6571428605488369,
+        0.7049467148620797
+      ],
+      "scene": {
+        "scene": "native_complex_room",
+        "task": "",
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "startSource": "",
+        "lamps": 7,
+        "trainingViews": 3,
+        "checkViews": 5,
+        "width": 448,
+        "height": 256,
+        "checkWidth": 896,
+        "checkHeight": 512,
+        "budget": 0,
+        "seed": 0,
+        "bakedGi": false,
+        "realtimeGi": false,
+        "noiseRms": 0.0,
+        "noiseHigh": 0.0,
+        "noiseThreshold": 0.0,
+        "ambient": 0.0023219813592731953,
+        "boundsMin": {
+          "x": -4.349999904632568,
+          "y": 0.25,
+          "z": -3.5
+        },
+        "boundsMax": {
+          "x": 4.349999904632568,
+          "y": 2.8499999046325684,
+          "z": 3.5
+        },
+        "viewPositions": [
+          {
+            "x": 3.4000000953674316,
+            "y": 1.5499999523162842,
+            "z": 2.950000047683716
+          },
+          {
+            "x": -3.450000047683716,
+            "y": 1.5499999523162842,
+            "z": 2.9000000953674316
+          },
+          {
+            "x": 3.450000047683716,
+            "y": 1.5,
+            "z": -2.9000000953674316
+          },
+          {
+            "x": -3.4000000953674316,
+            "y": 1.5,
+            "z": -2.950000047683716
+          },
+          {
+            "x": 0.0,
+            "y": 1.649999976158142,
+            "z": 3.3499999046325684
+          }
+        ],
+        "viewRotations": [
+          {
+            "x": -0.018069546669721603,
+            "y": 0.916641116142273,
+            "z": -0.041708704084157944,
+            "w": -0.3971182703971863
+          },
+          {
+            "x": 0.019319739192724228,
+            "y": 0.9034255743026733,
+            "z": -0.040938202291727066,
+            "w": 0.42634859681129456
+          },
+          {
+            "x": 0.03246911242604256,
+            "y": -0.40265941619873047,
+            "z": 0.014293796382844448,
+            "w": 0.9146621823310852
+          },
+          {
+            "x": 0.032876282930374146,
+            "y": 0.40290892124176025,
+            "z": -0.014484028331935406,
+            "w": 0.9145347476005554
+          },
+          {
+            "x": 0.0,
+            "y": 0.9980303049087524,
+            "z": -0.06273365765810013,
+            "w": 0.0
+          }
+        ],
+        "gt": [
+          {
+            "type": "Point",
+            "position": {
+              "x": 0.0,
+              "y": 2.2799999713897705,
+              "z": 0.0
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.949999988079071,
+              "b": 0.8700000047683716,
+              "a": 1.0
+            },
+            "intensity": 2.4000000953674316,
+            "range": 7.0,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": -1.4999998807907104
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9700000286102295,
+              "b": 0.9200000166893005,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": -1.4999998807907104
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 0.9300000071525574,
+              "g": 0.9599999785423279,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": 1.5000001192092896
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9300000071525574,
+              "b": 0.8299999833106995,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": 1.5000001192092896
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9399999976158142,
+              "b": 0.8600000143051147,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -3.700000047683716,
+              "y": 2.1500000953674316,
+              "z": -1.0999999046325684
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.8999999761581421,
+              "b": 0.800000011920929,
+              "a": 1.0
+            },
+            "intensity": 2.0,
+            "range": 4.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 3.700000047683716,
+              "y": 2.1500000953674316,
+              "z": 1.1000001430511475
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 0.949999988079071,
+              "g": 0.9300000071525574,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 2.0,
+            "range": 4.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          }
+        ]
+      },
+      "seconds": 1185.9705162999999,
+      "provenance": {
+        "referenceCommit": "a89669d68ad6ce3927f7bb1e7bbe250e2100de9e",
+        "referenceSceneHash": "f0857934e241d49d5597cd5bdb1b38b96de2fbfdb13928af764a480f7a7e8501",
+        "localSceneHash": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+        "sceneHashMatch": false,
+        "hardScale": 0.38417816162109375,
+        "referenceHardScale": 0.38417816162109375,
+        "referenceHardLogStartLoss": 0.4517950450627373,
+        "localHardLogStartLossAtReferenceScale": 0.45179504486471656
+      }
+    },
+    {
+      "name": "e24_e50_complex",
+      "arms": 3,
+      "truth": [
+        0.5,
+        0.7807692484037417,
+        0.5,
+        0.7407125511968184,
+        0.23563218359305246,
+        0.7807692484037417,
+        0.2857142857142857,
+        0.7709521172176023,
+        0.7643678164069475,
+        0.7807692484037417,
+        0.2857142857142857,
+        0.7709521172176023,
+        0.23563218359305246,
+        0.7807692484037417,
+        0.7142857142857143,
+        0.7709521172176023,
+        0.7643678164069475,
+        0.7807692484037417,
+        0.7142857142857143,
+        0.7709521172176023,
+        0.07471262887346616,
+        0.7307692942534701,
+        0.34285713945116314,
+        0.7049467148620797,
+        0.9252873711265338,
+        0.7307692942534701,
+        0.6571428605488369,
+        0.7049467148620797
+      ],
+      "scene": {
+        "scene": "native_complex_room",
+        "task": "",
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "startSource": "",
+        "lamps": 7,
+        "trainingViews": 3,
+        "checkViews": 5,
+        "width": 448,
+        "height": 256,
+        "checkWidth": 896,
+        "checkHeight": 512,
+        "budget": 0,
+        "seed": 0,
+        "bakedGi": false,
+        "realtimeGi": false,
+        "noiseRms": 0.0,
+        "noiseHigh": 0.0,
+        "noiseThreshold": 0.0,
+        "ambient": 0.0023219813592731953,
+        "boundsMin": {
+          "x": -4.349999904632568,
+          "y": 0.25,
+          "z": -3.5
+        },
+        "boundsMax": {
+          "x": 4.349999904632568,
+          "y": 2.8499999046325684,
+          "z": 3.5
+        },
+        "viewPositions": [
+          {
+            "x": 3.4000000953674316,
+            "y": 1.5499999523162842,
+            "z": 2.950000047683716
+          },
+          {
+            "x": -3.450000047683716,
+            "y": 1.5499999523162842,
+            "z": 2.9000000953674316
+          },
+          {
+            "x": 3.450000047683716,
+            "y": 1.5,
+            "z": -2.9000000953674316
+          },
+          {
+            "x": -3.4000000953674316,
+            "y": 1.5,
+            "z": -2.950000047683716
+          },
+          {
+            "x": 0.0,
+            "y": 1.649999976158142,
+            "z": 3.3499999046325684
+          }
+        ],
+        "viewRotations": [
+          {
+            "x": -0.018069546669721603,
+            "y": 0.916641116142273,
+            "z": -0.041708704084157944,
+            "w": -0.3971182703971863
+          },
+          {
+            "x": 0.019319739192724228,
+            "y": 0.9034255743026733,
+            "z": -0.040938202291727066,
+            "w": 0.42634859681129456
+          },
+          {
+            "x": 0.03246911242604256,
+            "y": -0.40265941619873047,
+            "z": 0.014293796382844448,
+            "w": 0.9146621823310852
+          },
+          {
+            "x": 0.032876282930374146,
+            "y": 0.40290892124176025,
+            "z": -0.014484028331935406,
+            "w": 0.9145347476005554
+          },
+          {
+            "x": 0.0,
+            "y": 0.9980303049087524,
+            "z": -0.06273365765810013,
+            "w": 0.0
+          }
+        ],
+        "gt": [
+          {
+            "type": "Point",
+            "position": {
+              "x": 0.0,
+              "y": 2.2799999713897705,
+              "z": 0.0
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.949999988079071,
+              "b": 0.8700000047683716,
+              "a": 1.0
+            },
+            "intensity": 2.4000000953674316,
+            "range": 7.0,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": -1.4999998807907104
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9700000286102295,
+              "b": 0.9200000166893005,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": -1.4999998807907104
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 0.9300000071525574,
+              "g": 0.9599999785423279,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": 1.5000001192092896
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9300000071525574,
+              "b": 0.8299999833106995,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": 1.5000001192092896
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9399999976158142,
+              "b": 0.8600000143051147,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -3.700000047683716,
+              "y": 2.1500000953674316,
+              "z": -1.0999999046325684
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.8999999761581421,
+              "b": 0.800000011920929,
+              "a": 1.0
+            },
+            "intensity": 2.0,
+            "range": 4.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 3.700000047683716,
+              "y": 2.1500000953674316,
+              "z": 1.1000001430511475
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 0.949999988079071,
+              "g": 0.9300000071525574,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 2.0,
+            "range": 4.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          }
+        ]
+      },
+      "seconds": 236.8236002,
+      "provenance": {
+        "referenceCommit": "a89669d68ad6ce3927f7bb1e7bbe250e2100de9e",
+        "referenceSceneHash": "f0857934e241d49d5597cd5bdb1b38b96de2fbfdb13928af764a480f7a7e8501",
+        "localSceneHash": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+        "sceneHashMatch": false,
+        "hardScale": 0.38417816162109375,
+        "referenceHardScale": 0.38417816162109375,
+        "referenceHardLogStartLoss": 0.4517950450627373,
+        "localHardLogStartLossAtReferenceScale": 0.45179504500027823
+      }
+    },
+    {
+      "name": "e24_e_classroom",
+      "arms": 21,
+      "truth": [
+        0.5371542003697897,
+        0.6967850710758917,
+        0.22475035761984327,
+        0.5876696575590338,
+        0.5371542003697897,
+        0.6967850710758917,
+        0.5023504606115343,
+        0.5876696575590338,
+        0.5371542003697897,
+        0.6967850710758917,
+        0.7824506374873134,
+        0.5876696575590338,
+        0.8312336892328275,
+        0.6967850710758917,
+        0.22475035761984327,
+        0.5876696575590338,
+        0.8312336892328275,
+        0.6967850710758917,
+        0.5023504606115343,
+        0.5876696575590338,
+        0.8312336892328275,
+        0.6967850710758917,
+        0.7824506374873134,
+        0.5876696575590338,
+        0.17679392662087695,
+        0.975069893070589,
+        0.887884803331468,
+        0.9204603350781482
+      ],
+      "scene": {
+        "scene": "classroom",
+        "task": "",
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "renderer": "URP stock Forward+",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "startSource": "",
+        "lamps": 7,
+        "trainingViews": 3,
+        "checkViews": 5,
+        "width": 448,
+        "height": 256,
+        "checkWidth": 896,
+        "checkHeight": 512,
+        "budget": 0,
+        "seed": 0,
+        "bakedGi": false,
+        "realtimeGi": false,
+        "noiseRms": 0.0,
+        "noiseHigh": 0.0,
+        "noiseThreshold": 0.0,
+        "ambient": 0.03310476243495941,
+        "boundsMin": {
+          "x": -5.329999923706055,
+          "y": 1.059999942779541,
+          "z": -4.400000095367432
+        },
+        "boundsMax": {
+          "x": 3.4800000190734863,
+          "y": 2.859999895095825,
+          "z": 3.0299999713897705
+        },
+        "viewPositions": [
+          {
+            "x": 2.8499999046325684,
+            "y": 1.3799999952316284,
+            "z": -4.039999961853027
+          },
+          {
+            "x": -1.9500000476837158,
+            "y": 1.6200000047683716,
+            "z": 2.7899999618530273
+          },
+          {
+            "x": -4.730000019073486,
+            "y": 1.4900000095367432,
+            "z": -0.6499999761581421
+          },
+          {
+            "x": 2.9800000190734863,
+            "y": 1.5199999809265137,
+            "z": 2.5399999618530273
+          },
+          {
+            "x": -4.590000152587891,
+            "y": 1.850000023841858,
+            "z": 2.7699999809265137
+          }
+        ],
+        "viewRotations": [
+          {
+            "x": 0.005251741036772728,
+            "y": -0.2332741916179657,
+            "z": 0.001259873271919787,
+            "w": 0.9723960161209106
+          },
+          {
+            "x": 0.011237755417823792,
+            "y": 0.9706711173057556,
+            "z": -0.04629070311784744,
+            "w": 0.23564481735229492
+          },
+          {
+            "x": -0.00142187369056046,
+            "y": 0.16828149557113647,
+            "z": 0.00024273699091281742,
+            "w": 0.9857379198074341
+          },
+          {
+            "x": -0.013856721110641956,
+            "y": 0.8953837156295776,
+            "z": -0.02793114073574543,
+            "w": -0.4442024827003479
+          },
+          {
+            "x": 0.005712978076189756,
+            "y": 0.9930260181427002,
+            "z": -0.05429086834192276,
+            "w": 0.10449520498514175
+          }
+        ],
+        "gt": [
+          {
+            "type": "Point",
+            "position": {
+              "x": -0.5976714491844177,
+              "y": 2.3142130374908447,
+              "z": -2.730104923248291
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -0.5976714491844177,
+              "y": 2.3142130374908447,
+              "z": -0.667536199092865
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -0.5976714491844177,
+              "y": 2.3142130374908447,
+              "z": 1.4136080741882324
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 1.9931687116622925,
+              "y": 2.3142130374908447,
+              "z": -2.730104923248291
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 1.9931687116622925,
+              "y": 2.3142130374908447,
+              "z": -0.667536199092865
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 1.9931687116622925,
+              "y": 2.3142130374908447,
+              "z": 1.4136080741882324
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 1.100000023841858,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -3.7724454402923584,
+              "y": 2.8151257038116455,
+              "z": 2.196984052658081
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 6.0,
+            "range": 5.25,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          }
+        ]
+      },
+      "seconds": 951.8974033,
+      "provenance": {
+        "referenceCommit": "a89669d68ad6ce3927f7bb1e7bbe250e2100de9e",
+        "referenceSceneHash": "7bf132a88258927de8a29290f12d6c22201dac96cf60d5ba47c77562d8d3e4eb",
+        "localSceneHash": "7fc060b4ae652fa5bbd47d85e24be1aa5c64b94ab724733ed1f629e681b84f50",
+        "sceneHashMatch": false,
+        "hardScale": 0.25849953293800354,
+        "referenceHardScale": 0.2584995627403259,
+        "referenceHardLogStartLoss": 0.5786560046676266,
+        "localHardLogStartLossAtReferenceScale": 0.5786574200206693
+      }
+    },
+    {
+      "name": "e24_e_complex",
+      "arms": 21,
+      "truth": [
+        0.5,
+        0.7807692484037417,
+        0.5,
+        0.7407125511968184,
+        0.23563218359305246,
+        0.7807692484037417,
+        0.2857142857142857,
+        0.7709521172176023,
+        0.7643678164069475,
+        0.7807692484037417,
+        0.2857142857142857,
+        0.7709521172176023,
+        0.23563218359305246,
+        0.7807692484037417,
+        0.7142857142857143,
+        0.7709521172176023,
+        0.7643678164069475,
+        0.7807692484037417,
+        0.7142857142857143,
+        0.7709521172176023,
+        0.07471262887346616,
+        0.7307692942534701,
+        0.34285713945116314,
+        0.7049467148620797,
+        0.9252873711265338,
+        0.7307692942534701,
+        0.6571428605488369,
+        0.7049467148620797
+      ],
+      "scene": {
+        "scene": "native_complex_room",
+        "task": "",
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "startSource": "",
+        "lamps": 7,
+        "trainingViews": 3,
+        "checkViews": 5,
+        "width": 448,
+        "height": 256,
+        "checkWidth": 896,
+        "checkHeight": 512,
+        "budget": 0,
+        "seed": 0,
+        "bakedGi": false,
+        "realtimeGi": false,
+        "noiseRms": 0.0,
+        "noiseHigh": 0.0,
+        "noiseThreshold": 0.0,
+        "ambient": 0.0023219813592731953,
+        "boundsMin": {
+          "x": -4.349999904632568,
+          "y": 0.25,
+          "z": -3.5
+        },
+        "boundsMax": {
+          "x": 4.349999904632568,
+          "y": 2.8499999046325684,
+          "z": 3.5
+        },
+        "viewPositions": [
+          {
+            "x": 3.4000000953674316,
+            "y": 1.5499999523162842,
+            "z": 2.950000047683716
+          },
+          {
+            "x": -3.450000047683716,
+            "y": 1.5499999523162842,
+            "z": 2.9000000953674316
+          },
+          {
+            "x": 3.450000047683716,
+            "y": 1.5,
+            "z": -2.9000000953674316
+          },
+          {
+            "x": -3.4000000953674316,
+            "y": 1.5,
+            "z": -2.950000047683716
+          },
+          {
+            "x": 0.0,
+            "y": 1.649999976158142,
+            "z": 3.3499999046325684
+          }
+        ],
+        "viewRotations": [
+          {
+            "x": -0.018069546669721603,
+            "y": 0.916641116142273,
+            "z": -0.041708704084157944,
+            "w": -0.3971182703971863
+          },
+          {
+            "x": 0.019319739192724228,
+            "y": 0.9034255743026733,
+            "z": -0.040938202291727066,
+            "w": 0.42634859681129456
+          },
+          {
+            "x": 0.03246911242604256,
+            "y": -0.40265941619873047,
+            "z": 0.014293796382844448,
+            "w": 0.9146621823310852
+          },
+          {
+            "x": 0.032876282930374146,
+            "y": 0.40290892124176025,
+            "z": -0.014484028331935406,
+            "w": 0.9145347476005554
+          },
+          {
+            "x": 0.0,
+            "y": 0.9980303049087524,
+            "z": -0.06273365765810013,
+            "w": 0.0
+          }
+        ],
+        "gt": [
+          {
+            "type": "Point",
+            "position": {
+              "x": 0.0,
+              "y": 2.2799999713897705,
+              "z": 0.0
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.949999988079071,
+              "b": 0.8700000047683716,
+              "a": 1.0
+            },
+            "intensity": 2.4000000953674316,
+            "range": 7.0,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": -1.4999998807907104
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9700000286102295,
+              "b": 0.9200000166893005,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": -1.4999998807907104
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 0.9300000071525574,
+              "g": 0.9599999785423279,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": 1.5000001192092896
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9300000071525574,
+              "b": 0.8299999833106995,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": 1.5000001192092896
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9399999976158142,
+              "b": 0.8600000143051147,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -3.700000047683716,
+              "y": 2.1500000953674316,
+              "z": -1.0999999046325684
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.8999999761581421,
+              "b": 0.800000011920929,
+              "a": 1.0
+            },
+            "intensity": 2.0,
+            "range": 4.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 3.700000047683716,
+              "y": 2.1500000953674316,
+              "z": 1.1000001430511475
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 0.949999988079071,
+              "g": 0.9300000071525574,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 2.0,
+            "range": 4.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          }
+        ]
+      },
+      "seconds": 568.0467798999999,
+      "provenance": {
+        "referenceCommit": "a89669d68ad6ce3927f7bb1e7bbe250e2100de9e",
+        "referenceSceneHash": "f0857934e241d49d5597cd5bdb1b38b96de2fbfdb13928af764a480f7a7e8501",
+        "localSceneHash": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+        "sceneHashMatch": false,
+        "hardScale": 0.38417819142341614,
+        "referenceHardScale": 0.38417816162109375,
+        "referenceHardLogStartLoss": 0.4517950450627373,
+        "localHardLogStartLossAtReferenceScale": 0.4517950448118619
+      }
+    },
+    {
+      "name": "e24_p_full",
+      "arms": 12,
+      "truth": [
+        0.5,
+        0.7807692484037417,
+        0.5,
+        0.7407125511968184,
+        0.23563218359305246,
+        0.7807692484037417,
+        0.2857142857142857,
+        0.7709521172176023,
+        0.7643678164069475,
+        0.7807692484037417,
+        0.2857142857142857,
+        0.7709521172176023,
+        0.23563218359305246,
+        0.7807692484037417,
+        0.7142857142857143,
+        0.7709521172176023,
+        0.7643678164069475,
+        0.7807692484037417,
+        0.7142857142857143,
+        0.7709521172176023,
+        0.07471262887346616,
+        0.7307692942534701,
+        0.34285713945116314,
+        0.7049467148620797,
+        0.9252873711265338,
+        0.7307692942534701,
+        0.6571428605488369,
+        0.7049467148620797
+      ],
+      "scene": {
+        "scene": "native_complex_room",
+        "task": "",
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "startSource": "",
+        "lamps": 7,
+        "trainingViews": 3,
+        "checkViews": 5,
+        "width": 448,
+        "height": 256,
+        "checkWidth": 896,
+        "checkHeight": 512,
+        "budget": 0,
+        "seed": 0,
+        "bakedGi": false,
+        "realtimeGi": false,
+        "noiseRms": 0.0,
+        "noiseHigh": 0.0,
+        "noiseThreshold": 0.0,
+        "ambient": 0.0023219813592731953,
+        "boundsMin": {
+          "x": -4.349999904632568,
+          "y": 0.25,
+          "z": -3.5
+        },
+        "boundsMax": {
+          "x": 4.349999904632568,
+          "y": 2.8499999046325684,
+          "z": 3.5
+        },
+        "viewPositions": [
+          {
+            "x": 3.4000000953674316,
+            "y": 1.5499999523162842,
+            "z": 2.950000047683716
+          },
+          {
+            "x": -3.450000047683716,
+            "y": 1.5499999523162842,
+            "z": 2.9000000953674316
+          },
+          {
+            "x": 3.450000047683716,
+            "y": 1.5,
+            "z": -2.9000000953674316
+          },
+          {
+            "x": -3.4000000953674316,
+            "y": 1.5,
+            "z": -2.950000047683716
+          },
+          {
+            "x": 0.0,
+            "y": 1.649999976158142,
+            "z": 3.3499999046325684
+          }
+        ],
+        "viewRotations": [
+          {
+            "x": -0.018069546669721603,
+            "y": 0.916641116142273,
+            "z": -0.041708704084157944,
+            "w": -0.3971182703971863
+          },
+          {
+            "x": 0.019319739192724228,
+            "y": 0.9034255743026733,
+            "z": -0.040938202291727066,
+            "w": 0.42634859681129456
+          },
+          {
+            "x": 0.03246911242604256,
+            "y": -0.40265941619873047,
+            "z": 0.014293796382844448,
+            "w": 0.9146621823310852
+          },
+          {
+            "x": 0.032876282930374146,
+            "y": 0.40290892124176025,
+            "z": -0.014484028331935406,
+            "w": 0.9145347476005554
+          },
+          {
+            "x": 0.0,
+            "y": 0.9980303049087524,
+            "z": -0.06273365765810013,
+            "w": 0.0
+          }
+        ],
+        "gt": [
+          {
+            "type": "Point",
+            "position": {
+              "x": 0.0,
+              "y": 2.2799999713897705,
+              "z": 0.0
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.949999988079071,
+              "b": 0.8700000047683716,
+              "a": 1.0
+            },
+            "intensity": 2.4000000953674316,
+            "range": 7.0,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": -1.4999998807907104
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9700000286102295,
+              "b": 0.9200000166893005,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": -1.4999998807907104
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 0.9300000071525574,
+              "g": 0.9599999785423279,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": 1.5000001192092896
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9300000071525574,
+              "b": 0.8299999833106995,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": 1.5000001192092896
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9399999976158142,
+              "b": 0.8600000143051147,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -3.700000047683716,
+              "y": 2.1500000953674316,
+              "z": -1.0999999046325684
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.8999999761581421,
+              "b": 0.800000011920929,
+              "a": 1.0
+            },
+            "intensity": 2.0,
+            "range": 4.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 3.700000047683716,
+              "y": 2.1500000953674316,
+              "z": 1.1000001430511475
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 0.949999988079071,
+              "g": 0.9300000071525574,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 2.0,
+            "range": 4.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          }
+        ]
+      },
+      "seconds": 947.3484980999999,
+      "provenance": {
+        "referenceCommit": "a89669d68ad6ce3927f7bb1e7bbe250e2100de9e",
+        "referenceSceneHash": "f0857934e241d49d5597cd5bdb1b38b96de2fbfdb13928af764a480f7a7e8501",
+        "localSceneHash": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+        "sceneHashMatch": false,
+        "hardScale": 0.38417816162109375,
+        "referenceHardScale": 0.38417816162109375,
+        "referenceHardLogStartLoss": 0.4517950450627373,
+        "localHardLogStartLossAtReferenceScale": 0.45179504504130363
+      }
+    },
+    {
+      "name": "e24_p_small",
+      "arms": 8,
+      "truth": [
+        0.5,
+        0.7807692484037417,
+        0.5,
+        0.7407125511968184,
+        0.23563218359305246,
+        0.7807692484037417,
+        0.2857142857142857,
+        0.7709521172176023,
+        0.7643678164069475,
+        0.7807692484037417,
+        0.2857142857142857,
+        0.7709521172176023,
+        0.23563218359305246,
+        0.7807692484037417,
+        0.7142857142857143,
+        0.7709521172176023,
+        0.7643678164069475,
+        0.7807692484037417,
+        0.7142857142857143,
+        0.7709521172176023,
+        0.07471262887346616,
+        0.7307692942534701,
+        0.34285713945116314,
+        0.7049467148620797,
+        0.9252873711265338,
+        0.7307692942534701,
+        0.6571428605488369,
+        0.7049467148620797
+      ],
+      "scene": {
+        "scene": "native_complex_room",
+        "task": "",
+        "unity": "2022.3.62f3c1",
+        "urp": "14.0.12",
+        "renderer": "URP stock Forward+ (Classroom-equivalent)",
+        "gpu": "NVIDIA GeForce GTX 1060 6GB",
+        "graphics": "Direct3D11",
+        "colorSpace": "Linear",
+        "startSource": "",
+        "lamps": 7,
+        "trainingViews": 3,
+        "checkViews": 5,
+        "width": 448,
+        "height": 256,
+        "checkWidth": 896,
+        "checkHeight": 512,
+        "budget": 0,
+        "seed": 0,
+        "bakedGi": false,
+        "realtimeGi": false,
+        "noiseRms": 0.0,
+        "noiseHigh": 0.0,
+        "noiseThreshold": 0.0,
+        "ambient": 0.0023219813592731953,
+        "boundsMin": {
+          "x": -4.349999904632568,
+          "y": 0.25,
+          "z": -3.5
+        },
+        "boundsMax": {
+          "x": 4.349999904632568,
+          "y": 2.8499999046325684,
+          "z": 3.5
+        },
+        "viewPositions": [
+          {
+            "x": 3.4000000953674316,
+            "y": 1.5499999523162842,
+            "z": 2.950000047683716
+          },
+          {
+            "x": -3.450000047683716,
+            "y": 1.5499999523162842,
+            "z": 2.9000000953674316
+          },
+          {
+            "x": 3.450000047683716,
+            "y": 1.5,
+            "z": -2.9000000953674316
+          },
+          {
+            "x": -3.4000000953674316,
+            "y": 1.5,
+            "z": -2.950000047683716
+          },
+          {
+            "x": 0.0,
+            "y": 1.649999976158142,
+            "z": 3.3499999046325684
+          }
+        ],
+        "viewRotations": [
+          {
+            "x": -0.018069546669721603,
+            "y": 0.916641116142273,
+            "z": -0.041708704084157944,
+            "w": -0.3971182703971863
+          },
+          {
+            "x": 0.019319739192724228,
+            "y": 0.9034255743026733,
+            "z": -0.040938202291727066,
+            "w": 0.42634859681129456
+          },
+          {
+            "x": 0.03246911242604256,
+            "y": -0.40265941619873047,
+            "z": 0.014293796382844448,
+            "w": 0.9146621823310852
+          },
+          {
+            "x": 0.032876282930374146,
+            "y": 0.40290892124176025,
+            "z": -0.014484028331935406,
+            "w": 0.9145347476005554
+          },
+          {
+            "x": 0.0,
+            "y": 0.9980303049087524,
+            "z": -0.06273365765810013,
+            "w": 0.0
+          }
+        ],
+        "gt": [
+          {
+            "type": "Point",
+            "position": {
+              "x": 0.0,
+              "y": 2.2799999713897705,
+              "z": 0.0
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.949999988079071,
+              "b": 0.8700000047683716,
+              "a": 1.0
+            },
+            "intensity": 2.4000000953674316,
+            "range": 7.0,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": -1.4999998807907104
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9700000286102295,
+              "b": 0.9200000166893005,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": -1.4999998807907104
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 0.9300000071525574,
+              "g": 0.9599999785423279,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": 1.5000001192092896
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9300000071525574,
+              "b": 0.8299999833106995,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 2.299999952316284,
+              "y": 2.2799999713897705,
+              "z": 1.5000001192092896
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.9399999976158142,
+              "b": 0.8600000143051147,
+              "a": 1.0
+            },
+            "intensity": 2.799999952316284,
+            "range": 6.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": -3.700000047683716,
+              "y": 2.1500000953674316,
+              "z": -1.0999999046325684
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 1.0,
+              "g": 0.8999999761581421,
+              "b": 0.800000011920929,
+              "a": 1.0
+            },
+            "intensity": 2.0,
+            "range": 4.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          },
+          {
+            "type": "Point",
+            "position": {
+              "x": 3.700000047683716,
+              "y": 2.1500000953674316,
+              "z": 1.1000001430511475
+            },
+            "direction": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "color": {
+              "r": 0.949999988079071,
+              "g": 0.9300000071525574,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "intensity": 2.0,
+            "range": 4.599999904632568,
+            "innerSpotAngle": 0.0,
+            "spotAngle": 0.0
+          }
+        ]
+      },
+      "seconds": 106.0206637,
+      "provenance": {
+        "referenceCommit": "a89669d68ad6ce3927f7bb1e7bbe250e2100de9e",
+        "referenceSceneHash": "f0857934e241d49d5597cd5bdb1b38b96de2fbfdb13928af764a480f7a7e8501",
+        "localSceneHash": "ef40a2ca9c8d20d890cd93fb6c6959c73cf2f57be24b20edace25ad00f865c52",
+        "sceneHashMatch": false,
+        "hardScale": 0.38417816162109375,
+        "referenceHardScale": 0.38417816162109375,
+        "referenceHardLogStartLoss": 0.4517950450627373,
+        "localHardLogStartLossAtReferenceScale": 0.45179504493673733
+      }
+    }
+  ],
+  "displacement_rollup": [
+    {
+      "scene": "classroom",
+      "cm": 10,
+      "model": "C4",
+      "seeds": [
+        1301,
+        1601
+      ],
+      "passed": 0,
+      "count": 2,
+      "max_position_cm": [
+        10.030895471572876,
+        10.228140652179718
+      ],
+      "max_intensity_relative": [
+        0.05682960490366806,
+        0.04945093263423783
+      ],
+      "held_raw": [
+        0.6719389624944564,
+        0.6806025586715826
+      ],
+      "held_log": [
+        0.2594172461037028,
+        0.30694604458809616
+      ],
+      "held_display": [
+        0.13677823854993584,
+        0.16806073648885644
+      ]
+    },
+    {
+      "scene": "classroom",
+      "cm": 10,
+      "model": "H0",
+      "seeds": [
+        1301,
+        1601
+      ],
+      "passed": 0,
+      "count": 2,
+      "max_position_cm": [
+        10.397222638130188,
+        10.214250534772873
+      ],
+      "max_intensity_relative": [
+        0.33526502738559516,
+        0.06812942759997342
+      ],
+      "held_raw": [
+        0.7024152516097114,
+        0.6801562023391081
+      ],
+      "held_log": [
+        0.26938830236727007,
+        0.3023633055076705
+      ],
+      "held_display": [
+        0.14620227769911565,
+        0.16616741917149538
+      ]
+    },
+    {
+      "scene": "classroom",
+      "cm": 10,
+      "model": "H2",
+      "seeds": [
+        1301,
+        1601
+      ],
+      "passed": 0,
+      "count": 2,
+      "max_position_cm": [
+        9.95897725224495,
+        11.966203898191452
+      ],
+      "max_intensity_relative": [
+        0.15244548867444763,
+        0.09483402161322552
+      ],
+      "held_raw": [
+        0.5361870739713006,
+        0.6799530776600008
+      ],
+      "held_log": [
+        0.2362554701059846,
+        0.28646575672517993
+      ],
+      "held_display": [
+        0.12848113692615093,
+        0.1557426205846183
+      ]
+    },
+    {
+      "scene": "classroom",
+      "cm": 20,
+      "model": "C4",
+      "seeds": [
+        1301,
+        1601
+      ],
+      "passed": 0,
+      "count": 2,
+      "max_position_cm": [
+        20.170460641384125,
+        19.97271627187729
+      ],
+      "max_intensity_relative": [
+        0.050505613977276154,
+        0.07804862014832503
+      ],
+      "held_raw": [
+        10.838455629342915,
+        2.0665901482033617
+      ],
+      "held_log": [
+        0.6448204894883076,
+        0.3515611501666992
+      ],
+      "held_display": [
+        0.24084345067772797,
+        0.18640768689680604
+      ]
+    },
+    {
+      "scene": "classroom",
+      "cm": 20,
+      "model": "H0",
+      "seeds": [
+        1301,
+        1601
+      ],
+      "passed": 0,
+      "count": 2,
+      "max_position_cm": [
+        68.77197623252869,
+        49.55795705318451
+      ],
+      "max_intensity_relative": [
+        0.8163229964244949,
+        0.8033802885199426
+      ],
+      "held_raw": [
+        0.6984717388762869,
+        0.6910213832148575
+      ],
+      "held_log": [
+        0.46107448312289706,
+        0.4295097418577383
+      ],
+      "held_display": [
+        0.28280452509102566,
+        0.28723776704223475
+      ]
+    },
+    {
+      "scene": "classroom",
+      "cm": 20,
+      "model": "H2",
+      "seeds": [
+        1301,
+        1601
+      ],
+      "passed": 0,
+      "count": 2,
+      "max_position_cm": [
+        23.37382733821869,
+        20.029054582118988
+      ],
+      "max_intensity_relative": [
+        0.26994470337731147,
+        0.057221911265108893
+      ],
+      "held_raw": [
+        15.176682709403302,
+        2.2169424113591916
+      ],
+      "held_log": [
+        0.6048523403348716,
+        0.35723962180361546
+      ],
+      "held_display": [
+        0.21529234072917142,
+        0.18726421959921732
+      ]
+    },
+    {
+      "scene": "classroom",
+      "cm": 30,
+      "model": "C4",
+      "seeds": [
+        1301,
+        1601
+      ],
+      "passed": 0,
+      "count": 2,
+      "max_position_cm": [
+        57.71884322166443,
+        68.83193254470825
+      ],
+      "max_intensity_relative": [
+        0.48702772943405537,
+        0.3541368375772218
+      ],
+      "held_raw": [
+        0.9500561224845,
+        0.7504050002799129
+      ],
+      "held_log": [
+        0.49301167546331637,
+        0.3875203849752043
+      ],
+      "held_display": [
+        0.2228330632166823,
+        0.2063723060553376
+      ]
+    },
+    {
+      "scene": "classroom",
+      "cm": 30,
+      "model": "H0",
+      "seeds": [
+        1301,
+        1601
+      ],
+      "passed": 0,
+      "count": 2,
+      "max_position_cm": [
+        96.0673451423645,
+        96.32070064544678
+      ],
+      "max_intensity_relative": [
+        0.8685951437182988,
+        0.44065694549058376
+      ],
+      "held_raw": [
+        0.6937711343812637,
+        0.6829636122724811
+      ],
+      "held_log": [
+        0.45676784274435767,
+        0.387931739376071
+      ],
+      "held_display": [
+        0.28203179981624216,
+        0.22953110739965762
+      ]
+    },
+    {
+      "scene": "classroom",
+      "cm": 30,
+      "model": "H2",
+      "seeds": [
+        1301,
+        1601
+      ],
+      "passed": 0,
+      "count": 2,
+      "max_position_cm": [
+        64.95062112808228,
+        52.68586874008179
+      ],
+      "max_intensity_relative": [
+        0.5119675361620946,
+        0.37871811898078545
+      ],
+      "held_raw": [
+        7.708657223933321,
+        0.7034946674995967
+      ],
+      "held_log": [
+        0.6250658714713917,
+        0.35928841604194417
+      ],
+      "held_display": [
+        0.2087535555494094,
+        0.196831330305928
+      ]
+    },
+    {
+      "scene": "native_complex_room",
+      "cm": 20,
+      "model": "C4",
+      "seeds": [
+        793,
+        911,
+        1201
+      ],
+      "passed": 1,
+      "count": 3,
+      "max_position_cm": [
+        8.984651416540146,
+        15.586227178573608,
+        0.06763309938833117
+      ],
+      "max_intensity_relative": [
+        0.13240898150935898,
+        0.09766523553005091,
+        0.00048467957773801196
+      ],
+      "held_raw": [
+        0.04266258610674995,
+        0.7456759639945394,
+        0.0011292260792710482
+      ],
+      "held_log": [
+        0.04307275585515596,
+        0.27321529017116597,
+        0.0021904792093348294
+      ],
+      "held_display": [
+        0.03359922406901804,
+        0.1456910497837226,
+        0.0015967016532997377
+      ]
+    },
+    {
+      "scene": "native_complex_room",
+      "cm": 20,
+      "model": "H0",
+      "seeds": [
+        793,
+        911,
+        1201
+      ],
+      "passed": 0,
+      "count": 3,
+      "max_position_cm": [
+        17.104263603687286,
+        20.170919597148895,
+        20.851007103919983
+      ],
+      "max_intensity_relative": [
+        1.1341845360173832,
+        0.16788754417887874,
+        0.13166590258270117
+      ],
+      "held_raw": [
+        0.21279770966313807,
+        0.1560175599619294,
+        1.8106234151058052
+      ],
+      "held_log": [
+        0.1845466517107927,
+        0.09199816402155475,
+        0.33293503364886473
+      ],
+      "held_display": [
+        0.1242762874200176,
+        0.05011806142938986,
+        0.15439730457939618
+      ]
+    },
+    {
+      "scene": "native_complex_room",
+      "cm": 20,
+      "model": "H2",
+      "seeds": [
+        793,
+        911,
+        1201
+      ],
+      "passed": 0,
+      "count": 3,
+      "max_position_cm": [
+        5.076085403561592,
+        19.977501034736633,
+        16.925618052482605
+      ],
+      "max_intensity_relative": [
+        0.03162081310403453,
+        0.04753121623556711,
+        0.03631931304277569
+      ],
+      "held_raw": [
+        0.10872444039709318,
+        0.18267271288045006,
+        0.7142104146288625
+      ],
+      "held_log": [
+        0.02469481452668321,
+        0.07002603417996932,
+        0.37298269663431766
+      ],
+      "held_display": [
+        0.015379816713456057,
+        0.030377300296088053,
+        0.11982970357303512
+      ]
+    },
+    {
+      "scene": "native_complex_room",
+      "cm": 30,
+      "model": "C4",
+      "seeds": [
+        793,
+        911,
+        1201
+      ],
+      "passed": 2,
+      "count": 3,
+      "max_position_cm": [
+        0.05849164444953203,
+        4.955292120575905,
+        2.280440181493759
+      ],
+      "max_intensity_relative": [
+        0.0009147168381897774,
+        0.05380790365160648,
+        0.029208839982522772
+      ],
+      "held_raw": [
+        0.001458304425640439,
+        0.03454324984342645,
+        0.033578729079215525
+      ],
+      "held_log": [
+        0.0019548182759343124,
+        0.022227574161515457,
+        0.020834104796781185
+      ],
+      "held_display": [
+        0.0019004979276766654,
+        0.015775163925007604,
+        0.015247929061304717
+      ]
+    },
+    {
+      "scene": "native_complex_room",
+      "cm": 30,
+      "model": "H0",
+      "seeds": [
+        793,
+        911,
+        1201
+      ],
+      "passed": 1,
+      "count": 3,
+      "max_position_cm": [
+        0.669230567291379,
+        4.223364591598511,
+        32.66690969467163
+      ],
+      "max_intensity_relative": [
+        0.01188386332751823,
+        0.13830651707934782,
+        1.0008602222254859
+      ],
+      "held_raw": [
+        0.008836120422209878,
+        0.032061563405552745,
+        1.044042366688905
+      ],
+      "held_log": [
+        0.004996614323391906,
+        0.03837472079375797,
+        0.4402920283289796
+      ],
+      "held_display": [
+        0.004815622885558944,
+        0.024324669339833786,
+        0.21180161722647478
+      ]
+    },
+    {
+      "scene": "native_complex_room",
+      "cm": 30,
+      "model": "H2",
+      "seeds": [
+        793,
+        911,
+        1201
+      ],
+      "passed": 1,
+      "count": 3,
+      "max_position_cm": [
+        0.9300141595304012,
+        9.74004939198494,
+        32.914888858795166
+      ],
+      "max_intensity_relative": [
+        0.0010080372135127247,
+        0.10207404384706631,
+        0.43713162092452973
+      ],
+      "held_raw": [
+        0.014382770086446749,
+        0.08527885441143042,
+        4.834504683231538
+      ],
+      "held_log": [
+        0.004804373157982018,
+        0.055226320678170814,
+        0.3654131863059587
+      ],
+      "held_display": [
+        0.005077023942058444,
+        0.02767359583472243,
+        0.16637045076480403
+      ]
+    },
+    {
+      "scene": "native_complex_room",
+      "cm": 50,
+      "model": "C4",
+      "seeds": [
+        911
+      ],
+      "passed": 1,
+      "count": 1,
+      "max_position_cm": [
+        0.0
+      ],
+      "max_intensity_relative": [
+        8.350433511328248e-08
+      ],
+      "held_raw": [
+        6.298772983352472e-08
+      ],
+      "held_log": [
+        3.288799650534392e-08
+      ],
+      "held_display": [
+        4.9133351619581496e-08
+      ]
+    },
+    {
+      "scene": "native_complex_room",
+      "cm": 50,
+      "model": "H0",
+      "seeds": [
+        911
+      ],
+      "passed": 1,
+      "count": 1,
+      "max_position_cm": [
+        7.152557373046875e-05
+      ],
+      "max_intensity_relative": [
+        4.1771346004360055e-07
+      ],
+      "held_raw": [
+        1.0080133205381803e-06
+      ],
+      "held_log": [
+        2.82848148322045e-06
+      ],
+      "held_display": [
+        2.9621547360518057e-06
+      ]
+    },
+    {
+      "scene": "native_complex_room",
+      "cm": 50,
+      "model": "H2",
+      "seeds": [
+        911
+      ],
+      "passed": 1,
+      "count": 1,
+      "max_position_cm": [
+        0.007608690793858841
+      ],
+      "max_intensity_relative": [
+        0.000320871888257801
+      ],
+      "held_raw": [
+        0.0001922902101925746
+      ],
+      "held_log": [
+        0.0002168248377817115
+      ],
+      "held_display": [
+        0.0004133734853934903
+      ]
+    }
+  ],
+  "reused_small_radius": {
+    "commit": "a89669d68ad6ce3927f7bb1e7bbe250e2100de9e",
+    "historical_results_separate_from_local_rates": true,
+    "2_5_10cm": [
+      {
+        "scenario": "dir271_2cm",
+        "method": "C0",
+        "pass": true,
+        "positionCm": [
+          0.0001430511474609375,
+          0.0,
+          0.0,
+          2.384185791015625e-05,
+          0.0,
+          2.384185791015625e-05,
+          0.00020955080799467396
+        ],
+        "intensityRelative": [
+          1.265782822024164e-05,
+          4.491146028406945e-07,
+          8.170111570615646e-07,
+          1.7624769216295633e-06,
+          6.9538662017532e-07,
+          2.2472311522747646e-07,
+          9.256316506611739e-07
+        ],
+        "held": 6.5067122396868445e-06,
+        "evaluations": 514
+      },
+      {
+        "scenario": "dir271_5cm",
+        "method": "C0",
+        "pass": true,
+        "positionCm": [
+          4.76837158203125e-05,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.00254876595136011
+        ],
+        "intensityRelative": [
+          4.06133779495832e-06,
+          3.131176015136461e-07,
+          3.9331585044433126e-07,
+          6.947899915399347e-07,
+          1.780350457281088e-06,
+          3.7000925878771795e-08,
+          1.4816680696583262e-05
+        ],
+        "held": 3.199471118356393e-05,
+        "evaluations": 514
+      },
+      {
+        "scenario": "dir271_10cm",
+        "method": "C0",
+        "pass": true,
+        "positionCm": [
+          7.152557373046875e-05,
+          0.00011920928955078125,
+          0.0,
+          9.5367431640625e-05,
+          4.76837158203125e-05,
+          0.00525242394360248,
+          0.0025604478651075624
+        ],
+        "intensityRelative": [
+          4.6760104563947635e-06,
+          1.0504326956817245e-05,
+          1.1722299408933878e-07,
+          7.221980040772458e-06,
+          2.3051723081479736e-06,
+          6.561180716380122e-05,
+          1.1270918575112532e-05
+        ],
+        "held": 5.352634343992331e-05,
+        "evaluations": 514
+      },
+      {
+        "scenario": "dir793_2cm",
+        "method": "C0",
+        "pass": true,
+        "positionCm": [
+          2.086162567138672e-05,
+          0.0,
+          0.0,
+          2.384185791015625e-05,
+          2.384185791015625e-05,
+          2.384185791015625e-05,
+          0.0007487444236176088
+        ],
+        "intensityRelative": [
+          5.371559540279236e-06,
+          1.0071134630695866e-06,
+          1.442737605827915e-06,
+          2.471218376598472e-06,
+          1.7315797773420627e-06,
+          4.4657802034109295e-07,
+          5.175478961394475e-06
+        ],
+        "held": 1.049635367832583e-05,
+        "evaluations": 514
+      },
+      {
+        "scenario": "dir793_5cm",
+        "method": "C0",
+        "pass": true,
+        "positionCm": [
+          0.0001681917979112768,
+          0.0,
+          2.384185791015625e-05,
+          4.76837158203125e-05,
+          0.0,
+          0.0,
+          0.0004643045031116344
+        ],
+        "intensityRelative": [
+          1.0830998592448182e-05,
+          1.982925424304227e-06,
+          2.3785641953821823e-06,
+          4.682688187429562e-06,
+          1.812929432132293e-06,
+          5.339921238523004e-07,
+          3.1061047705005507e-06
+        ],
+        "held": 0.00029035296519072895,
+        "evaluations": 514
+      },
+      {
+        "scenario": "dir793_10cm",
+        "method": "C0",
+        "pass": true,
+        "positionCm": [
+          0.0010987431778630707,
+          4.76837158203125e-05,
+          4.76837158203125e-05,
+          0.0001430511474609375,
+          4.76837158203125e-05,
+          0.0,
+          0.0020799885533051565
+        ],
+        "intensityRelative": [
+          9.048461429139731e-05,
+          6.080675798214585e-06,
+          6.726728113193303e-06,
+          1.5228039757619882e-05,
+          7.101711300805391e-06,
+          1.4820679272720128e-07,
+          1.2675356334312937e-05
+        ],
+        "held": 0.0002936186322598582,
+        "evaluations": 514
+      },
+      {
+        "scenario": "dir271_2cm",
+        "method": "B2",
+        "pass": true,
+        "positionCm": [
+          0.00043491136239026673,
+          0.0005047777904110262,
+          0.0005474549652717542,
+          0.0006819980171712814,
+          0.00044236126086616423,
+          0.0005816875727759907,
+          0.000561170691071311
+        ],
+        "intensityRelative": [
+          2.5603699355336573e-05,
+          2.9203452363013582e-05,
+          6.887352921980394e-06,
+          6.103114108979568e-06,
+          1.958265457924213e-05,
+          2.4656701398617642e-05,
+          1.5037076383062065e-05
+        ],
+        "held": 0.00013753591889098619,
+        "evaluations": 479
+      },
+      {
+        "scenario": "dir271_5cm",
+        "method": "B2",
+        "pass": true,
+        "positionCm": [
+          0.00862382075865753,
+          0.004515200271271169,
+          0.013542726810555905,
+          0.28516538441181183,
+          0.007108563295332715,
+          0.03351877967361361,
+          0.03695293562486768
+        ],
+        "intensityRelative": [
+          0.00021883330415661817,
+          0.0002975229214132735,
+          0.00026863522184439326,
+          0.00042771273703423596,
+          0.0002418490264837203,
+          0.00016920252328667118,
+          0.0005077755318017019
+        ],
+        "held": 0.02112634536943149,
+        "evaluations": 484
+      },
+      {
+        "scenario": "dir271_10cm",
+        "method": "B2",
+        "pass": true,
+        "positionCm": [
+          0.0003891202140948735,
+          0.0005197579866944579,
+          0.0005618034265353344,
+          0.001333919499302283,
+          0.000684078531776322,
+          0.0038299403968267143,
+          0.00296790440188488
+        ],
+        "intensityRelative": [
+          2.0404253799677363e-05,
+          4.110221380959622e-05,
+          6.750448336534376e-06,
+          4.606610570112579e-06,
+          1.0902634966836189e-05,
+          9.650008179340475e-05,
+          2.4338751080432708e-05
+        ],
+        "held": 0.00030800912426603424,
+        "evaluations": 473
+      },
+      {
+        "scenario": "dir793_2cm",
+        "method": "B2",
+        "pass": true,
+        "positionCm": [
+          0.01984832197194919,
+          0.004737050767289475,
+          0.00470343729830347,
+          0.18906365148723125,
+          0.004093654570169747,
+          0.014374332386069,
+          0.008514623186783865
+        ],
+        "intensityRelative": [
+          0.002393241207030883,
+          0.0002234324010270683,
+          6.035638686374689e-05,
+          0.0005375063381856116,
+          5.698100963935637e-05,
+          0.00017554130034236337,
+          9.244220202453413e-05
+        ],
+        "held": 0.013994129816518734,
+        "evaluations": 483
+      },
+      {
+        "scenario": "dir793_5cm",
+        "method": "B2",
+        "pass": true,
+        "positionCm": [
+          0.004186109435977414,
+          0.006419351120712236,
+          0.001476271245337557,
+          0.29305252246558666,
+          0.0007828883099136874,
+          0.012546278594527394,
+          0.008707804227015004
+        ],
+        "intensityRelative": [
+          0.00016483495642494184,
+          0.00017502231450849948,
+          4.043624143201807e-05,
+          0.0004172286369805711,
+          1.191315253978864e-05,
+          6.376299629395898e-05,
+          5.505873943367767e-05
+        ],
+        "held": 0.02167076004292169,
+        "evaluations": 473
+      },
+      {
+        "scenario": "dir793_10cm",
+        "method": "B2",
+        "pass": true,
+        "positionCm": [
+          0.0,
+          7.633119025740598e-05,
+          4.9151248049383867e-05,
+          0.00016388568155889516,
+          0.00015859764062042814,
+          0.00017357134538542596,
+          0.00034550134841992985
+        ],
+        "intensityRelative": [
+          2.2919397912879447e-06,
+          6.976359487875783e-07,
+          1.2263620605690306e-06,
+          8.059276914718083e-07,
+          1.354184313429041e-05,
+          3.3630942268825237e-06,
+          9.060977213204424e-06
+        ],
+        "held": 1.4240056684265889e-05,
+        "evaluations": 479
+      }
+    ]
+  },
+  "gpu_timing": "Unavailable for individual synchronous editor Camera.Render calls; no derived GPU timing."
+}
