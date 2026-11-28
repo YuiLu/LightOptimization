@@ -232,6 +232,7 @@ namespace LightingMvp.Editor
             if (!GraphicsSettings.lightsUseLinearIntensity) throw new InvalidOperationException("Enable linear light intensity for calibrated color coordinates.");
             test = test.ToLowerInvariant();
             if (test.StartsWith("e23-", StringComparison.Ordinal)) { RunE23Stages(test, output); return; }
+            if (test == "e27-run") { RunE27Stages(output); return; }
             if (test.StartsWith("e26-", StringComparison.Ordinal)) { RunE26Stages(test, output); return; }
             if (test.StartsWith("e25-", StringComparison.Ordinal)) { RunE25Stages(test, output); return; }
             if (test.StartsWith("e24-", StringComparison.Ordinal)) { RunE24Stages(test, output); return; }

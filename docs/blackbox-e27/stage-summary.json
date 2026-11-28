@@ -1,0 +1,160 @@
+{
+  "baseline": "01e51735a42e5eb8b1f4884d063a7a5b54a79b3f",
+  "stages": {
+    "0": {
+      "required": 2,
+      "required_completed": 2,
+      "conditional": 0,
+      "statuses": {
+        "completed": 2
+      },
+      "measured": 2,
+      "pass_gt": 2
+    },
+    "A1": {
+      "required": 21,
+      "required_completed": 21,
+      "conditional": 0,
+      "statuses": {
+        "completed": 21
+      },
+      "measured": 0,
+      "pass_gt": 0
+    },
+    "A2": {
+      "required": 34,
+      "required_completed": 34,
+      "conditional": 0,
+      "statuses": {
+        "completed": 34
+      },
+      "measured": 34,
+      "pass_gt": 11
+    },
+    "A3": {
+      "required": 26,
+      "required_completed": 26,
+      "conditional": 0,
+      "statuses": {
+        "completed": 26
+      },
+      "measured": 26,
+      "pass_gt": 0
+    },
+    "B1": {
+      "required": 30,
+      "required_completed": 30,
+      "conditional": 0,
+      "statuses": {
+        "completed": 30
+      },
+      "measured": 30,
+      "pass_gt": 1
+    },
+    "B2": {
+      "required": 88,
+      "required_completed": 88,
+      "conditional": 0,
+      "statuses": {
+        "completed": 88
+      },
+      "measured": 88,
+      "pass_gt": 5
+    },
+    "B3": {
+      "required": 5,
+      "required_completed": 5,
+      "conditional": 0,
+      "statuses": {
+        "completed": 5
+      },
+      "measured": 5,
+      "pass_gt": 0
+    },
+    "C": {
+      "required": 10,
+      "required_completed": 10,
+      "conditional": 2,
+      "statuses": {
+        "completed": 10,
+        "not_triggered": 2
+      },
+      "measured": 10,
+      "pass_gt": 0
+    },
+    "D1": {
+      "required": 2,
+      "required_completed": 2,
+      "conditional": 0,
+      "statuses": {
+        "completed": 2
+      },
+      "measured": 0,
+      "pass_gt": 0
+    },
+    "D2": {
+      "required": 49,
+      "required_completed": 49,
+      "conditional": 12,
+      "statuses": {
+        "completed": 61
+      },
+      "measured": 61,
+      "pass_gt": 53
+    },
+    "D-budget": {
+      "required": 0,
+      "required_completed": 0,
+      "conditional": 4,
+      "statuses": {
+        "not_triggered": 4
+      },
+      "measured": 0,
+      "pass_gt": 0
+    },
+    "D3": {
+      "required": 53,
+      "required_completed": 53,
+      "conditional": 0,
+      "statuses": {
+        "completed": 53
+      },
+      "measured": 52,
+      "pass_gt": 36
+    },
+    "E": {
+      "required": 24,
+      "required_completed": 24,
+      "conditional": 5,
+      "statuses": {
+        "completed": 26,
+        "not_triggered": 3
+      },
+      "measured": 24,
+      "pass_gt": 22
+    },
+    "transfer": {
+      "required": 16,
+      "required_completed": 16,
+      "conditional": 0,
+      "statuses": {
+        "completed": 16
+      },
+      "measured": 16,
+      "pass_gt": 15
+    }
+  },
+  "total": 383,
+  "completed": 374,
+  "required": 360,
+  "required_completed": 360,
+  "complete": true,
+  "layout_exact": {
+    "trajectory_exact": true,
+    "endpoint_exact": true,
+    "render_queries": 1134,
+    "pass": true
+  },
+  "independent_gradient_pass": true,
+  "real_native_5d_6d_gpu_pass": true
+}

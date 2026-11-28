@@ -19,6 +19,7 @@ namespace LightingMvp
             public TrustFallback Fallback;
             public int[] ViewBlocks;
             public bool FixedProbeScale;
+            public bool ReserveRemainingModels; // Opt-in for predetermined short branch comparisons.
             // Optional physical, per-lamp position test. The original whole-rig check still runs.
             public Func<double[], int, bool> LampPositionAllowed;
             public bool IndependentLampDamping;
@@ -33,6 +34,11 @@ namespace LightingMvp
             // Diagnostic observer receives borrowed columns, valid only during the callback.
             public Action<int, float[][]> AuditColumns;
             public Action<TrustTrial> Trial;
+            public Func<TrustJacobian, bool> FinishAfterModel;
+            public Func<TrustJacobian, float[][], float[], double[]> ProposalGradient;
+            public int StallModelLimit;
+            public Func<bool> StopAfterIteration;
+            public bool BuildModelAtZero;
             public TrustTiming Timing;
             public bool TraceProposalClipping;
         }
@@ -84,6 +90,7 @@ namespace LightingMvp
             public string Status, Source, Constraint;
             public int[] LampShrinks;
             public double CurrentLoss, ReferenceLoss, ReferenceRatio, BestLoss;
+            public double UnclippedPrediction = double.NaN;
         }
 
         public sealed class TrustResult
@@ -135,7 +142,7 @@ namespace LightingMvp
             double f = result.InitialLoss = result.BestLoss = Evaluate(x, "initial", center);
             double native = settings.NativeAcceptance == null ? f : CheckNative(x, "initial_native");
             double probeScale = 1;
-            int consecutiveCandidateRejects = 0;
+            int consecutiveCandidateRejects = 0, stalledModels = 0;
             int checkCost = settings.NativeAcceptance == null ? 0 : 1;
             var history = new Queue<double>();
             history.Enqueue(f);
@@ -154,7 +161,7 @@ namespace LightingMvp
 
             while (result.Evaluations + maxProbes + 1 + checkCost <= settings.Budget && result.Jacobians < settings.Iterations)
             {
-                if (f < 1e-12) { result.Stop = "near_zero_residual"; break; }
+                if (f < 1e-12 && !settings.BuildModelAtZero) { result.Stop = "near_zero_residual"; break; }
                 ++result.Jacobians;
                 int blockedBefore = result.Blocked;
                 var steps = new double[n];
@@ -237,9 +244,14 @@ namespace LightingMvp
                 int zeros = 0;
                 for (int j = 0; j < n; ++j) if (!(gram[j, j] > 1e-18)) ++zeros;
                 result.ZeroColumns += zeros;
-                settings.Jacobian?.Invoke(new TrustJacobian { Iteration = result.Jacobians, Query = result.Evaluations, Theta = x,
-                    PhysicalSteps = steps, Stencils = stencils, Gram = gram, Gradient = gradient, Blocked = result.Blocked - blockedBefore });
+                TrustJacobian snapshot = null;
+                if (settings.Jacobian != null || settings.FinishAfterModel != null || settings.ProposalGradient != null)
+                    snapshot = new TrustJacobian { Iteration = result.Jacobians, Query = result.Evaluations, Theta = x,
+                        PhysicalSteps = steps, Stencils = stencils, Gram = gram, Gradient = gradient, Blocked = result.Blocked - blockedBefore };
+                settings.Jacobian?.Invoke(snapshot);
+                if (settings.FinishAfterModel?.Invoke(snapshot) == true) { result.Stop = "audit_model"; break; }
                 if (zeros == n) { result.Stop = "zero_jacobian"; break; }
+                var directionGradient = settings.ProposalGradient?.Invoke(snapshot, columns, center) ?? gradient;
                 var model = gram;
                 double[] dampingScale = null;
                 if (settings.NormalMode == TrustNormalMode.LampDiagonal)
@@ -268,9 +280,11 @@ namespace LightingMvp
                 bool poolUsed = false;
                 var uphill = new List<(double[] theta, double[] delta, double predicted, double next, int shrinks)>();
                 bool acceptedIteration = false;
-                for (int attempt = 0; attempt < 7 && result.Evaluations + 1 + checkCost <= settings.Budget; ++attempt)
+                long reserved = settings.ReserveRemainingModels ?
+                    (long)(settings.Iterations - result.Jacobians) * (maxProbes + 1 + checkCost) : 0;
+                for (int attempt = 0; attempt < 7 && result.Evaluations + 1 + checkCost + reserved <= settings.Budget; ++attempt)
                 {
-                    var delta = groups == 1 ? TimedSolve(model, gradient, x, damping[0], dampingScale) : new double[n];
+                    var delta = groups == 1 ? TimedSolve(model, directionGradient, x, damping[0], dampingScale) : new double[n];
                     var unclipped = settings.TraceProposalClipping ? new double[n] : null;
                     for (int lamp = 0; lamp < lamps; ++lamp)
                     {
@@ -329,6 +343,7 @@ namespace LightingMvp
                         Accepted = accepted, Legal = legal, Source = "full", Constraint = constraint, LampShrinks = lampShrinks, CurrentLoss = f, BestLoss = result.BestLoss, Predicted = predicted, Actual = actual, Ratio = ratio, NativeActual = nativeActual,
                         PositionRadius = positionRadius, IntensityRadius = intensityRadius, Damping = damping, Step = delta,
                         DampingScale = dampingScale, Theta = probe, UnclippedStep = unclipped, RadiusLimitedStep = radiusLimited,
+                        UnclippedPrediction = unclipped == null ? double.NaN : TrustPredicted(gram, gradient, unclipped),
                         PredictedByLamp = predictedByLamp, ActualByLamp = actualByLamp });
                     for (int group = 0; group < groups; ++group)
                     {
@@ -381,8 +396,12 @@ namespace LightingMvp
                     (!viewPool || settings.FixedProbeScale || probeScale <= .125)) acceptedIteration = TryFallback();
                 if (firstUphillModel > 0 && result.Jacobians - firstUphillModel >= 3)
                 { result.Stop = "nonmonotone_rollback"; f = result.BestLoss; break; }
+                if (settings.StopAfterIteration?.Invoke() == true) { result.Stop = "small_improvements"; break; }
+                if (acceptedIteration) stalledModels = 0;
                 if (!acceptedIteration)
                 {
+                    if (settings.StallModelLimit > 0 && ++stalledModels >= settings.StallModelLimit) { result.Stop = "stalled_models"; break; }
+                    if (settings.StallModelLimit > 0 && settings.FixedProbeScale) continue;
                     if (result.Evaluations + maxProbes + 1 + checkCost > settings.Budget) break;
                     if (settings.FixedProbeScale || probeScale <= .125) { result.Stop = "no_decreasing_step"; break; }
                     probeScale *= .5;
@@ -416,6 +435,34 @@ namespace LightingMvp
                         double curvature = d.Select((v, i) => v * d.Select((w, j) => gram[i, j] * w).Sum()).Sum();
                         if (slope > 0 && curvature > 0)
                             foreach (double fraction in new[] { 1d, .5, .25 }) Add("cauchy", d.Select(v => v * slope / curvature).ToArray(), fraction);
+                    }
+                    else if (settings.Fallback == TrustFallback.Dogleg)
+                    {
+                        // Gauss-Newton dogleg in the physical trust-radius coordinates.
+                        var s = layout.Axes.Select(a => (a.IsPosition ? modelRadius * a.Radius / .24 :
+                            Math.Min(a.MaximumRadius, modelIntensityRadius * a.Radius / .28)) / a.Unit).ToArray();
+                        var z = gradient.Select((g, j) => -g * s[j]).ToArray();
+                        var physicalCauchy = z.Select((v, j) => v * s[j]).ToArray();
+                        double slope = z.Sum(v => v * v);
+                        double curvature = 2 * slope - TrustPredicted(gram, gradient, physicalCauchy);
+                        if (slope > 0 && curvature > 0)
+                        {
+                            var u = z.Select(v => v * slope / curvature).ToArray();
+                            double Norm(double[] v) => Math.Sqrt(v.Sum(a => a * a));
+                            double un = Norm(u);
+                            var gn = TimedSolve(gram, gradient, x, 1e-12, dampingScale).Select((v, j) => v / s[j]).ToArray();
+                            double[] Step()
+                            {
+                                if (un >= 1) return u.Select(v => v / un).ToArray();
+                                if (Norm(gn) <= 1) return gn;
+                                var b = gn.Select((v, j) => v - u[j]).ToArray();
+                                double bb = b.Sum(v => v * v), ub = b.Select((v, j) => v * u[j]).Sum();
+                                double t = (1 - un * un) / (Math.Sqrt(Math.Max(0, ub * ub + bb * (1 - un * un))) + ub);
+                                return u.Select((v, j) => v + t * b[j]).ToArray();
+                            }
+                            Add("dogleg", Step().Select((v, j) => v * s[j]).ToArray(), 1);
+                            Add("scaled_cauchy", u.Select((v, j) => v * s[j] / Math.Max(1, un)).ToArray(), 1);
+                        }
                     }
                     else if (settings.Fallback == TrustFallback.Nonmonotone && uphillInARow < 2)
                     {
@@ -549,7 +596,8 @@ namespace LightingMvp
         }
 
         public static double[] LampScaledTrustProposal(double[,] gram, double[] gradient, double[] theta, TrustLayout layout,
-            Func<double[], bool> legal, out int shrinks, double fraction = 1, bool cauchy = false)
+            Func<double[], bool> legal, out int shrinks, double fraction = 1, bool cauchy = false,
+            Func<double[], int, bool> lampLegal = null, int[] lampShrinks = null)
         {
             var scale = LampDampingScale(gram, layout);
             var step = cauchy ? gradient.Select((g, i) => -g / scale[i]).ToArray() : SolveDamped(gram, gradient, theta, .002, 0, scale);
@@ -561,7 +609,7 @@ namespace LightingMvp
             }
             for (int lamp = 0; lamp < layout.Lamps; ++lamp) LimitLampStep(step, layout, lamp, .24, .28);
             for (int i = 0; i < step.Length; ++i) step[i] *= fraction;
-            shrinks = FormCandidate(theta, step, new double[theta.Length], legal);
+            shrinks = BuildCandidate(theta, step, new double[theta.Length], layout, legal, lampLegal, lampShrinks, out _);
             return step;
         }
 

@@ -25,14 +25,14 @@ namespace LightingMvp.Editor
                 bool hardPosition = model is "H3" or "H5", offPosition = model != "H3";
                 bool hardAnchor = model != "C1";
                 if (cachedMapping && !anchored) throw new ArgumentException("Cached mapping requires C3 or C4.");
-                var hardMapped = cachedMapping ? new float[E23Channels] : null;
+                var hardMapped = cachedMapping ? new float[objective.Size] : null;
                 var probeRig = cachedMapping ? new double[settings.Layout?.Count ?? settings.Units.Length] : null;
-                var hard = new float[E23Channels]; var off = new float[E23Channels];
-                var plus = new float[E23Channels]; var minus = new float[E23Channels];
-                var hardA = hardPosition || masked ? new float[E23Channels] : null;
-                var hardB = hardA == null ? null : new float[E23Channels];
-                var weights = cachedMapping ? null : new double[E23Channels];
-                var mask = masked ? active.Select(_ => new float[E23Channels / 3]).ToArray() : null;
+                var hard = new float[objective.Size]; var off = new float[objective.Size];
+                var plus = new float[objective.Size]; var minus = new float[objective.Size];
+                var hardA = hardPosition || masked ? new float[objective.Size] : null;
+                var hardB = hardA == null ? null : new float[objective.Size];
+                var weights = cachedMapping ? null : new double[objective.Size];
+                var mask = masked ? active.Select(_ => new float[objective.Size / 3]).ToArray() : null;
                 var norms = masked ? new float[E24PixelsPerView] : null;
                 settings.PositionModel = new ImageJacobianLm.TrustPositionModel(Flag(hardAnchor) + Flag(offPosition),
                     Flag(hardPosition) + Flag(offPosition), Anchor, Position, masked ? 2 : 1,

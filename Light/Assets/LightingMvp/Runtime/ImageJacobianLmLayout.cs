@@ -6,7 +6,7 @@ namespace LightingMvp
 {
     public static partial class ImageJacobianLm
     {
-        public enum TrustCoordinate { X, Y, Z, LogIntensity, Mired }
+        public enum TrustCoordinate { X, Y, Z, LogIntensity, Mired, LogRedGreen, LogBlueGreen }
 
         /// <summary>Physical bounds [Minimum, Minimum + Unit] are encoded as [0,1].</summary>
         public readonly struct TrustAxis
@@ -64,6 +64,6 @@ namespace LightingMvp
             }
         }
 
-        public enum TrustFallback { None, ViewPool, ViewPairPool, Cauchy, Nonmonotone }
+        public enum TrustFallback { None, ViewPool, ViewPairPool, Cauchy, Nonmonotone, Dogleg }
     }
 }

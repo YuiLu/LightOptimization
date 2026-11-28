@@ -1,0 +1,26 @@
+[
+  {
+    "fingerprint": {
+      "unity": "2022.3.62f3c1",
+      "urp": "14.0.12",
+      "api": "Direct3D 11",
+      "gpu": "NVIDIA GeForce GTX 1060 6GB",
+      "driver": "32.0.15.8278"
+    },
+    "stage_logs": [
+      "unity-0.log",
+      "unity-A1.log",
+      "unity-A2.log",
+      "unity-A3.log",
+      "unity-B1.log",
+      "unity-B2.log",
+      "unity-B3.log",
+      "unity-C.log",
+      "unity-D1.log",
+      "unity-D2.log",
+      "unity-D3.log",
+      "unity-E.log",
+      "unity-transfer.log"
+    ]
+  }
+]
